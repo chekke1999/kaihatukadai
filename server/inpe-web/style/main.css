@@ -1,0 +1,25 @@
+html{
+    height:100%;
+}
+body{
+    display: flex;
+    background-color: #1f1f1f;
+    height:100%;
+}
+#inpe_window,#pi_window{
+    
+    width: 50%;
+    height: 94%;
+    margin: 5px;
+    margin-top: 15px;
+    background-color:#424242;
+
+    border-style: solid;
+    border-color:#D79B00;
+    border-width: 2px;
+}
+#inpe_window{
+}
+#pi_window{
+    resize: horizontal;
+}

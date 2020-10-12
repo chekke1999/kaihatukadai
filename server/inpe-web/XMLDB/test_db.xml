@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root>
+    <check number="1" time="2020/09/15/ 10:39:55" RFID="1234567890,93">
+        <parts name="R1">
+            <Mounted_parts result="good"></Mounted_parts>
+            <Misalignment result="bad">部品の角度が許容値を超えています</Misalignment>
+        </parts>
+        <parts name="R2">
+            <Mounted_parts result="bad">部品を間違えています</Mounted_parts>
+            <Misalignment result="good"></Misalignment>
+        </parts>
+    </check>
+    <check number="2" time="2020/09/15/ 10:45:55" RFID="1234567871,93">
+        <parts name="R1">
+            <Mounted_parts result="good"></Mounted_parts>
+            <Misalignment result="good"></Misalignment>
+        </parts>
+        <parts name="R2">
+            <Mounted_parts result="good"></Mounted_parts>
+            <Misalignment result="good"></Misalignment>
+        </parts>
+    </check>
+        <check number="3" time="2020/09/15/ 10:55:55" RFID="1234567881,93">
+        <parts name="R1">
+            <Mounted_parts result="good"></Mounted_parts>
+            <Misalignment result="good"></Misalignment>
+        </parts>
+        <parts name="R2">
+            <Mounted_parts result="good"></Mounted_parts>
+            <Misalignment result="good"></Misalignment>
+        </parts>
+    </check>
+</root>

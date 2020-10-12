@@ -1,0 +1,17 @@
+{
+    "name": "shoji/inpe-web",
+    "authors": [
+        {
+            "name": "chekke1999",
+            "email": "nevec555@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "MyApp\\": "./"
+        }
+    },
+    "require": {
+        "cboden/ratchet": "^0.4.3"
+    }
+}
