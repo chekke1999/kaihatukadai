@@ -1,0 +1,35 @@
+﻿body {
+    margin: 0;
+    padding: 0;
+    background-color: #222341;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0 0 0 0;
+}
+
+.developer{
+    position:fixed;
+    top:90%;
+    left:60%;
+    color:#faf8ed;
+    font-size:14px;
+}
+
+#title {
+    margin:50px;
+    font-size: 30px;
+    text-align: center;
+    color: #faf8ed;
+}
+
+.page_trans {
+    margin:5px;
+    padding: 1.3rem 0.5em;
+    font-weight: bold;
+    background: #faf8ed;
+    border-left: solid 10px #ca1818;
+    text-decoration: none;
+    color: #222341;
+}
