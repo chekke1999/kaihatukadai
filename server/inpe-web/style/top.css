@@ -33,3 +33,16 @@
     text-decoration: none;
     color: #222341;
 }
+
+img {
+    float: left;
+    display: block;
+}
+
+.back {
+    margin: 0 0 0 0;
+}
+
+.forward {
+    margin: 0 0 0 0;
+}

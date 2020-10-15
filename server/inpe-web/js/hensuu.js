@@ -1,10 +1,7 @@
 function hensuu() {
-    var h = 2;
+    var h = 1;
     return h;
 }
-
-var data3 = C();
-console.log(data3);
 
 function C2() {
     var test = data3;

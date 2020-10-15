@@ -5,8 +5,6 @@ const req = {
     }
 }
 
-
-
 conn.onopen = function(e) {
     console.log("Connection established!");
     const cfm = document.getElementById("cfm_text");
@@ -27,12 +25,15 @@ window.onload = function (e) {
         //arr.time = JSON.parse(e.data)["@attributes"].time;
         //arr.RFID = JSON.parse(e.data)["@attributes"].RFID;
 
-        console.log(JSON.parse(e.data)["parts"][0]["@attributes"]);
+        //console.log(JSON.parse(e.data)["parts"][0]["@attributes"]);
         //var num = inpe_attach.insertAdjacentHTML("afterbegin", "<div>" + JSON.parse(e.data)["@attributes"].number + "</div>");
         //inpe_attach.insertAdjacentHTML("afterbegin", "<div>" + JSON.parse(e.data)["@attributes"].time + "</div>");
         //inpe_attach.insertAdjacentHTML("afterbegin", "<div>" + JSON.parse(e.data)["@attributes"].RFID + "</div>");
 
-        var h ='<a href="parts.html">' 
+        var h = '<a href="parts.html?number='
+            + JSON.parse(e.data)["@attributes"].number
+            //+ '" onclick="getId(this);">' 
+            + '">'
             + '<div class="dynamic_box">'
             + '<div class="dynamic_innerbox_name">'
             + '基板'
@@ -47,22 +48,14 @@ window.onload = function (e) {
             + '</div>'
             + '</a>';
 
-        inpe_attach.insertAdjacentHTML("afterbegin",h);
+        inpe_attach.insertAdjacentHTML("afterbegin", h);
     }
 
+
 }
 
 
-function C(){
-    const lists = Array.from(document.querySelectorAll("div"));
-    lists.forEach(li => {
-        li.addEventListener("click", e => {
-            const index = lists.findIndex(list => list === e.target);
-            console.log(index);
-            return index;
-        });
-    });
-}
+
 
 timerID = setInterval('clock()',500); //0.5秒毎にclock()を実行
 

@@ -161,22 +161,13 @@ h2 {
 }
 
 .header {
-    height: 5%;
+    height: 7%;
     width: 100%;
     background-color: #faf8ed;
     position: center;
     border-bottom: double 5px #ca1818;
 }
 
-.back {
-    width: 30px;
-    height: 10px;
-}
-
-.forward {
-    width: 30px;
-    height: 10px;
-}
 
 #view_clock {
     display: inline-block;
@@ -186,7 +177,9 @@ h2 {
 }
 
 .header_title {
-    font-size: 150%;
+    position: fixed;
+    margin: 0.5em 0 0 2em;
+    font-size: 200%;
     font-weight: bold;
     color: #222341;
 }
@@ -197,4 +190,17 @@ h2 {
     background-color: #faf8ed;
     position: center;
     border-bottom: double 5px #ca1818;
+}
+
+img {
+    float: left;
+    display: block;
+}
+
+.back {
+    margin: 0 0 0 0;
+}
+
+.forward {
+    margin: 0 0 0 0;
 }
