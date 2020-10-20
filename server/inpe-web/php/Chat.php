@@ -28,6 +28,9 @@ class Chat implements MessageComponentInterface {
                         var_dump($SendMsg);
                         $client->send($SendMsg);
                     }
+                }else if($jmsg->banana !== NULL){
+                        var_dump($jmsg);
+                        $client->send(json_encode($jmsg));
                 }
             }
         }
