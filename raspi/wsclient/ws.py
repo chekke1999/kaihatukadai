@@ -2,11 +2,11 @@
 import asyncio,json,websockets
 class ws:
     @staticmethod
-    async def asend(uri,jlist):
+    async def _send(uri,jlist):
         async with websockets.connect(uri) as websocket:
             await websocket.send(json.dumps(jlist))
             recv = await websocket.recv()
             print(json.loads(recv))
     @classmethod
     def send(cls,uri,jlist):
-        asyncio.get_event_loop().run_until_complete(cls.asend(uri,jlist))
+        asyncio.get_event_loop().run_until_complete(cls._send(uri,jlist))
