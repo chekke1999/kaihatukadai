@@ -8,6 +8,7 @@ jlist = {
 }
 class ws:
     @staticmethod
+    hogehoge = "moji"
     async def _send(url,jlist):
         async with websockets.connect(url) as websocket:
             await websocket.send(json.dumps(jlist))
@@ -15,5 +16,6 @@ class ws:
             print(recv)
     @classmethod
     def send(cls,url,jlist):
+        cls.hogehoge 
         asyncio.get_event_loop().run_until_complete(cls._send(url,jlist))
 ws.send("ws://192.168.77.55:8080/",jlist)
