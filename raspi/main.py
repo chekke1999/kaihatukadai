@@ -1,21 +1,33 @@
 #!/usr/bin/env python3
-import asyncio,json,websockets
+import asyncio,json,websockets,os,time
+from multiprocessing import Pipe, Process
 jlist = {
     "banana":{
         "test":"unchi",
         "ringo":"chinchin"
     }
 }
-class ws:
+
+async def _send(url,jlist):
+    async with websockets.connect(url) as websocket:
+        await websocket.send(json.dumps(jlist))
+        return await websocket.recv()
+#asyncio.get_event_loop().run_until_complete(cls._send(url,jlist))
+class DEMO:
     @staticmethod
-    hogehoge = "moji"
-    async def _send(url,jlist):
-        async with websockets.connect(url) as websocket:
-            await websocket.send(json.dumps(jlist))
-            recv = await websocket.recv()
-            print(recv)
+    def camera_run(pipe):
+        pipe.send("banana")
+        print(pipe.recv())
+class CamPi:
     @classmethod
-    def send(cls,url,jlist):
-        cls.hogehoge 
-        asyncio.get_event_loop().run_until_complete(cls._send(url,jlist))
-ws.send("ws://192.168.77.55:8080/",jlist)
+    def main(cls):
+        parent_conn, child_conn = Pipe()
+        camera_p = Process(target=DEMO.camera_run, args=[child_conn])
+        camera_p.start()
+        print(parent_conn.recv())
+        parent_conn.send("apple")
+if __name__ == "__main__":
+    CamPi.main()
+    
+    
+
