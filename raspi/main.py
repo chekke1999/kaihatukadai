@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import asyncio,json,websockets,os,time
 from multiprocessing import Pipe, Process
+from scapy.all import *
 jlist = {
     "banana":{
         "test":"unchi",
@@ -28,6 +29,6 @@ class CamPi:
         parent_conn.send("apple")
 if __name__ == "__main__":
     CamPi.main()
-    
+    ARP.show() 
     
 
