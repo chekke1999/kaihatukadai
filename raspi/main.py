@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 import asyncio,json,websockets,os,time
+from sys import argv
 from multiprocessing import Pipe, Process
-from scapy.all import *
+import netifaces as ni
+import scapy.all as scapy
+
 jlist = {
     "banana":{
         "test":"unchi",
@@ -21,14 +24,35 @@ class DEMO:
         print(pipe.recv())
 class CamPi:
     @classmethod
-    def main(cls):
+    def Arp(cls, ip):
+        #cls.ip = ip
+        mac_list = []
+        print(ip)
+        arp_r = scapy.ARP(pdst=ip)
+        br = scapy.Ether(dst='ff:ff:ff:ff:ff:ff')
+        request = br/arp_r
+        answered, unanswered = scapy.srp(request, timeout=1)
+        print('\tIP\t\t\t\t\tMAC')
+        print('_' * 37)
+        for i in answered:
+            ip, mac = i[1].psrc, i[1].hwsrc
+            print(ip, '\t\t' + mac)
+            print('-' * 37)
+            mac_list.append([ip,mac])
+        return mac_list
+    @classmethod
+    def Main(cls):
+        """
+        プロセスの分離とプロセス間通信用の
+        パイプを生成
+        """
         parent_conn, child_conn = Pipe()
         camera_p = Process(target=DEMO.camera_run, args=[child_conn])
         camera_p.start()
+
         print(parent_conn.recv())
         parent_conn.send("apple")
 if __name__ == "__main__":
-    CamPi.main()
-    ARP.show() 
-    
+    if argv[1] == "-c":
+        CamPi.Main()
 
