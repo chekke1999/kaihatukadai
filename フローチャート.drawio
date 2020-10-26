@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2020-10-26T06:18:02.194Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36" etag="Sk78CAeCGhVMNC7e2hB2" version="13.8.2" type="github">
+<mxfile host="app.diagrams.net" modified="2020-10-26T07:14:28.212Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36" etag="Qs42dolOzIy0BfChVUu6" version="13.8.2" type="github">
   <diagram id="wkKprQKMh2lIjEy9JK0p" name="Page-1">
-    <mxGraphModel dx="1158" dy="364" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="1794" dy="2231" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -8,7 +8,7 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="dFKXp6tCZQXhxMECFwLC-1" value="CameraPi&lt;br&gt;Start" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
-          <mxGeometry x="100" y="60" width="100" height="100" as="geometry" />
+          <mxGeometry x="100" y="-100" width="100" height="100" as="geometry" />
         </mxCell>
         <mxCell id="dFKXp6tCZQXhxMECFwLC-48" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="dFKXp6tCZQXhxMECFwLC-3" target="dFKXp6tCZQXhxMECFwLC-88" edge="1">
           <mxGeometry relative="1" as="geometry">
@@ -19,16 +19,16 @@
           <mxGeometry relative="1" as="geometry">
             <mxPoint x="-155" y="480" as="targetPoint" />
             <Array as="points">
-              <mxPoint x="-10" y="350" />
+              <mxPoint x="-10" y="190" />
               <mxPoint x="-10" y="510" />
             </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="dFKXp6tCZQXhxMECFwLC-3" value="&lt;span style=&quot;color: rgb(0 , 0 , 0) ; font-family: &amp;#34;helvetica&amp;#34; ; font-size: 12px ; font-style: normal ; font-weight: 400 ; letter-spacing: normal ; text-align: center ; text-indent: 0px ; text-transform: none ; word-spacing: 0px ; background-color: rgb(248 , 249 , 250) ; display: inline ; float: none&quot;&gt;相方マイコンの存在確認&lt;br&gt;ARP&lt;br&gt;&lt;/span&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="60" y="310" width="180" height="80" as="geometry" />
+          <mxGeometry x="60" y="150" width="180" height="80" as="geometry" />
         </mxCell>
         <mxCell id="dFKXp6tCZQXhxMECFwLC-5" value="true" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="190" y="390" width="40" height="20" as="geometry" />
+          <mxGeometry x="190" y="230" width="40" height="20" as="geometry" />
         </mxCell>
         <mxCell id="dFKXp6tCZQXhxMECFwLC-59" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="dFKXp6tCZQXhxMECFwLC-54" target="dFKXp6tCZQXhxMECFwLC-58" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -40,7 +40,7 @@
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="20" y="1240" />
-              <mxPoint x="20" y="365" />
+              <mxPoint x="20" y="205" />
             </Array>
           </mxGeometry>
         </mxCell>
@@ -63,7 +63,7 @@
           <mxGeometry x="190" y="1169" width="40" height="20" as="geometry" />
         </mxCell>
         <mxCell id="dFKXp6tCZQXhxMECFwLC-70" value="false" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="1" vertex="1">
-          <mxGeometry x="15.5" y="320" width="40" height="20" as="geometry" />
+          <mxGeometry x="15.5" y="160" width="40" height="20" as="geometry" />
         </mxCell>
         <mxCell id="dFKXp6tCZQXhxMECFwLC-75" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="dFKXp6tCZQXhxMECFwLC-73" target="dFKXp6tCZQXhxMECFwLC-74" edge="1">
           <mxGeometry relative="1" as="geometry" />
@@ -290,13 +290,13 @@
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
         <mxCell id="LhpffrZuen5v1YRQ7B42-1" value="&lt;span style=&quot;color: rgb(0 , 0 , 0) ; font-family: &amp;#34;helvetica&amp;#34; ; font-size: 12px ; font-style: normal ; font-weight: 400 ; letter-spacing: normal ; text-align: center ; text-indent: 0px ; text-transform: none ; word-spacing: 0px ; background-color: rgb(248 , 249 , 250) ; display: inline ; float: none&quot;&gt;PLCの存在確認&lt;br&gt;ARP&lt;br&gt;&lt;/span&gt;" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
-          <mxGeometry x="60" y="180" width="180" height="80" as="geometry" />
+          <mxGeometry x="60" y="20" width="180" height="80" as="geometry" />
         </mxCell>
         <mxCell id="LhpffrZuen5v1YRQ7B42-4" value="true" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="150" y="270" width="40" height="20" as="geometry" />
+          <mxGeometry x="150" y="110" width="40" height="20" as="geometry" />
         </mxCell>
         <mxCell id="LhpffrZuen5v1YRQ7B42-5" value="false" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
-          <mxGeometry x="10" y="190" width="40" height="20" as="geometry" />
+          <mxGeometry x="10" y="30" width="40" height="20" as="geometry" />
         </mxCell>
         <mxCell id="LhpffrZuen5v1YRQ7B42-6" value="単独動作モード" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="-170" y="190" width="120" height="60" as="geometry" />
