@@ -1,0 +1,19 @@
+{
+    "parts":{
+        "R1":{
+            "Mounted_parts":true,
+            "Misalignment":false,
+            "comment":"ずれが許容値を超えています"
+        },
+        "R2":{
+            "Mounted_parts":false,
+            "Misalignment":true,
+            "comment":"違うパーツが載っています" 
+        },
+        "R3":{
+            "Mounted_parts":true,
+            "Misalignment":true,
+            "comment":"" 
+        }
+    }
+}

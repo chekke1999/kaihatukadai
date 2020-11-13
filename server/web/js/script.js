@@ -1,4 +1,4 @@
-﻿const conn = new WebSocket('ws://192.168.77.55:8080/');
+﻿const conn = new WebSocket('ws://192.168.11.199:8080/');
 const req = {
     "db_select_data" : {
         "xpath" : "//check"
@@ -16,7 +16,7 @@ window.onload = function (e) {
     var arr = {}
     const inpe_attach = document.getElementById('inpe_window');
     conn.onmessage = function (e) {
-
+        console.log(e.data)
         //console.log(JSON.parse(e.data));
         //console.log(e.data);
         //var arr = new Object();
