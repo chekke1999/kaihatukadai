@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import asyncio,json,websockets,os,time
+from get_camera import pi_sub_camera
 from sys import argv
 from multiprocessing import Pipe, Process
 import netifaces as ni
@@ -47,11 +48,11 @@ class CamPi:
         パイプを生成
         """
         parent_conn, child_conn = Pipe()
-        camera_p = Process(target=DEMO.camera_run, args=[child_conn])
+        camera_p = Process(target=pi_sub_camera, args=[child_conn])
         camera_p.start()
-
+        sleep(2)
+        parent_conn.send(1)
         print(parent_conn.recv())
-        parent_conn.send("apple")
 if __name__ == "__main__":
     if argv[1] == "-c":
         CamPi.Main()
