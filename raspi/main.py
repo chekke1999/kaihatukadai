@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import asyncio,json,websockets,os,time
-from get_camera import pi_sub_camera
+from get_camera import img_get
 from sys import argv
 from multiprocessing import Pipe, Process
 import netifaces as ni
