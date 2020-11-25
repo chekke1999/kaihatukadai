@@ -48,11 +48,12 @@ class CamPi:
         パイプを生成
         """
         parent_conn, child_conn = Pipe()
-        camera_p = Process(target=pi_sub_camera, args=[child_conn])
+        camera_p = Process(target=img_get, args=[child_conn])
         camera_p.start()
-        sleep(2)
-        print(parent_conn.recv())
-if __name__ == "__main__":
+        time.sleep(2)
+        print(type(parent_conn.recv()))
+if __name__ == '__main__':
+    print(argv[1])
     if argv[1] == "-c":
         CamPi.Main()
 
