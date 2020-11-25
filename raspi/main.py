@@ -51,7 +51,6 @@ class CamPi:
         camera_p = Process(target=pi_sub_camera, args=[child_conn])
         camera_p.start()
         sleep(2)
-        parent_conn.send(1)
         print(parent_conn.recv())
 if __name__ == "__main__":
     if argv[1] == "-c":

@@ -2,7 +2,7 @@
 from __future__ import print_function
 from imutils.video import WebcamVideoStream
 from imutils.video import FPS
-import argparse,asyncio,imutils,cv2
+import argparse,imutils,cv2
 import numpy as np
 
 ap = argparse.ArgumentParser()
@@ -19,28 +19,20 @@ fps = FPS().start()
 WIDTH = 1920
 #HEIGHT = 1080
 
-async def img_get(pipe):
+def img_get(pipe):
 	while(True):
-		await host = pipe.recv()
-		while(True):
-			frame = vs.read()
-			if host == 1:
-				pipe.send(frame)
-				break
-			frame = imutils.resize(frame, width=WIDTH)
-			cv2.imshow("Frame", frame)
-			key = cv2.waitKey(1) & 0xFF
+		frame = vs.read()
+		pipe.send(frame)
+		frame = imutils.resize(frame, width=WIDTH)
+		cv2.imshow("Frame", frame)
+		key = cv2.waitKey(1) & 0xFF
 
-			if key == ord('c'):
-				cv2.imwrite('./data/test_fps.jpg', frame)
-			elif key == ord('q'):
-
-				break
-			fps.update()
+		if key == ord('c'):
+			cv2.imwrite('./data/test_fps.jpg', frame)
+		elif key == ord('q'):
+			break
+		fps.update()
 	fps.stop()
-
-def pi_sub_camera(pipe):
-	asyncio.run(img_get(pipe))
 
 if "__main__" == __init__:
 	print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
