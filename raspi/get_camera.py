@@ -34,7 +34,7 @@ def img_get(pipe):
 		fps.update()
 	fps.stop()
 
-if "__main__" == __init__:
+if __name__ == '__main__':
 	print("[INFO] elasped time: {:.2f}".format(fps.elapsed()))
 	print("[INFO] approx. FPS: {:.2f}".format(fps.fps()))
 	print("[INFO] width: {:.0f}".format(WIDTH))
