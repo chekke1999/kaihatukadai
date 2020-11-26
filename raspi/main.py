@@ -49,7 +49,7 @@ class CamPi:
         """
         #parent_conn, child_conn = Pipe()
         with Manager() as manager:
-            l = manager.list(range(10))
+            l = manager.list()
             camera_p = Process(target=img_get, args=[l])
             camera_p.start()
             while(True):
