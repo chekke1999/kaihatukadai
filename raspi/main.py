@@ -2,7 +2,7 @@
 import asyncio,json,websockets,os,time
 from get_camera import img_get
 from sys import argv
-from multiprocessing import Pipe, Process
+from multiprocessing import Pipe, Process, Manager
 import netifaces as ni
 import scapy.all as scapy
 
@@ -47,11 +47,14 @@ class CamPi:
         プロセスの分離とプロセス間通信用の
         パイプを生成
         """
-        parent_conn, child_conn = Pipe()
-        camera_p = Process(target=img_get, args=[child_conn])
-        camera_p.start()
-        time.sleep(2)
-        print(type(parent_conn.recv()))
+        #parent_conn, child_conn = Pipe()
+        with Manager() as manager:
+            l = manager.list(range(10))
+            camera_p = Process(target=img_get, args=[l])
+            camera_p.start()
+            while(True):
+                time.sleep(2)
+                print(type(l))
 if __name__ == '__main__':
     print(argv[1])
     if argv[1] == "-c":
