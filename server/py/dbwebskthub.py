@@ -20,24 +20,26 @@ def sql(database,query,commit):
     if commit == True:
         cnxn.commit()
     row = cursor.fetchone() 
+    cnt = 1
+    send_data = {}
     while row: 
-        data = row
-        yield data
+        send_data[cnt] = list(row)
         row = cursor.fetchone()
+        cnt+=1
     cursor.close()
     cnxn.close()
+    return send_data
 
 async def websqhub(websocket, path):
     recv_data = await websocket.recv()
     dict_data = json.loads(recv_data)
-    cnt = 0
-    send_data = {}
     print(dict_data)
     for jkey in dict_data:
         if jkey == "sql":
-            for i in [list(i) for i in sql(dict_data[jkey]["db"],dict_data[jkey]["query"],dict_data[jkey]["commit"])]:
-                cnt+=1
-                send_data[cnt] = i
+            send_data = sql(dict_data[jkey]["db"],dict_data[jkey]["query"],dict_data[jkey]["commit"])
+        # elif jkey == "img":
+        #     for i in [list(i) for i in sql(dict_data[jkey])]
+
     print(send_data)
     await websocket.send(json.dumps(send_data,default=json_serial))
 
