@@ -43,11 +43,7 @@ class CamPi:
         return mac_list
     @classmethod
     def Main(cls):
-        """
-        プロセスの分離とプロセス間通信用の
-        パイプを生成
-        """
-        #parent_conn, child_conn = Pipe()
+        #プロセスの分離とプロセス間通信用マネージャ
         with Manager() as manager:
             l = manager.list()
             camera_p = Process(target=img_get, args=[l])
