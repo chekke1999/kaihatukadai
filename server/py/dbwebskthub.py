@@ -1,4 +1,4 @@
-import websockets,asyncio,pyodbc,json
+import websockets,asyncio,pyodbc,json,base64
 from datetime import date, datetime
 
 # date, datetimeの変換関数
@@ -37,9 +37,14 @@ async def websqhub(websocket, path):
     for jkey in dict_data:
         if jkey == "sql":
             send_data = sql(dict_data[jkey]["db"],dict_data[jkey]["query"],dict_data[jkey]["commit"])
-        # elif jkey == "img":
-        #     for i in [list(i) for i in sql(dict_data[jkey])]
-
+        elif jkey == "img":
+            imgdict = sql(dict_data[jkey]["db"],f"SELECT top_img_path,slanting_img_path FROM pi_camera WHERE scan_id={dict_data[jkey]['id']}",False)
+            cnt = 0
+            for imgpath in imgdict[1]:
+                with open(imgpath,"rb") as imgf:
+                    imgdict[1][cnt] = base64.b64encode(imgf.read()).decode('utf-8')
+                cnt+=1
+            send_data = {"img":[imgdict[1][0],imgdict[1][0]]}
     print(send_data)
     await websocket.send(json.dumps(send_data,default=json_serial))
 

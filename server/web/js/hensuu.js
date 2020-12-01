@@ -1,5 +1,5 @@
-function hensuu() {
-    var h = 1;
+function hensuu(test) {
+    var h = test;
     return h;
 }
 

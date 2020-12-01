@@ -1,14 +1,83 @@
 <!DOCTYPE html>
 <html lang="ja">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>検査データベース</title>
-        <link rel="stylesheet" type="text/css" href="style/main.css">
-        <script type="text/javascript" src="js/wstest.js"></script>
-    </head>
-    <body>
-        <div id="pi_window">pi_window</div>
-        <div id="inpe_window"></div>
-    </body>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style\test.css">
+
+    <link rel="shortcut icon" href="favicon.ico">
+    
+</head>
+<body>
+
+    <div id="box" class="wrapper">
+
+
+        <header>
+            <div class="header1">
+                <a href="Top.html">
+                    <div class="header2">
+                        <span class="TOPname">新たな生産システムに関する教材開発（生産ロボットシステムコース）</span>
+                    </div>
+                </a>
+                <!-- <div class="header3">
+                    <span id="view_clock" style="float: right; font-size:1em">2000年00月00日00時00分00秒</span>
+                </div> -->
+            </div>
+            <div class="header">
+                <div class="header4">
+                    <span class="header_text">検査結果</span>
+                </div>
+        </header>
+       
+        <div class="container">
+          <div class="menu">
+            <div id="humberger">
+                <div></div>
+                <div></div>
+                <div></div>
+              </div>
+                <div class="menu_title">
+                  <span class="title_text">MENU</span></br>
+                </div>
+
+                <a class="menu_a" href="index.html"><div class="menu_box1"><span class="menu_text">検査結果</span></div></a>
+                <a class="menu_a" href="search.html"><div class="menu_box1"><span class="menu_text">検索</span></div></a>
+                <a class="menu_a" href="index.html"><div class="menu_box1"><span class="menu_text">menu3</span></div></a>
+          </div>
+          
+          <div class="details">
+            <div class="details1">
+
+                <div class="result_box_main">
+                    <div class="result_table">
+                        <div class="result_table_dai">
+                            <div class="dai dai1">日付</div>
+                            <div class="dai dai2">時間</div>
+                            <div class="dai dai3">基板タイプ</div>
+                            <div class="dai dai4">判定</div>
+                        </div>
+
+                        <div class="result_elementbox">
+                            <div id="inpe_window">
+                            </div>
+                        </div>
+                        
+                    </div>
+
+                </div>
+            </div>
+            <div class="details2">
+                <div class="result_counter">
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>
+
+</body>
+<script src="js\script.js"></script>
+
 </html>

@@ -1,39 +1,142 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ja">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="normalize.css"> <!--いらんかも-->
-    <link rel="stylesheet" href="StyleSheet1.css">
+    <link rel="stylesheet" href="style\test.css">
 
+    <link rel="shortcut icon" href="favicon.ico">
+    
 </head>
 <body>
 
-    <div class="split-box left-box">
-        <h2><spen class="under">MENU</spen></h2>
-        <a href="mgmt.html"><div class="boxmini_left">管理</div></a>
-        <a href="search.html"><div class="boxmini_left">検索</div></a>
-        <a href="parts.html"><div class="boxmini_left">test_Detail</div></a>
-        <div class="under2"></div>
-        <a href="top.html"><div class="boxmini_left_top_link">Top</div></a>
-        <div id="cfm_text"></div>
-    </div>
+    <div class="wrapper">
 
 
-    <div class="split-box right-box">
-        <div class="header">
-            <a href="javascript:history.back()"> <img src="01.png" class="back"></a>
-            <span id="view_clock" style="float: right; font-size:13px">2000年00月00日00時00分00秒</span>
-            <a href="javascript:history.forward()"> <img src="02.png" class="forward"></a>
-            <div class="header_title">検索</div>
+        <header>
+            <div class="header1">
+                <a href="Top.html">
+                    <div class="header2">
+                        <span class="TOPname">新たな生産システムに関する教材開発（生産ロボットシステムコース）</span>
+                    </div>
+                </a>
+                <!-- <div class="header3">
+                    <span id="view_clock" style="float: right; font-size:1em">2000年00月00日00時00分00秒</span>
+                </div> -->
+            </div>
+            <div class="header">
+                <div class="header4">
+                    <span class="header_text">検索</span>
+                </div>
+        </header>
+       
+        <div class="container">
+          <div class="menu">
+                <div class="menu_title">
+                  <span class="title_text">MENU</span></br>
+
+
+                </div>
+
+                <a class="menu_a" href="index.html"><div class="menu_box1"><span class="menu_text">検査結果</span></div></a>
+                <a class="menu_a" href="search.html"><div class="menu_box1"><span class="menu_text">検索</span></div></a>
+                <a class="menu_a" href="index.html"><div class="menu_box1"><span class="menu_text">menu3</span></div></a>
+          </div>
+          
+            <div class="details">
+                <div class="details1">
+                    <!-- <script src="test.js"></script> -->
+                    <div class="search_form_box">
+                        <span class="S_box_in_red"></span>
+                        <div class="S_box_in">
+                            <span class="S_box1" style="width:100%;margin-bottom:5px;">条件を入力してください</span></br>
+                            <span class="S_box1">基板タイプ</span>
+                            <select name="select" id="Type_sel"　class="S_box1_form">
+                                <option value="type_all">*</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                            </select></br>
+
+                            <span class="S_box1">日付</span>
+                            <input type="text" name="name" size="7" id="S_date_year_old" class="S_date" style="text-align:right">
+                            <span> ～ </span>
+                            <input type="text" name="name" size="7" id="S_date_year_new" class="S_date" style="text-align:right">
+                            </br>
+
+                            <span class="S_box1">時間</span>
+                            <div class="S_time_in">
+                                    <input type="text" name="name" size="3" id="S_date_start_H" class="S_date" style="text-align:right">
+                                    <span> ～ </span>
+                                    <input type="text" name="name" size="3" id="S_date_now_H" class="S_date" style="text-align:right">
+                            </div>
+                            <div style="margin:2% 10% 0 10%">
+                                <input type="button" id="search_B" style="width:95%;" value="検索">
+                               </div>
+                        </div>
+                    </div>
+
+                    <div class="result_box">
+                        <div class="result_table">
+                            <div class="result_table_dai">
+                                <div class="dai dai1">日付</div>
+                                <div class="dai dai2">時間</div>
+                                <div class="dai dai3">基板タイプ</div>
+                                <div class="dai dai4">判定</div>
+                            </div>
+
+                            <div class="result_elementbox">
+                                <div id="inpe_window">
+                                <!-- <a href="Top.html">
+                                    <div class="result_element">
+                                        <div class="dai1">2020/11/18</div>
+                                        <div class="dai2">15:34:55</div>
+                                        <div class="dai3">A</div>
+                                        <div class="dai4">×</div>
+                                    </div>
+                                </a> -->
+                                </div>
+                            </div>
+                            
+                        </div>
+
+                    </div>
+                </div>
+                <div class="details2">
+                    <div class="result_counter">
+                        <div class="R_count_text">
+                            <ul>
+                                <li>検索結果</li>
+                            </ul>
+                        </div>
+
+
+
+                        <!-- <a href="javaScript:setCell()">セル内容を変更する</a><br> -->
+                        <table id="result_num" border="1">
+                            <tr>
+                                <td>件数</td><td class="td_num">--</td>
+                            </tr>
+                            <tr>
+                                <td>可</td><td class="td_num">--</td>
+                            </tr>
+                            <tr>
+                                <td>不可</td><td class="td_error td_num">--</td>
+                            </tr>
+                          </table>
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
         </div>
-        <div class="item_window">
 
-        </div>
 
     </div>
 
 </body>
-<script rel="text/javascript" src="search.js">
+<script src="js\search.js"></script>
 
-</script>
 </html>

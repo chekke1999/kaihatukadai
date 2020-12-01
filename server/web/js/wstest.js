@@ -7,10 +7,16 @@ const req = {
         "commit":false
     }
 }
+const req_img = {
+    "img" : {
+        "db":"piscan",
+        "id":"1"
+    }
+}
 
 // 接続が開いたときのイベント
 socket.onopen = function (event) {
-    socket.send(JSON.stringify(req)); 
+    socket.send(JSON.stringify(req_img)); 
   };
 
 // メッセージの待ち受け

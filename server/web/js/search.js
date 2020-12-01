@@ -1,97 +1,73 @@
-﻿const conn = new WebSocket('ws://192.168.77.55:8080/');
+const socket = new WebSocket('ws://192.168.11.199:8080');
+
 const req = {
-    "db_select_data": {
-        "xpath": "//check"
+    "sql" : {
+        "db":"piscan",
+        "query" :"SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera;",
+        "commit":false
     }
 }
 
+// 接続が開いたときのイベント
+socket.onopen = function (event) {
+    socket.send(JSON.stringify(req)); 
+  };
 
-conn.onopen = function (e) {
-    console.log("Connection established!");
-    const cfm = document.getElementById("cfm_text");
-    cfm.insertAdjacentHTML("afterbegin", "接続完了");
 
-    conn.send(JSON.stringify(req));
-};
+
 window.onload = function (e) {
-    var arr = {}
+
+// メッセージの待ち受け
+socket.onmessage = function (event) {
+    // console.log(JSON.parse(event.data));
+	data = event.data;
+}
+
     const inpe_attach = document.getElementById('inpe_window');
-    conn.onmessage = function (e) {
-
-        //console.log(JSON.parse(e.data));
-        //console.log(e.data);
-        var arr = new Object();
-        var a = JSON.parse(e.data);
-        var b = [];
-        console.log(a);
-
-        arr.number = JSON.parse(e.data)["@attributes"].number;
-        arr.time = JSON.parse(e.data)["@attributes"].time;
-        arr.RFID = JSON.parse(e.data)["@attributes"].RFID;
-
-       // console.log(JSON.parse(e.data)["parts"][0]["@attributes"]);
-        //var num = inpe_attach.insertAdjacentHTML("afterbegin", "<div>" + JSON.parse(e.data)["@attributes"].number + "</div>");
-        //inpe_attach.insertAdjacentHTML("afterbegin", "<div>" + JSON.parse(e.data)["@attributes"].time + "</div>");
-        //inpe_attach.insertAdjacentHTML("afterbegin", "<div>" + JSON.parse(e.data)["@attributes"].RFID + "</div>");
-
-        //var all_cities = JSON.parse(e.data)["attributes"].filter(function (item, index) {
-        //    if (item.number == "1") return true;
-        //});
-
-        //for (var i = 0; i < all_cities.length; i++) {
-        //    console.log(all_cities[i].Name);
-        //}
+    const s_year_o = document.getElementById('S_date_year_old');
+    const s_year_n = document.getElementById('S_date_year_new');
+    const s_n_hour = document.getElementById('S_date_now_H');
+    const s_s_minute = document.getElementById('S_date_start_H');
+    const today = new Date();
 
 
-        //var h = '<a href="parts.html">'
-        //    //+ JSON.parse(e.data)["@attributes"].number
-        //    //+ '">'
-        //    + '<div class="dynamic_box">'
-        //    + '<div class="dynamic_innerbox_name">'
-        //    //+ '<spen class="box_title">'
-        //    + '基板'
-        //    + JSON.parse(e.data)["@attributes"].number
-        //    //+ '</spen>'
-        //    + '</div>'
-        //    + '<div class="dynamic_innerbox_time">'
-        //    + JSON.parse(e.data)["@attributes"].time
-        //    + '</div>'
-        //    + '<div class="dynamic_innerbox_rfid">'
-        //    + JSON.parse(e.data)["@attributes"].RFID
-        //    //+ JSON.parse(e.data)["parts"][0]["@attributes"].name + ','
-        //    //+ JSON.parse(e.data)["parts"][1]["@attributes"].name
-        //    + '</div>'
-        //    + '</div>'
-        //    + '</a>';
+    for(let step= 1; step<100;step++){
+        var h = '<a href="Top.html">'
+                + '<div class="result_element">'
+                + '<div class="dai1">2020/11/'
+                + step
+                + '</div>'
+                + '<div class="dai2">15:34:55</div>'
+                + '<div class="dai3">A</div>'
+                + '<div class="dai4">×</div>'
+                + '</div>'
+                + '</a>';
+        
+                inpe_attach.insertAdjacentHTML("afterbegin", h);
+        }
 
-        //inpe_attach.insertAdjacentHTML("afterbegin", h);
-    }
-
-}
-timerID = setInterval('clock()', 500); //0.5秒毎にclock()を実行
-
-function clock() {
-    document.getElementById("view_clock").innerHTML = getNow();
-}
-var toDoubleDigits = function (num) {
-    num += "";
-    if (num.length === 1) {
-        num = "0" + num;
-    }
-    return num;
+        const year_date1 =  today.getFullYear()
+                        +   '/'
+                        +   (today.getMonth()+1)
+                        +   '/'
+                        +   today.getDate();
+        
+        s_year_o.value = '*';
+        s_year_n.value = year_date1;
+        s_n_hour.value = today.getHours() + ':' + today.getMinutes();
+        s_s_minute.value = '00:00';
 }
 
-function getNow() {
-    var now = new Date();
-    var year = now.getFullYear();
-    var mon = toDoubleDigits(now.getMonth() + 1); //１を足すこと
-    var day = toDoubleDigits(now.getDate());
-    var hour = toDoubleDigits(now.getHours());
-    var min = toDoubleDigits(now.getMinutes());
-    var sec = toDoubleDigits(now.getSeconds());
-
-    //出力用
-    var s = year + "年" + mon + "月" + day + "日" + hour + "時" + min + "分" + sec + "秒";
-    return s;
-}
-
+document.getElementById("search_B").onclick = function() {
+    const type = document.getElementById("Type_sel").value;
+    const date = document.getElementById("S_date_year").value;
+    const month = document.getElementById("S_date_month").value;
+    const day = document.getElementById("S_date_day").value;
+    const hour_start = document.getElementById("S_date_start_H").value;
+    const hour_stop = document.getElementById("S_date_now_H").value;
+    console.log(type);
+    console.log(date);
+    console.log(month);
+    console.log(hour_start);
+    console.log(hour_stop);
+};

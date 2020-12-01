@@ -1,85 +1,113 @@
-﻿const conn = new WebSocket('ws://192.168.11.199:8080/');
+const socket = new WebSocket('ws://192.168.11.199:8080');
+
 const req = {
-    "db_select_data" : {
-        "xpath" : "//check"
+    "sql" : {
+        "db":"piscan",
+        "query" :"SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera;",
+        "commit":false
     }
 }
 
-conn.onopen = function(e) {
-    console.log("Connection established!");
-    const cfm = document.getElementById("cfm_text");
-    cfm.insertAdjacentHTML("afterbegin","接続完了");
-
-    conn.send(JSON.stringify(req));
+// 接続が開いたときのイベント
+socket.onopen = function (event) {
+    socket.send(JSON.stringify(req)); 
+    console.log("req");
 };
+
+
+
+function getId(ele){
+
+	let xhr = new XMLHttpRequest()
+	let box = document.getElementById("box");//読み込みたい位置を指定
+    let h;
+	xhr.responseType="";//XMLとして扱いたいので一応記述
+	xhr.open("GET", "./parts.html", true);
+	xhr.onreadystatechange = function () {
+		if(xhr.readyState === 4 && xhr.status === 200) {
+            let restxt=xhr.responseText;//重要
+            console.log(restxt);
+            box.innerHTML = restxt ;
+		}
+	};
+    xhr.send();
+    // var id_value = ele.id; // eleのプロパティとしてidを取得
+    // console.log(id_value); //「id01」
+    // const req2 = {
+    //     "img" : {
+    //         "db":"piscan",
+    //         "id" : id_value
+    //     }
+    // }
+    // socket.send(JSON.stringify(req2)); 
+
+}
+
 window.onload = function (e) {
-    var arr = {}
+
+    
     const inpe_attach = document.getElementById('inpe_window');
-    conn.onmessage = function (e) {
-        console.log(e.data)
-        //console.log(JSON.parse(e.data));
-        //console.log(e.data);
-        //var arr = new Object();
 
-        //arr.number = JSON.parse(e.data)["@attributes"].number;
-        //arr.time = JSON.parse(e.data)["@attributes"].time;
-        //arr.RFID = JSON.parse(e.data)["@attributes"].RFID;
+    // メッセージの待ち受け
+    socket.onmessage = function (event) {
+        
+        console.log(JSON.parse(event.data));
+        var data = new Object();
+        data.arr = JSON.parse(event.data)[1][3];
+        
+        jdata = JSON.parse(event.data);
 
-        //console.log(JSON.parse(e.data)["parts"][0]["@attributes"]);
-        //var num = inpe_attach.insertAdjacentHTML("afterbegin", "<div>" + JSON.parse(e.data)["@attributes"].number + "</div>");
-        //inpe_attach.insertAdjacentHTML("afterbegin", "<div>" + JSON.parse(e.data)["@attributes"].time + "</div>");
-        //inpe_attach.insertAdjacentHTML("afterbegin", "<div>" + JSON.parse(e.data)["@attributes"].RFID + "</div>");
+        console.log(jdata);
 
-        var h = '<a href="parts.html?number='
-            + JSON.parse(e.data)["@attributes"].number
-            //+ '" onclick="getId(this);">' 
-            + '">'
-            + '<div class="dynamic_box">'
-            + '<div class="dynamic_innerbox_name">'
-            + '基板'
-            + JSON.parse(e.data)["@attributes"].number
-            + '</div>'
-            + '<div class="dynamic_innerbox_time">'
-            + JSON.parse(e.data)["@attributes"].time
-            + '</div>'
-            + '<div class="dynamic_innerbox_rfid">'
-            + JSON.parse(e.data)["@attributes"].RFID
-            + '</div>'
-            + '</div>'
-            + '</a>';
+        for(var key in jdata){
 
-        inpe_attach.insertAdjacentHTML("afterbegin", h);
+            console.log(key);
+            if(key == "img"){
+                console.log("img-------------");
+                console.log(jdata);
+            }else{
+                console.log("else");
+            data.date = jdata[key][2];
+            data.status = JSON.parse(data.arr);
+            data.type = data.status.type;
+            data.number = key;
+            let O_N = 0;
+            var day = new Object;
+            day = data.date.split('T');
+            day.date = day[0];
+            day.hours = day[1];
+
+            day.detail = day.date.split("-");
+            day.time = day.hours.split(":");
+            day.time[2] = Math.floor(day.time[2]);
+
+            var false_cnt = event.data.indexOf("false");
+
+            if(false_cnt < 0){
+                O_N = '〇';
+            }else{
+                O_N = '×';
+            }
+
+            var h = '<div id="'
+            + data.number
+            + '" class="result_element" onclick="getId(this);">'
+            + '<div class="dai1">'
+            + day.detail[0] + '/' + day.detail[1] + '/' +day.detail[2]
+            + '</div>'
+            + '<div class="dai2">'
+            + day.time[0] + ':' + day.time[1] + ':' + day.time[2]
+            + '</div>'
+            + '<div class="dai3">'
+            + data.type
+            + '</div>'
+            + '<div idO_N" class="dai4">'
+            + O_N
+            + '</div>'
+            + '</div>';
+        
+            inpe_attach.insertAdjacentHTML("afterbegin", h);
+            }
+        }
     }
-
-
-}
-
-
-
-
-timerID = setInterval('clock()',500); //0.5秒毎にclock()を実行
-
-function clock() {
-                document.getElementById("view_clock").innerHTML = getNow();
-}
-var toDoubleDigits = function (num) {
-    num += "";
-    if (num.length === 1) {
-        num = "0" + num;
-    }
-    return num;
-}
-
-function getNow() {
-	var now = new Date();
-	var year = now.getFullYear();
-    var mon = toDoubleDigits(now.getMonth()+1); //１を足すこと
-    var day = toDoubleDigits(now.getDate());
-    var hour = toDoubleDigits(now.getHours());
-    var min = toDoubleDigits(now.getMinutes());
-    var sec = toDoubleDigits(now.getSeconds());
-
-	//出力用
-	var s = year + "年" + mon + "月" + day + "日" + hour + "時" + min + "分" + sec + "秒";
-	return s;
 }
