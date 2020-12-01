@@ -168,6 +168,7 @@ a:hover .result_element{
     width: 80%;
     height:100%;
     margin:100px 0 0 auto;
+
 }
 
 .details1{
@@ -274,6 +275,7 @@ a:hover .result_element{
       display: flex;
       height:100%;
       width:100%;
+      display: none!important;
     }
     
     .menu {

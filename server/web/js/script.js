@@ -11,7 +11,7 @@ const req = {
 // 接続が開いたときのイベント
 socket.onopen = function (event) {
     socket.send(JSON.stringify(req)); 
-    console.log("req");
+    // console.log("req");
 };
 
 
@@ -26,20 +26,23 @@ function getId(ele){
 	xhr.onreadystatechange = function () {
 		if(xhr.readyState === 4 && xhr.status === 200) {
             let restxt=xhr.responseText;//重要
-            console.log(restxt);
+            //console.log(restxt);
             box.innerHTML = restxt ;
 		}
 	};
     xhr.send();
-    // var id_value = ele.id; // eleのプロパティとしてidを取得
-    // console.log(id_value); //「id01」
-    // const req2 = {
-    //     "img" : {
-    //         "db":"piscan",
-    //         "id" : id_value
-    //     }
-    // }
-    // socket.send(JSON.stringify(req2)); 
+    var id_value = ele.id; // eleのプロパティとしてidを取得
+    //console.log(id_value); //「id01」
+    const req2 = {
+        "img" : {
+            "db":"piscan",
+            "id" : id_value
+        }
+    }
+    socket.onopen = function (event) {
+        socket.send(JSON.stringify(req2)); 
+        console.log("ok");
+    };
 
 }
 
@@ -51,17 +54,17 @@ window.onload = function (e) {
     // メッセージの待ち受け
     socket.onmessage = function (event) {
         
-        console.log(JSON.parse(event.data));
+        // console.log(JSON.parse(event.data));
         var data = new Object();
         data.arr = JSON.parse(event.data)[1][3];
         
         jdata = JSON.parse(event.data);
 
-        console.log(jdata);
+        // console.log(jdata);
 
         for(var key in jdata){
 
-            console.log(key);
+            // console.log(key);
             if(key == "img"){
                 console.log("img-------------");
                 console.log(jdata);
@@ -111,3 +114,5 @@ window.onload = function (e) {
         }
     }
 }
+
+// var url = location.href ;
