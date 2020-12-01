@@ -39,37 +39,41 @@ function getId(ele){
             "id" : id_value
         }
     }
-    socket.onopen = function (event) {
-        socket.send(JSON.stringify(req2)); 
-        console.log("ok");
-    };
+    socket.send(JSON.stringify(req2)); 
 
 }
 
 window.onload = function (e) {
 
-    
     const inpe_attach = document.getElementById('inpe_window');
+    const result_attach_1 = document.getElementById('result_picture1');
+    const result_attach_2 = document.getElementById('result_picture2');
 
     // メッセージの待ち受け
     socket.onmessage = function (event) {
         
         // console.log(JSON.parse(event.data));
         var data = new Object();
-        data.arr = JSON.parse(event.data)[1][3];
+
         
         jdata = JSON.parse(event.data);
 
         // console.log(jdata);
 
         for(var key in jdata){
-
-            // console.log(key);
+            
             if(key == "img"){
                 console.log("img-------------");
-                console.log(jdata);
+                console.log(jdata["img"][0]);
+
+                let p =     'data:image/png;base64,'
+                        +   jdata["img"][0];
+
+                result_attach_1.insertAdjacentHTML("afterbegin", p);
+
             }else{
-                console.log("else");
+                data.arr = JSON.parse(event.data)[1][3];
+                // console.log("else");
             data.date = jdata[key][2];
             data.status = JSON.parse(data.arr);
             data.type = data.status.type;

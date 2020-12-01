@@ -1,5 +1,6 @@
-import websockets,asyncio,pyodbc,json,base64
+import pyodbc,json,base64
 from datetime import date, datetime
+from websocket_server import WebsocketServer
 
 # date, datetimeの変換関数
 def json_serial(obj):
@@ -30,10 +31,17 @@ def sql(database,query,commit):
     cnxn.close()
     return send_data
 
-async def websqhub(websocket, path):
-    recv_data = await websocket.recv()
-    dict_data = json.loads(recv_data)
-    print(dict_data)
+
+def new_client(client, server):
+    print(f"connection success fully.")
+    print(f"client : {client}")
+def disconnect():
+    print(f"disconnect cliet")
+    print(f"clinet : {client}")
+
+def recv(client, server, message):
+    print(f"recv_msg:{message}")
+    dict_data = json.loads(message)
     for jkey in dict_data:
         if jkey == "sql":
             send_data = sql(dict_data[jkey]["db"],dict_data[jkey]["query"],dict_data[jkey]["commit"])
@@ -45,10 +53,13 @@ async def websqhub(websocket, path):
                     imgdict[1][cnt] = base64.b64encode(imgf.read()).decode('utf-8')
                 cnt+=1
             send_data = {"img":[imgdict[1][0],imgdict[1][0]]}
-    print(send_data)
-    await websocket.send(json.dumps(send_data,default=json_serial))
+    print(client,send_data)
+    server.send_message(client,json.dumps(send_data,default=json_serial))
 
 
-start_server = websockets.serve(websqhub, "192.168.11.199", 8080)
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
+#websocket_server
+server = WebsocketServer(8080, host='192.168.11.199')
+server.set_fn_new_client(new_client)
+server.set_fn_message_received(recv)
+server.set_fn_client_left(disconnect)
+server.run_forever()
