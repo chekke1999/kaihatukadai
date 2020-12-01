@@ -46,3 +46,10 @@ img {
 .forward {
     margin: 0 0 0 0;
 }
+
+#result_picture1{
+    background: #ca1818;
+    position: absolute;
+    height:500px;
+    width:500px;
+}

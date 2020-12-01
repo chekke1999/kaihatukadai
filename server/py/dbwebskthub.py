@@ -31,14 +31,16 @@ def sql(database,query,commit):
     cnxn.close()
     return send_data
 
-
+#websocket_serverのコールバック関数に渡すやつ
+#クライアント接続時
 def new_client(client, server):
     print(f"connection success fully.")
     print(f"client : {client}")
+#クライアント切断時
 def disconnect():
     print(f"disconnect cliet")
     print(f"clinet : {client}")
-
+#メッセージ受信時
 def recv(client, server, message):
     print(f"recv_msg:{message}")
     dict_data = json.loads(message)
@@ -57,7 +59,7 @@ def recv(client, server, message):
     server.send_message(client,json.dumps(send_data,default=json_serial))
 
 
-#websocket_server
+
 server = WebsocketServer(8080, host='192.168.11.199')
 server.set_fn_new_client(new_client)
 server.set_fn_message_received(recv)

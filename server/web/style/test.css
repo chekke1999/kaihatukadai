@@ -683,7 +683,7 @@ table .td_error{
 
 /*///////////////////////night_mode/////////////////////////*/
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
         html{
             background: #e7e7e7;
     }
@@ -766,8 +766,8 @@ table .td_error{
 
     ul li{
         color: rgb(255, 255, 255);
-        border-left: solid 8px #929292;/*左側の線*/
-        background: #414141;/*背景色*/
+        border-left: solid 8px #929292;
+        background: #414141;
     }
 
     .search_count{
@@ -779,12 +779,12 @@ table .td_error{
     }
 
     table {
-        border: solid 2px  #dadada;/*表全体を線で囲う*/
+        border: solid 2px  #dadada;
         color:white;
     }
 
     table td {
-        border: dashed 1px  #e6e6e6;/**/
+        border: dashed 1px  #e6e6e6;
         background: #636363;
     }
     table .td_error{
@@ -794,7 +794,7 @@ table .td_error{
         background: #000000;
     }
 
-}
+}*/
 
 /*///////////////////detail////////////////////*/
 
@@ -869,3 +869,12 @@ table .td_error{
     border-radius: 0 10px 0 10px;
     border: solid 2px #e9bc40;
   }
+
+.picture_1{
+    width:10vw;
+    margin:50px 0 5px 0;
+}
+
+.picture_2{
+    margin:50px 0 5px 0;
+}

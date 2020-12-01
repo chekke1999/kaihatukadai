@@ -1,4 +1,5 @@
 const socket = new WebSocket('ws://192.168.11.199:8080');
+let xhr = new XMLHttpRequest()
 
 const req = {
     "sql" : {
@@ -17,8 +18,6 @@ socket.onopen = function (event) {
 
 
 function getId(ele){
-
-	let xhr = new XMLHttpRequest()
 	let box = document.getElementById("box");//読み込みたい位置を指定
     let h;
 	xhr.responseType="";//XMLとして扱いたいので一応記述
@@ -27,7 +26,7 @@ function getId(ele){
 		if(xhr.readyState === 4 && xhr.status === 200) {
             let restxt=xhr.responseText;//重要
             //console.log(restxt);
-            box.innerHTML = restxt ;
+            box.insertAdjacentHTML("afterbegin", restxt);
 		}
 	};
     xhr.send();
@@ -40,14 +39,14 @@ function getId(ele){
         }
     }
     socket.send(JSON.stringify(req2)); 
-
 }
 
 window.onload = function (e) {
 
     const inpe_attach = document.getElementById('inpe_window');
-    const result_attach_1 = document.getElementById('result_picture1');
-    const result_attach_2 = document.getElementById('result_picture2');
+
+    // const result_attach_2 = document.getElementById('result_picture2');
+    console.log(inpe_attach);
 
     // メッセージの待ち受け
     socket.onmessage = function (event) {
@@ -63,11 +62,15 @@ window.onload = function (e) {
         for(var key in jdata){
             
             if(key == "img"){
+                const result_attach_1 = document.getElementById('result_picture1');
                 console.log("img-------------");
-                console.log(jdata["img"][0]);
+                // console.log(jdata["img"][0]);
 
-                let p =     'data:image/png;base64,'
-                        +   jdata["img"][0];
+                var p =    '<image src="data:image/png;base64,'
+                        +   jdata["img"][0]
+                        +   '" class="picture_1">';
+
+                console.log(result_picture1);
 
                 result_attach_1.insertAdjacentHTML("afterbegin", p);
 
@@ -111,6 +114,7 @@ window.onload = function (e) {
             + '<div idO_N" class="dai4">'
             + O_N
             + '</div>'
+            + '<div id="result_picture1"></div>'
             + '</div>';
         
             inpe_attach.insertAdjacentHTML("afterbegin", h);
