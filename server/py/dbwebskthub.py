@@ -1,4 +1,4 @@
-import pyodbc,json,base64
+import pyodbc,json,base64,asyncio
 from datetime import date, datetime
 from websocket_server import WebsocketServer
 
@@ -37,7 +37,7 @@ def new_client(client, server):
     print(f"connection success fully.")
     print(f"client : {client}")
 #クライアント切断時
-def disconnect():
+def disconnect(client, server):
     print(f"disconnect cliet")
     print(f"clinet : {client}")
 #メッセージ受信時
@@ -52,12 +52,13 @@ def recv(client, server, message):
             cnt = 0
             for imgpath in imgdict[1]:
                 with open(imgpath,"rb") as imgf:
+                    print(imgdict[1][cnt],"---------------")
                     imgdict[1][cnt] = base64.b64encode(imgf.read()).decode('utf-8')
+                    print(imgdict[1][cnt])
                 cnt+=1
-            send_data = {"img":[imgdict[1][0],imgdict[1][0]]}
+            send_data = {"img":[imgdict[1][0],imgdict[1][1]]}
     print(client,send_data)
     server.send_message(client,json.dumps(send_data,default=json_serial))
-
 
 
 server = WebsocketServer(8080, host='192.168.11.199')

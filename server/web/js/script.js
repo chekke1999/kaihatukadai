@@ -1,5 +1,6 @@
 const socket = new WebSocket('ws://192.168.11.199:8080');
 let xhr = new XMLHttpRequest()
+xhr.responseType="";
 
 const req = {
     "sql" : {
@@ -20,13 +21,13 @@ socket.onopen = function (event) {
 function getId(ele){
 	let box = document.getElementById("box");//読み込みたい位置を指定
     let h;
-	xhr.responseType="";//XMLとして扱いたいので一応記述
 	xhr.open("GET", "./parts.html", true);
 	xhr.onreadystatechange = function () {
 		if(xhr.readyState === 4 && xhr.status === 200) {
             let restxt=xhr.responseText;//重要
             //console.log(restxt);
             box.insertAdjacentHTML("afterbegin", restxt);
+            console.log(restxt);
 		}
 	};
     xhr.send();
@@ -40,13 +41,29 @@ function getId(ele){
     }
     socket.send(JSON.stringify(req2)); 
 }
+window.addEventListener('beforeunload', function(e){
+  /** 更新される直前の処理 */
+  console.log('beforeunload');
+  socket.close();
+});
 
 window.onload = function (e) {
+    let box = document.getElementsByClassName('container')[0];//読み込みたい位置を指定
+	xhr.open("GET", "./menu.html", true);
+	xhr.onreadystatechange = function () {
+		if(xhr.readyState === 4 && xhr.status === 200) {
+            let restxt=xhr.responseText;//重要
+            //console.log(restxt);
+            box.insertAdjacentHTML("afterbegin", restxt);
+
+		}
+	};
+    xhr.send();
 
     const inpe_attach = document.getElementById('inpe_window');
 
     // const result_attach_2 = document.getElementById('result_picture2');
-    console.log(inpe_attach);
+
 
     // メッセージの待ち受け
     socket.onmessage = function (event) {
@@ -60,19 +77,26 @@ window.onload = function (e) {
         // console.log(jdata);
 
         for(var key in jdata){
-            
+            let cnt = 0;
             if(key == "img"){
                 const result_attach_1 = document.getElementById('result_picture1');
+                const result_attach_2 = document.getElementById('result_picture2');
                 console.log("img-------------");
-                // console.log(jdata["img"][0]);
+                console.log(jdata);
 
                 var p =    '<image src="data:image/png;base64,'
                         +   jdata["img"][0]
                         +   '" class="picture_1">';
 
-                console.log(result_picture1);
+                var p2 =    '<image src="data:image/png;base64,'
+                        +   jdata["img"][1]
+                        +   '" class="picture_2">';
+
+
+                //console.log(result_picture1);
 
                 result_attach_1.insertAdjacentHTML("afterbegin", p);
+                result_attach_2.insertAdjacentHTML("afterbegin", p2);
 
             }else{
                 data.arr = JSON.parse(event.data)[1][3];

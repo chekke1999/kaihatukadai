@@ -118,8 +118,17 @@ header {
 
 .menu_box1:hover{
     background: linear-gradient(rgb(250, 250,250),rgb(231, 231, 231));
-    border:solid 5px rgb(212, 212, 212)
+    border:solid 5px rgb(212, 212, 212);
+    animation: fadeIn 0.2s ease 0.3s 1 normal;
 }
+
+@keyframes fadeIn { /*animetion-nameで設定した値を書く*/
+
+    0% {opacity: 0} /*アニメーション開始時は不透明度0%*/
+  
+    100% {opacity: 1} /*アニメーション終了時は不透明度100%*/
+  
+  }
 
 .menu_title{
     position: relative;
@@ -871,10 +880,52 @@ table .td_error{
   }
 
 .picture_1{
-    width:10vw;
-    margin:50px 0 5px 0;
+    width:40%;
+    height:auto;
+    margin:70px 7% 5px 7%;
+    float: left;
 }
 
 .picture_2{
-    margin:50px 0 5px 0;
+    width:40%;
+    height:auto;
+    margin:70px 0 10px 0;
+    float: left;
+}
+
+.popup{
+    height:100%;
+    width:80%;
+    background: transparent;
+    position: fixed;
+    z-index: 1000;
+    margin:100px 0 0 20%;
+}
+.popup_in{
+    height:100%;
+    width:80%;
+    background: #4e380f;
+    opacity: 0.5;
+    position: fixed;
+}
+.popup_detail{
+    display: block;
+    height:83%;
+    width:90%;
+    background: #fff;
+    position: relative;
+    border-radius: 20px;
+    margin:0 auto;
+    margin-top:30px;
+    overflow-y:auto;
+}
+
+.close_detail{
+    height:40px;
+    width:40px;
+    background: tomato;
+    position: absolute;
+    margin: 10px 0 0 75%;
+    border-radius: 20px;
+    z-index: 200;
 }
