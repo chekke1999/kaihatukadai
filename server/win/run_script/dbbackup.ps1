@@ -1,0 +1,1 @@
+Invoke-Sqlcmd "BACKUP DATABASE piscan TO DISK = 'C:\dbbackup\TESTDB.bak' WITH FORMAT, NAME = 'piscan'" -ServerInstance "localhost" -QueryTimeout 300
