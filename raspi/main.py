@@ -30,16 +30,17 @@ def Arp(cls, ip):
 
 class CamPi:
     @classmethod
-    def Main(cls,smode=False):
-        #プロセスの分離とプロセス間通信用マネージャ
-        if mode == False:
-            with Manager() as manager:
+    def StartCamera(cls):
+        with Manager() as manager:
                 l = manager.list()
                 camera_p = Process(target=img_get, args=[l])
                 camera_p.start()
-                while(True):
-                    time.sleep(2)
-                    print(type(l))
+                return l
+    @classmethod
+    def Main(cls,smode=False):
+        #プロセスの分離とプロセス間通信用マネージャ
+        if mode == False:
+            img_data = cls.StartCamera()
         else:
             with Manager() as manager:
                 l = manager.list()
@@ -47,7 +48,8 @@ class CamPi:
                 camera_p.start()
                 while(True):
                     input("なにかのキーを押すと映像を取得します:")
-                    
+                    img_data = cls.StartCamera()
+
 if __name__ == '__main__':
     print(argv[1])
     if argv[1] == "-c":
