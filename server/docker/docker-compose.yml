@@ -1,0 +1,32 @@
+version: '3'
+services:
+  WebServer:
+    container_name: nginx
+    image: nginx
+    volumes:
+     - "../web:/usr/share/nginx/html"
+    ports:
+     - "80:80"
+    environment:
+     - "NGINX_PORT=80"
+  DB:
+    container_name: sqlserver2017
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    ports:
+     - "1433:1433"
+    volumes: 
+     - "../server/DB:/root/dbf"
+    command:
+     - "/opt/mssql-tools/bin/sqlcmd -i '/root/dbf/sql/createlogin.sql'"
+     - "/opt/mssql-tools/bin/sqlcmd -Q 'RESTORE DATABASE piscan FROM DISK = /root/dbf/piscan.bak WITH FILE = 1'"
+    environment:
+     - "ACCEPT_EULA=Y"
+  WebSocketServer:
+    container_name: PyWebSocket
+    build: 
+    ports:
+     - "8080:8080"
+    volumes:
+     -  "../py:/root/pyscript"
+    
+
