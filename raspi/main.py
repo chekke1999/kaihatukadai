@@ -38,6 +38,7 @@ class CamPi:
                 return l
     @classmethod
     def Main(cls,smode=False):
+        PLC_MAC = ["58:52:8a"]
         #プロセスの分離とプロセス間通信用マネージャ
         if mode == False:
             img_data = cls.StartCamera()

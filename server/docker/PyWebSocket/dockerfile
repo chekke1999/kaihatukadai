@@ -1,0 +1,6 @@
+FROM ubuntu:20.04
+ENV http_proxy="http://192.168.10.120:8080"
+ENV https_proxy="https://192.168.10.120:8080"
+COPY ./pip.conf /root/.pip/pip.conf
+RUN apt-get update;apt-get install python3 python3-pip git unixodbc-dev -y;pip3 install --upgrade pip &&\
+pip3 install pyodbc websocket-server

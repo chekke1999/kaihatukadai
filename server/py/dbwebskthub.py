@@ -61,7 +61,7 @@ def recv(client, server, message):
     server.send_message(client,json.dumps(send_data,default=json_serial))
 
 
-server = WebsocketServer(8080, host='192.168.11.199')
+server = WebsocketServer(8080, host='192.168.11.8')
 server.set_fn_new_client(new_client)
 server.set_fn_message_received(recv)
 server.set_fn_client_left(disconnect)

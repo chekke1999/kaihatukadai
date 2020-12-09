@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style\test.css">
-
+    <script src="js\script.js"></script>
     <link rel="shortcut icon" href="favicon.ico">
     <meta name="viewport" content="width=device-width,initial-scale=1">
 </head>
@@ -24,6 +24,7 @@
             <div class="header">
                 <div class="header4">
                     <span class="header_text">検査結果</span>
+
                 </div>
         </header>
 
@@ -31,6 +32,42 @@
             
           <div class="details">
             <div class="details1">
+
+                    <div id="search_details">
+                    <details >
+                        <summary>絞り込み</summary>
+                        <div class="search_form_box">
+                            <span class="S_box_in_red"></span>
+                            <div class="S_box_in">
+                                <span class="S_box1" style="width:100%;margin-bottom:5px;">条件を入力してください</span></br>
+                                <span class="S_box1">基板タイプ</span>
+                                <select name="select" id="Type_sel"　class="S_box1_form">
+                                    <option value="type_all">*</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                </select></br>
+
+                                <span class="S_box1">日付</span>
+                                <input type="text" name="name" size="7" id="S_date_year_old" class="S_date" style="text-align:right">
+                                <span> ～ </span>
+                                <input type="text" name="name" size="7" id="S_date_year_new" class="S_date" style="text-align:right">
+                                </br>
+
+                                <span class="S_box1">時間</span>
+                                <div class="S_time_in">
+                                        <input type="text" name="name" size="3" id="S_date_start_H" class="S_date" style="text-align:right">
+                                        <span> ～ </span>
+                                        <input type="text" name="name" size="3" id="S_date_now_H" class="S_date" style="text-align:right">
+                                </div>
+                                <div style="margin:2% 10% 0 10%">
+                                    <input type="button" id="search_B" style="width:95%;" value="検索" onclick="search()">
+                                </div>
+                            </div>
+                        </div>
+                    </details>
+                </div>
+
                 <div class="result_box_main">
                     <div class="result_table">
                         <div class="result_table_dai">
@@ -44,17 +81,49 @@
                             <div id="inpe_window"></div>
                         </div>
                     </div>
+                    <div id="nav-links" class="nav-links">
+                        <!-- <div class="page_box ">《</div>
+                        <div class="page_box detail_link_previous">1</div>
+                        <div class="page_box detail_link_current">2</div>
+                        <div class="page_box detail_link_next">3</div>
+                        <div class="page_box ">...</div>
+                        <div class="page_box detail_link_last">5</div>
+                        <div class="page_box ">》</div> -->
+                    </div>
                 </div>
             </div>
             <div class="details2">
                 <div class="result_counter">
+                    <div class="R_count_text">
+                        <ul>
+                            <li>検索結果</li>
+                        </ul>
+                    </div>
+
+
+
+                    <!-- <a href="javaScript:setCell()">セル内容を変更する</a><br> -->
+                    <table id="result_num" border="1">
+                        <tr>
+                            <td>件数</td><td id="cnt_result" class="td_num">--</td>
+                        </tr>
+                        <tr>
+                            <td>可</td><td id="cnt_good" class="td_num">--</td>
+                        </tr>
+                        <tr>
+                            <td>不可</td><td id="cnt_bad" class="td_error td_num">--</td>
+                        </tr>
+                      </table>
+                      
                 </div>
+
             </div>
+
         </div>
     </div>
 </div>
 
 </body>
-<script src="js\script.js"></script>
+
 
 </html>

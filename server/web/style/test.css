@@ -193,7 +193,8 @@ a:hover .result_element{
     float: left;
 }
 
-@media (max-width: 500px){
+
+@media (max-width: 400px){
     *{
         margin:0%;
     }
@@ -424,11 +425,11 @@ a:hover .result_element{
 .search_form_box{
     background:#dedede;
     height:170px;
-    width:60%;
-    position: fixed;
+    width:100%;
     border-bottom: solid 1px #CDCDCD;
     box-sizing: border-box;
     z-index: 400;
+    position: relative;
 }
 
 .S_box1{
@@ -440,9 +441,9 @@ a:hover .result_element{
 
 .S_box_in{
     height :90%;
-    margin:10px 10px 0 10px;
     background: transparent;
     max-width: 500px;
+
 }
 
 .S_time_in{
@@ -458,7 +459,7 @@ a:hover .result_element{
 }
 
 .details1 .S_box_in_red{
-    height :2.3em;
+    height :1.7em;
     width:60%;
     margin:0 50% 0 auto;
     background: transparent;
@@ -560,10 +561,34 @@ table .td_error{
     background: transparent;
     position: relative;
     margin:0 auto;
+    margin-top:25px;
     z-index: 0;
     overflow:hidden;
-    margin-bottom:30px;
+    margin-bottom:10px;
     border-bottom:solid 10px #325fb3;
+}
+
+.nav-links{
+    position: relative;
+    height:40px;
+    width:72%;
+    background: transparent;
+    margin:0 auto;
+    margin-bottom:30px;
+    margin-top:20px;
+    display: table;
+}
+
+.page_box{
+    height:40px;
+    width:40px;
+    background: white;
+    border: solid 1px #999;
+    box-sizing: border-box;
+    float: left;
+    margin-right:3px;
+    line-height: 40px;
+    text-align: center;
 }
 
 .result_table_dai{
@@ -880,18 +905,40 @@ table .td_error{
     border: solid 2px #e9bc40;
   }
 
+.display_picture{
+    height:70%;
+    width:30%;
+    background: transparent;
+    margin:0 0 0 42%;
+    pointer-events: none;
+    margin-top:100px;
+    position: fixed;
+}
+
+.popup_picture{
+    height:100%;
+    width:80%;
+    background: transparent;
+    margin:0 auto;
+    position: relative;
+}
+
+
 .picture_1{
-    width:20%;
-    height:200%;
-    margin:120px 5% 5px 5%;
-    float: left;
+    width:100%;
+    height: auto;
+    pointer-events: none;
+    position: relative;
+    margin-top: 30px;
+    z-index: 60;
 }
 
 .picture_2{
-    width:20%;
+    width:100%;
     height:auto;
-    margin:120px 0 10px 0;
-    float: left;
+    pointer-events: none;
+    z-index: 60;
+    position: relative;
 }
 
 .popup_detail::-webkit-scrollbar {
@@ -916,12 +963,11 @@ table .td_error{
 .popup_detail{
     display: block;
     height:83%;
-    width:90%;
+    width:72%;
     background: #fff;
-    position: relative;
+    position: fixed;
     border-radius: 20px;
-    margin:0 auto;
-    margin-top:30px;
+    margin:30px 0 4% 4%;
     overflow-y:visible;
     overflow-x:hidden ;
 }
@@ -934,6 +980,7 @@ table .td_error{
     background-color: #ffedc6;
     background-image: -webkit-gradient(linear, 0 0, 100% 100%,color-stop(.25, #fff3da), color-stop(.25, transparent),color-stop(.5, transparent), color-stop(.5, #fff3da),color-stop(.75, #fff3da), color-stop(.75, transparent),to(transparent));
     -webkit-background-size: 14px 14px;
+    border-radius: 20px 20px 0 0 ;
 }
 
 .header_de_title{
@@ -947,46 +994,96 @@ table .td_error{
 
 .header_de_close{
     position: absolute;
-    height:70%;
-    width: calc(100% - (100% - 50pt) + 1px);
-    margin:0 0 0 calc(100% - 50pt);
+    height:70px;
+    width: 70px;
+    margin:0 0 0 calc(100% - 70px);
     background: transparent;
     float: left;
 }
 
 .triangle_close{
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 0 51pt 51pt 0;
-    border-color: transparent tomato transparent transparent;
-    margin:0 0 0 0;
-    overflow: hidden;
-    background: transparent;
-    float: left;
-    cursor: default;
+    width: 100%;
+    height:100%;
+    background:tomato;
+    border-radius: 40px 20px 40px 40px;
 }
 
 .triangle_close a{
     color:white;
-    font-size: 33px;
+    font-size: 40px;
     overflow: hidden;
     position: absolute;
     background: transparent;
-    margin:-5px 0 0 50%;
-    
+    margin:5% 0 0 27% ;
 }
 
 #detail_title{
-    display: inline-block;
+    display: inline;
     display: table-cell;
     vertical-align: middle;
-    font-size: 2em;
+    font-size: 2vmax;
+    color:red;
 }
 
-.header_de_ENV{
+.popup_ENV{
     height:100px;
-    width:100%;
+    width:72%;
     background: #EFEFEF;
-    position: absolute;
+    position: fixed;
+    border-radius: 20px 20px 0 0 ;
+    z-index: 60;
+}
+
+.details_search{
+    position: fixed;
+}
+
+.search_details{
+    display: block;
+    height:30px;
+    width:95%;
+    background: red;
+    margin-top:0 auto;
+}
+
+summary{
+    background: #CDCDCD;
+    display: table;
+    width:200%;
+    outline:none;
+}
+
+details[open] summary{
+    background: red;
+    width:100%;
+}
+
+#search_details{
+    position: fixed;
+}
+
+/* details{
+    position: sticky ;
+} */
+
+.parts_name{
+    height:30px;
+    width:30px;
+    background: red;
+    margin:10px;
+    position: relative;
+}
+
+.inspection_name1{
+    height:30px;
+    width:30px;
+    background: red;
+    margin:10px;
+}
+
+.inspection_name2{
+    height:30px;
+    width:30px;
+    background: red;
+    margin:10px;
 }

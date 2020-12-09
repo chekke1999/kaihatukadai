@@ -1,32 +1,38 @@
-version: '3'
+version: '3.7'
 services:
-  WebServer:
+  Webserver:
     container_name: nginx
     image: nginx
     volumes:
-     - "../web:/usr/share/nginx/html"
+      - "../web:/usr/share/nginx/html"
     ports:
-     - "80:80"
+      - "80:80"
     environment:
-     - "NGINX_PORT=80"
-  DB:
+      - "NGINX_PORT=80"
+  db:
     container_name: sqlserver2017
     image: mcr.microsoft.com/mssql/server:2017-latest
     ports:
      - "1433:1433"
     volumes: 
-     - "../server/DB:/root/dbf"
-    command:
-     - "/opt/mssql-tools/bin/sqlcmd -i '/root/dbf/sql/createlogin.sql'"
-     - "/opt/mssql-tools/bin/sqlcmd -Q 'RESTORE DATABASE piscan FROM DISK = /root/dbf/piscan.bak WITH FILE = 1'"
+     - "/etc/localtime:/etc/localtime:ro"
+     - "../DB:/root/dbfile"
     environment:
-     - "ACCEPT_EULA=Y"
-  WebSocketServer:
-    container_name: PyWebSocket
-    build: 
-    ports:
-     - "8080:8080"
-    volumes:
-     -  "../py:/root/pyscript"
-    
+     - SA_PASSWORD=MyPass@2020
+     - ACCEPT_EULA=Y
+     - sqlcmd=/opt/mssql-tools/bin/sqlcmd
+    command: bash -c
+      "`sleep 20;/opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'MyPass@2020' -i /root/dbfile/sql/createdb.sql;
+      /opt/mssql-tools/bin/sqlcmd -S localhost -U SA -P 'MyPass@2020' -i /root/dbfile/sql/testdatainsert.sql` & 
+      /opt/mssql/bin/sqlservr"
 
+  websocket:
+    build: 
+      context: ./PyWebSocket
+    container_name: PyWebSocket
+    network_mode: "host"
+    ports:
+      - "8080"
+    volumes:
+      - "../py:/root/pyscript"
+    command: python3 /root/pyscript/dbwebskthub.py > /root/pyscript/error.log

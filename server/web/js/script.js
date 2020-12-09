@@ -7,6 +7,7 @@ var day = new Object();
 var data = new Object();
 var id_value;
 
+
 const req = {
     "sql" : {
         "db":"piscan",
@@ -15,8 +16,18 @@ const req = {
     }
 }
 
+const req3 ={
+    "sql" : {
+        "db":"piscan",
+        "query" :"SELECT COUNT(*) FROM pi_camera;",
+        "commit":false
+    }
+}
+
+
 // 接続が開いたときのイベント
 socket.onopen = function (event) {
+    socket.send(JSON.stringify(req3)); 
     socket.send(JSON.stringify(req)); 
     console.log(req);
 };
@@ -60,7 +71,13 @@ window.addEventListener('beforeunload', function(e){
   socket.close();
 });
 
+function page_generate(page){
+    console.log(page);
+
+}
+
 window.onload = function (e) {
+    var cnt_page_processing = 0;
     let box = document.getElementsByClassName('container')[0];//読み込みたい位置を指定
 	xhr.open("GET", "./menu.html", true);
 	xhr.onreadystatechange = function () {
@@ -68,7 +85,6 @@ window.onload = function (e) {
             let restxt=xhr.responseText;//重要
             //console.log(restxt);
             box.insertAdjacentHTML("afterbegin", restxt);
-
 		}
 	};
     xhr.send();
@@ -77,19 +93,65 @@ window.onload = function (e) {
 
     // const result_attach_2 = document.getElementById('result_picture2');
 
-
     // メッセージの待ち受け
     socket.onmessage = function (event) {
-        
+        var page_cnt;
         var h;
-        
+        var h2;
+        var today = new Date();
         jdata = JSON.parse(event.data);
+        const search_date_o = document.getElementById('S_date_year_old');
+        const search_date_n = document.getElementById('S_date_year_new');
+        const search_time_o = document.getElementById('S_date_start_H');
+        const search_time_n = document.getElementById('S_date_now_H');
+        var G_B_text;
+        
 
+
+        const cnt_result = document.getElementById('cnt_result');
+        const cnt_good = document.getElementById('cnt_good');
+        const cnt_bad = document.getElementById('cnt_bad');
         // console.log(jdata);
+        var cnt_g = 0;
+        var cnt_b = 0;
+
+        if(cnt_page_processing==0){
+            const pages_attach = document.getElementById('nav-links');
+
+            var page_max_text;
+            cnt_page_processing = 1;
+            page_cnt = parseInt(jdata[1] / 50) + 1 ;
+
+            page_cnt = 1;
+            console.log(page_cnt);
+            page_generate(page_cnt)
+            if(page_cnt > 4){
+                page_max_text = '<div class="page_box ">...</div>'
+                                +   '<div class="page_box detail_link_last">'
+                                +   page_cnt  
+                                +   '</div>';
+            }else if(page_cnt == 4){
+                page_max_text = '<div class="page_box detail_link_last">'
+                                +   page_cnt  
+                                +   '</div>';
+            }else{
+                page_max_text = '';
+            }
+
+            var page_html = '<div class="page_box ">《</div>'
+            +   '<div class="page_box detail_link_previous">1</div>'
+            +   '<div class="page_box detail_link_current">2</div>'
+            +   '<div class="page_box detail_link_next">3</div>'
+            +   page_max_text
+            +   '<div class="page_box ">》</div>';
+
+            pages_attach.insertAdjacentHTML("afterbegin", page_html);
+
+
+        }
 
         for(var key in jdata){
 
-            let cnt = 0;
             if(key == "img"){
                 const result_attach_1 = document.getElementById('result_picture1');
                 const result_attach_2 = document.getElementById('result_picture2');
@@ -121,6 +183,13 @@ window.onload = function (e) {
                     day.time = day.hours.split(":");
                     day.time[2] = Math.floor(day.time[2]);
 
+
+                    // arr_j[id_value][3]
+                    let arr_table = arr_j[id_value][3];
+                    arr_table = JSON.parse(arr_table)
+
+                    console.log(arr_table);
+
                 h =  day.detail[0] 
                     + '/' 
                     + day.detail[1] + '/' + day.detail[2] 
@@ -130,11 +199,30 @@ window.onload = function (e) {
                 detail_title.insertAdjacentHTML("afterbegin", h);
 
 
+                // h = '<li class="parts_name">'
+                //     + arr_j[3].status
+                //     + '</li>'
+                //     +
+                //     + '<li class="inspection_name1">'
+                //     + '</li>'
+                //     + '<li class="inspection_name2">'
+                //     + '</li>'
+
+
                 result_attach_1.insertAdjacentHTML("afterbegin", p);
                 result_attach_2.insertAdjacentHTML("afterbegin", p2);
 
             }else{
-                data.arr = JSON.parse(event.data)[1][3];
+
+
+
+
+            search_date_o.value = "*";
+            search_date_n.value = today.getFullYear() + "/" + (today.getMonth()+1) + "/" + today.getDate();
+            search_time_o.value = "00:00";
+            search_time_n.value = today.getHours() + ":" + today.getMinutes();
+            
+            data.arr = JSON.parse(event.data)[1][3];
                 // console.log("else");
             data.date = jdata[key][2];
             data.status = JSON.parse(data.arr);
@@ -150,12 +238,17 @@ window.onload = function (e) {
             day.time = day.hours.split(":");
             day.time[2] = Math.floor(day.time[2]);
 
-            var false_cnt = event.data.indexOf("false");
+            var false_cnt = 0;
+            false_cnt = jdata[key][3].indexOf("false");
 
             if(false_cnt < 0){
                 O_N = '〇';
+                cnt_g++;
+                G_B_text = '<div class="dai4">'
             }else{
                 O_N = '×';
+                cnt_b++;
+                G_B_text = '<div class="dai4 bad">'
             }
 
             arr_j[key] = jdata[key];
@@ -172,15 +265,29 @@ window.onload = function (e) {
             + '<div class="dai3">'
             + data.type
             + '</div>'
-            + '<div idO_N" class="dai4">'
+            + G_B_text
             + O_N
             + '</div>'
             + '<div id="result_picture1"></div>'
             + '</div>';
         
             inpe_attach.insertAdjacentHTML("afterbegin", h);
+
+            cnt_result.innerHTML = key;
+            cnt_good.innerHTML = cnt_g;
+            cnt_bad.innerHTML = cnt_b;
             }
         }
     }
 }
 
+function search(){
+    console.log("click");
+
+    const search_date_o = document.getElementById('S_date_year_old');
+    const search_date_n = document.getElementById('S_date_year_new');
+    const search_time_o = document.getElementById('S_date_start_H');
+    const search_time_n = document.getElementById('S_date_now_H');
+
+    console.log(arr_j[1][2]);
+}
