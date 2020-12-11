@@ -1,6 +1,15 @@
 FROM ubuntu:20.04
-ENV http_proxy="http://192.168.10.120:8080"
-ENV https_proxy="https://192.168.10.120:8080"
 COPY ./pip.conf /root/.pip/pip.conf
-RUN apt-get update;apt-get install python3 python3-pip git unixodbc-dev -y;pip3 install --upgrade pip &&\
-pip3 install pyodbc websocket-server
+ARG http_proxy
+ENV ACCEPT_EULA=Y
+ENV http_proxy=${http_proxy}
+ENV https_proxy=${http_proxy}
+RUN apt-get update;\
+    apt-get install apt-utils apt-transport-https curl gnupg2 wget -y;\
+    echo "proxy = ${http_proxy}" > ~/.curlrc ;\
+    curl -L https://packages.microsoft.com/keys/microsoft.asc | apt-key add -;\
+    curl -L https://packages.microsoft.com/config/ubuntu/20.04/prod.list | tee /etc/apt/sources.list.d/microsoft-prod.list;\
+    apt-get update;\
+    apt-get install python3 python3-pip git mssql-tools unixodbc-dev -y;\
+    pip3 install --upgrade pip && pip3 install pyodbc websocket-server
+

@@ -16,7 +16,7 @@ services:
      - "1433:1433"
     volumes: 
      - "/etc/localtime:/etc/localtime:ro"
-     - "../DB:/root/dbfile"
+     - "../DB:/root/dbfile:ro"
     environment:
      - SA_PASSWORD=MyPass@2020
      - ACCEPT_EULA=Y
@@ -29,10 +29,14 @@ services:
   websocket:
     build: 
       context: ./PyWebSocket
+      args:
+        - http_proxy=http://192.168.10.120:8080
     container_name: PyWebSocket
-    network_mode: "host"
+    #network_mode: "host"
     ports:
-      - "8080"
+      - "8080:8080"
     volumes:
-      - "../py:/root/pyscript"
-    command: python3 /root/pyscript/dbwebskthub.py > /root/pyscript/error.log
+      - "../py:/usr/local/bin/"
+      - "~/ピクチャ:/root/Picture/"
+    command: bash -c
+      "python3 -u /usr/local/bin/dbwebskthub.py"

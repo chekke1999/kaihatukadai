@@ -584,6 +584,20 @@ table .td_error{
     width:40px;
     background: white;
     border: solid 1px #999;
+    border-radius: 10px 10px 10px 10px;
+    box-sizing: border-box;
+    float: left;
+    margin-right:3px;
+    line-height: 40px;
+    text-align: center;
+}
+
+ .detail_link_current{
+    height:40px;
+    width:40px;
+    background: #BBB;
+    border: solid 1px #999;
+    border-radius: 10px 10px 10px 10px;
     box-sizing: border-box;
     float: left;
     margin-right:3px;
@@ -925,7 +939,7 @@ table .td_error{
 
 
 .picture_1{
-    width:100%;
+    width:90%;
     height: auto;
     pointer-events: none;
     position: relative;
@@ -934,7 +948,7 @@ table .td_error{
 }
 
 .picture_2{
-    width:100%;
+    width:90%;
     height:auto;
     pointer-events: none;
     z-index: 60;

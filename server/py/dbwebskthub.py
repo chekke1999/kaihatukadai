@@ -1,4 +1,5 @@
-import pyodbc,json,base64,asyncio
+#!/bin/env python3
+import pyodbc,json,base64,asyncio,socket
 from datetime import date, datetime
 from websocket_server import WebsocketServer
 
@@ -12,9 +13,11 @@ def json_serial(obj):
 
 def sql(database,query,commit):
     driver='{ODBC Driver 17 for SQL Server}'
-    server = "localhost"
-    trusted_connection='yes'    #Windows認証YES
-    cnxn = pyodbc.connect('DRIVER='+driver+';SERVER='+server+';DATABASE='+database+';Trusted_Connection='+trusted_connection+';')
+    server = "tcp:sqlserver2017"
+    #trusted_connection='yes'    #Windows認証YES
+    username = 'SA' 
+    password = 'MyPass@2020' 
+    cnxn = pyodbc.connect(f'DRIVER={driver};SERVER={server};DATABASE={database};UID={username};PWD={password};')
     cursor = cnxn.cursor()
 
     cursor.execute(query) 
@@ -61,7 +64,7 @@ def recv(client, server, message):
     server.send_message(client,json.dumps(send_data,default=json_serial))
 
 
-server = WebsocketServer(8080, host='192.168.11.8')
+server = WebsocketServer(8080, host='0.0.0.0')
 server.set_fn_new_client(new_client)
 server.set_fn_message_received(recv)
 server.set_fn_client_left(disconnect)
