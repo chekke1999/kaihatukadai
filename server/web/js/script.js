@@ -16,7 +16,7 @@ let inpe_num = 0;
 const req = {
     "sql" : {
         "db":"piscan",
-        "query" :"SELECT TOP 2 scan_id,plc_mac,datetime,scan_data FROM pi_camera ORDER BY scan_id DESC;",
+        "query" :"SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera ORDER BY scan_id DESC;",
         "commit":false
     }
     // "sql" : {
@@ -210,7 +210,7 @@ window.onload = function (e) {
 
     // メッセージの待ち受け
     socket.onmessage = function (event) {
-
+        console.log("ok");
         var h;
 
         jdata = JSON.parse(event.data);
@@ -326,7 +326,7 @@ function html_generate(key,jdata,event){
     var false_cnt = 0;
     false_cnt = jdata[key][3].indexOf("false");
 
-    if(false_cnt < 0){
+    if(false_cnt <= 0){
         O_N = '〇';
         cnt_g++;
         G_B_text = '<div class="dai4">'
@@ -337,6 +337,7 @@ function html_generate(key,jdata,event){
     }
 
     arr_j[key] = jdata[key];
+    console.log(false_cnt);
 
     h = '<div id="'
     + data.number
