@@ -55,12 +55,9 @@ def recv(client, server, message):
             cnt = 0
             for imgpath in imgdict[1]:
                 with open(imgpath,"rb") as imgf:
-                    print(imgdict[1][cnt],"---------------")
                     imgdict[1][cnt] = base64.b64encode(imgf.read()).decode('utf-8')
-                    print(imgdict[1][cnt])
                 cnt+=1
             send_data = {"img":[imgdict[1][0],imgdict[1][1]]}
-    print(client,send_data)
     server.send_message(client,json.dumps(send_data,default=json_serial))
 
 
