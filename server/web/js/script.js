@@ -12,18 +12,46 @@ var cnt_g = 0;
 
 let arr_details = [];
 
-var now_page = 0;
+var now_page = 1;
 var cnt = 0;
 var data_cnt = 0;
 var data_cnt_max = 0;
+var ccc = 0;
 
 let inpe;
 let inpe_num = 0;
 
+let env_rh = 0;
+let env_lux = 0;
+let env_atm = 0;
+let env_temp = 0;
+let arr_parts = 0;
+var hoge;
+
+const inspectionList = [
+    { name: "mounted_parts", display: '検査項目：部品の位置' },
+    { name: "misalignment", display: '検査項目：部品の値・型' },
+    { name: "angle", display: '検査項目：部品の傾き' },
+    { name: "foreign_matter", display: '検査項目：異物'},
+    { name: "scratch", display: '検査項目：傷'},
+    { name: "soiled", display: '検査項目：汚れ'}
+  ];
+
+var filename = 'test_CSV';
+
+
+const inspectionIndex = inspection => {
+    const inspectionNumber = inspectionList.find(p => p.name === inspection.name).display;
+  
+    return inspectionNumber;
+};
+  
+
+
 const req = {
     "sql" : {
         "db":"piscan",
-        "query" :"SELECT  scan_id,plc_mac,datetime,scan_data FROM pi_camera;",
+        "query" :"SELECT top 10 scan_id,plc_mac,datetime,scan_data FROM pi_camera;",
         "commit":false
     }
     // "sql" : {
@@ -48,7 +76,7 @@ const req3 = {
 socket.onopen = function (event) {
 
     if(data_cnt == 0){
-        //socket.send(JSON.stringify(req3)); 
+        socket.send(JSON.stringify(req3)); 
 
     }
 
@@ -73,9 +101,9 @@ function getId(ele){
     id_value = ele.id; // eleのプロパティとしてidを取得
     //console.log(id_value); //「id01」
     const req2 = {
-        "img" : {
+        "get_img" : {
             "db":"piscan",
-            "id" : id_value
+            "id":id_value
         }
     }
 
@@ -85,16 +113,30 @@ function getId(ele){
 
 function page_html_send(ele){
     let box = document.getElementById("inpe_window");//読み込みたい位置を指定
-    let add_derete = document.getElementById("add_details");
+    const add_details = document.getElementById("add_details");
+    const add_page = document.getElementById("add_page");
 
-    var now_page_cnt = now_page * 2;
+    add_details.remove();
+    add_page.remove();
+
+    let last_get_page = 0;
+
+    var now_page_cnt = (now_page - 1) * 10;
     let h;
+
+    if(now_page == page_cnt){
+        last_get_page = data_cnt_max % 10 + now_page_cnt;
+
+    }else{
+        last_get_page = (now_page_cnt + 10);
+    }
+
 
     h = "SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera WHERE"
         +   " scan_id >= "
-        +   now_page_cnt 
+        +   now_page_cnt
         +   " AND scan_id < "
-        +   (now_page_cnt + 2)
+        +   last_get_page
         +   ";"
 
     const req_2 = {
@@ -104,14 +146,17 @@ function page_html_send(ele){
             "commit":false
         }
     }
+    //console.log("現在のページ = " + last_get_page);
     cnt_b = 0;
     cnt_g = 0;
-    console.log("現在のページ = " + now_page);
-    add_derete.remove();
+
+
     console.log(h);
     console.log("inpe削除完了");
     socket.send(JSON.stringify(req_2)); 
     cnt = 0;
+    //ccc = 0;
+    page_generate()
 }
 
 function getId_close(){
@@ -134,9 +179,15 @@ function next_page(ele){
     page_html_send();
 }
 function page_max(ele){
-    if(now_page != 1){
+    //if(now_page != 1){
         now_page = page_cnt;
-    }
+    //}
+    page_html_send();
+}
+function page_min(ele){
+    //if(now_page != 1){
+        now_page = 1;
+    //}
     page_html_send();
 }
 
@@ -154,54 +205,81 @@ function next_page_Arrow(ele){
 
 
 
-function page_generate(page){
+function page_generate(){
     
     const pages_attach = document.getElementById('nav-links');
 
-    var previous_page;
-    (now_page <= 1)? previous_page = 1:previous_page = nowpage;
 
-    var next_page = now_page + 2;
+    var previous_page;
+    (now_page <= 1)? previous_page = 1:previous_page = now_page - 1 ;
+
+    var next_page = now_page + 1;
     if(page_cnt > 4){
-        page_max_text = '<div class="page_box ">...</div>'
-                        +   '<div class="page_box detail_link_last" onclick="page_max(this);">'
+        page_max_text = '<li class="page_box ">...</li>'
+                        +   '<li class="page_box detail_link_last" onclick="page_max(this);">'
                         +   page_cnt  
-                        +   '</div>';
+                        +   '</li>';
     }else if(page_cnt == 4){
-        page_max_text = '<div class="page_box detail_link_last" onclick="page_max(this);">'
+        page_max_text = '<li class="page_box detail_link_last" onclick="page_max(this);">'
                         +   page_cnt  
-                        +   '</div>';
+                        +   '</li>';
     }else{
         page_max_text = '';
     }
 
-    var page_html = '<div class="page_box " onclick="previous_page_Arrow();">《</div>'
-    +   '<div class="page_box detail_link_previous" onclick="previous('
+    var page_html = '<div id="add_page"><ul><li class="page_box " onclick="previous_page_Arrow();">《</li>'
+    +   '<li class="page_box detail_link_previous" onclick="previous('
     +   previous_page
     +   ');">'
     +   previous_page
-    +   '</div>'
-    +   '<div class="page_box detail_link_current">'
-    +   (now_page + 1)
-    +   '</div>'
-    +   '<div class="page_box detail_link_next" onclick="next_page('
+    +   '</li>'
+    +   '<li class="page_box detail_link_current">'
+    +   now_page
+    +   '</li>'
+    +   '<li class="page_box detail_link_next" onclick="next_page('
     +   next_page
     +   ');">'
     +   next_page
-    +   '</div>'
+    +   '</li>'
     +   page_max_text
-    +   '<div class="page_box"onclick="next_page_Arrow();">》</div>';
+    +   '<li class="page_box"onclick="next_page_Arrow();">》</li></ul><div>';
+
+
+
+    if(now_page == 1){
+        page_html = '<div id="add_page"><ul><li class="page_box " onclick="previous_page_Arrow();">《</li>'
+        +   '<li class="page_box detail_link_current">'
+        +   now_page
+        +   '</li>'
+        +   '<li class="page_box detail_link_next" onclick="next_page('
+        +   next_page
+        +   ');">'
+        +   next_page
+        +   '</li>'
+        +   page_max_text
+        +   '<li class="page_box"onclick="next_page_Arrow();">》</li></ul><div>';
+    }else if(now_page == page_cnt){
+
+        page_html = '<div id="add_page"><ul><li class="page_box " onclick="previous_page_Arrow();">《</li>'
+        +   '<li class="page_box detail_link_last" onclick="page_min(this);">1</li>'
+        +   '<li class="page_box ">...</li>'
+        +   '<li class="page_box detail_link_current">'
+        +   now_page
+        +   '</li>'
+        +   '<li class="page_box"onclick="next_page_Arrow();">》</li></ul><div>';
+    }
 
     if(page_cnt == 1){
-        page_html = '<div class="page_box ">《</div>'
-        +   '<div class="page_box detail_link_current">'
-        +   (now_page + 1)
-        +   '</div>'
-        +   '<div class="page_box ">》</div>';
+        page_html = '<div id="add_page"><ul><li class="page_box ">《</li>'
+        +   '<li class="page_box detail_link_current">'
+        +   now_page
+        +   '</li>'
+        +   '<li class="page_box ">》</li></ul><div>';
 
     }
 
     pages_attach.insertAdjacentHTML("afterbegin", page_html);
+    console.log(now_page)
 
 }
 window.onload = function (e) {
@@ -221,9 +299,6 @@ window.onload = function (e) {
 	};
     xhr.send();
     
-
-
-
     // const result_attach_2 = document.getElementById('result_picture2');
 
     // メッセージの待ち受け
@@ -232,9 +307,10 @@ window.onload = function (e) {
         jdata = JSON.parse(event.data);
 
         if(data_cnt == 0){
-            data_cnt_max =  jdata[1];
+            data_cnt_max =  jdata[1] - 1;
             //console.log(data_cnt_max);
             data_cnt = 1;
+            console.log(data_cnt_max);
         }
 
         if(cnt_page_processing==0){
@@ -242,19 +318,18 @@ window.onload = function (e) {
 
             var page_max_text;
             cnt_page_processing = 1;
-            page_cnt = parseInt(jdata[1] / 2) + 1 ;
-            page_cnt = 6;
-            //page_generate(page_cnt);
+            page_cnt = parseInt(jdata[1] / 10) + 1 ;
+            //page_cnt = 6;
+            page_generate(page_cnt);
 
         }
-
-
 
         for(var key in jdata){
             if(key == "img"){
                 const result_attach_1 = document.getElementById('result_picture1');
                 const result_attach_2 = document.getElementById('result_picture2');
                 const detail_title = document.getElementById('detail_title');
+                const env_text = document.getElementById('env_text');
 
                 var p =    '<image src="data:image/png;base64,'
                         +   jdata["img"][0]
@@ -264,7 +339,7 @@ window.onload = function (e) {
                         +   jdata["img"][1]
                         +   '" class="picture_2">';
 
-                        data.arr = arr_j[1][3];
+                    data.arr = arr_j[id_value][3];
                     data.date = arr_j[id_value][2];
                     data.status = JSON.parse(data.arr);
                     data.type = data.status.type;
@@ -279,6 +354,7 @@ window.onload = function (e) {
                     day.time = day.hours.split(":");
                     day.time[2] = Math.floor(day.time[2]);
 
+                    //console.log(jdata["img"][0])
 
                     // arr_j[id_value][3]
                     let arr_table = arr_j[id_value][3];
@@ -288,52 +364,79 @@ window.onload = function (e) {
                     + '/' 
                     + day.detail[1] + '/' + day.detail[2] 
                     + "  " 
-                    + day.time[0] + ':' + day.time[1] + ':' + day.time[2]
-            
-                detail_title.insertAdjacentHTML("afterbegin", h);
+                    + day.time[0] + ':' + day.time[1] + ':' + day.time[2];
+                    // +   '　ID.'
+                    // +   id_value;
 
+                // var h2  =   '気温:'
+                //         +   data.arr[1]
+
+                var env =   '気温:'
+                        +   env_temp
+                        +   '℃ / 湿度:'
+                        +   env_rh
+                        +   '% / 気圧:'
+                        +   env_atm
+                        +   'hPa / 輝度:'
+                        +   env_lux
+                        +   'lx / 基板タイプ:'
+                        +   data.type;
+
+                detail_title.insertAdjacentHTML("afterbegin", h);
+                env_text.insertAdjacentHTML("afterbegin",env)
                 result_attach_1.insertAdjacentHTML("afterbegin", p);
                 result_attach_2.insertAdjacentHTML("afterbegin", p2);
 
+                hoge = JSON.parse(arr_j[id_value][3]);
+                //console.log(hoge);
+                result_generate(hoge.parts);
+
             }else{
                 html_generate(key,jdata,event);
-                console.log(jdata[key])
+                
+                //console.log(jdata[key])
             }
 
+
         }
-        
+
         if(cnt == 0){
             h = '<div id="add_details">'
             + arr_details.join("") ;
             +'</div>';
-            inpe_attach.insertAdjacentHTML("beforeend", h);
+            inpe_attach.insertAdjacentHTML("afterbegin", h);
             cnt = 1;
         }
     }
 }
 function html_generate(key,jdata,event){
-    const search_date_o = document.getElementById('S_date_year_old');
-    const search_date_n = document.getElementById('S_date_year_new');
-    const search_time_o = document.getElementById('S_date_start_H');
-    const search_time_n = document.getElementById('S_date_now_H');
+
+
+    // const search_date_o = document.getElementById('S_date_year_old');
+    // const search_date_n = document.getElementById('S_date_year_new');
+    // const search_time_o = document.getElementById('S_date_start_H');
+    // const search_time_n = document.getElementById('S_date_now_H');
     const cnt_result = document.getElementById('cnt_result');
     const cnt_good = document.getElementById('cnt_good');
     const cnt_bad = document.getElementById('cnt_bad');
     const inpe_attach = document.getElementById('inpe_window');
 
+
     var today = new Date();
 
     var G_B_text;
 
-    search_date_o.value = "*";
-    search_date_n.value = today.getFullYear() + "/" + (today.getMonth()+1) + "/" + today.getDate();
-    search_time_o.value = "00:00";
-    search_time_n.value = today.getHours() + ":" + today.getMinutes();
+    // search_date_o.value = "*";
+    // search_date_n.value = today.getFullYear() + "/" + (today.getMonth()+1) + "/" + today.getDate();
+    // search_time_o.value = "00:00";
+    // search_time_n.value = today.getHours() + ":" + today.getMinutes();
     
-    data.arr = JSON.parse(event.data)[1][3];
+    data.arr = JSON.parse(event.data)[key][3];
+
     data.date = jdata[key][2];
     data.status = JSON.parse(data.arr);
     data.type = data.status.type;
+
     data.number = key;
     let O_N = 0;
 
@@ -344,6 +447,7 @@ function html_generate(key,jdata,event){
     day.detail = day.date.split("-");
     day.time = day.hours.split(":");
     day.time[2] = Math.floor(day.time[2]);
+
 
     var false_cnt = 0;
     false_cnt = jdata[key][3].indexOf("false");
@@ -360,16 +464,23 @@ function html_generate(key,jdata,event){
 
     arr_j[key] = jdata[key];
 
+    //console.log(arr_j[key][0])
+    
+    let fuga = JSON.parse(jdata[key][3]);
 
+    env_rh = fuga.status.hr;//湿度
+    env_lux = fuga.status.luminance;//輝度
+    env_atm = fuga.status.atm;//気圧
+    env_temp = fuga.status.temp;//温度
 
     h = '<div id="'
-    + data.number
+    +  data.number
     + '" class="result_element" onclick="getId(this);">'
     + '<div class="dai1">'
-    + day.detail[0] + '/' + day.detail[1] + '/' +day.detail[2]
+    + arr_j[key][0] + '//'+day.detail[0] + '/' + ( '00' + day.detail[1] ).slice( -2 ) + '/' +( '00' + day.detail[2] ).slice( -2 )
     + '</div>'
     + '<div class="dai2">'
-    + day.time[0] + ':' + day.time[1] + ':' + day.time[2]
+    + ( '00' + day.time[0] ).slice( -2 ) + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
     + '</div>'
     + '<div class="dai3">'
     + data.type
@@ -381,19 +492,118 @@ function html_generate(key,jdata,event){
 
     arr_details[key] = h;
 
-    //inpe_attach.insertAdjacentHTML("beforeend", h);
     inpe = document.getElementById(data.number);
-    cnt_result.innerHTML = 3;//data_cnt_max;
+    cnt_result.innerHTML = data_cnt_max - 1;//data_cnt_max;
     cnt_good.innerHTML = cnt_g;
     cnt_bad.innerHTML = cnt_b;
+    ccc++;
 }
 
 function search(){
 
-    const search_date_o = document.getElementById('S_date_year_old');
-    const search_date_n = document.getElementById('S_date_year_new');
-    const search_time_o = document.getElementById('S_date_start_H');
-    const search_time_n = document.getElementById('S_date_now_H');
+    // const search_date_o = document.getElementById('S_date_year_old');
+    // const search_date_n = document.getElementById('S_date_year_new');
+    // const search_time_o = document.getElementById('S_date_start_H');
+    // const search_time_n = document.getElementById('S_date_now_H');
 
 }
 
+function result_generate(arr_parts){
+    const table_ganerate = document.getElementById('popup_table_field');
+    var table_element = '';
+    var table_th;
+    var f_t = 0;
+    var font_red = '';
+    var i;
+    var cnt = 0;
+    var insp = '';
+
+    for(var key in arr_parts){
+        var arr_key = arr_parts[key];
+    }
+    for(i=0;i<Math.max(Object.keys(arr_key).length);i++){
+        const inspection = {
+            name: Object.keys(arr_key)[i]
+        };
+        insp = Object.keys(arr_key)[i];
+        table_th    =   '<div class="popup_inspection_name">'
+            +    inspectionIndex(inspection)
+            +   '</div><div class="popup_table"><table border="1"><tr><th>部品名</th><th>判定</th></tr>';
+
+        for(var key in arr_parts){
+            var arr_key = arr_parts[key]
+            if (insp in arr_parts[key]) {
+                if(arr_key[insp] == false){
+                    f_t = '×'; font_red = 'class="font_red"';
+                }else{ f_t = '〇'}
+                table_element   =   table_element + '<tr ' + font_red + '><td>' + key + '</td><td>' + f_t + '</td></tr>';
+                font_red = '';
+            }
+            cnt++;
+        }
+        table_element = table_element + "</table></div>";
+        table_ganerate.insertAdjacentHTML("beforeend",table_th + table_element);
+        table_element = '';
+    }
+}
+
+
+//jsonをcsv文字列に編集する
+function jsonToCsv(json, delimiter) {
+    //console.log("ok");
+    //console.log(json);
+    var header = [];
+    for(var key in arr_j){
+        header[key] = arr_j[key] + '\n';
+        //console.log(arr_j[key]);
+    }
+    // console.log(header);
+
+    return header;
+}
+
+//csv変換
+function exportCSV(items, delimiter, filename) {
+
+    //文字列に変換する
+    var csv = jsonToCsv(items, delimiter);
+    //console.log(csv);
+
+    //拡張子
+    var extention = delimiter==","?"csv":"tsv";
+
+    //出力ファイル名
+    var exportedFilenmae = (filename  || 'export') + '.' + extention;
+
+    //BLOBに変換
+    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+
+    if (navigator.msSaveBlob) { // for IE 10+
+        navigator.msSaveBlob(blob, exportedFilenmae);
+    } else {
+        //anchorを生成してclickイベントを呼び出す。
+        var link = document.createElement("a");
+        if (link.download !== undefined) {
+            var url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", exportedFilenmae);
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    }
+}
+
+var filename = 'testCSV';
+
+function output(){
+    console.log("クリックok");
+    exportCSV(arr_j,',', filename);
+    console.log("処理完了")
+}
+
+// const timer = 6000;    // ミリ秒で間隔の時間を指定
+// window.addEventListener('load',function(){
+//   setInterval('location.reload()',timer);
+// });

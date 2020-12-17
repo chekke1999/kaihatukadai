@@ -10,6 +10,11 @@ html{
     overflow-y: scroll;
 }
 
+html, body {
+    overflow: auto;
+    height: 100%;
+  }
+
 .wrapper {
   max-width: 100%;
   margin: 0 auto;
@@ -143,7 +148,7 @@ header {
     width: auto;
     display: inline;
     background: transparent;
-    font-size: 200%;
+    font-size: calc(21px + .8vw);
     border-bottom:solid 2px #ed6f1e;
 }
 
@@ -186,6 +191,15 @@ a:hover .result_element{
     float: left;
 }
 
+.hide_result{
+    background: #e7e7e7;
+    height:50px;
+    width:60%;
+    position: fixed;
+    margin-top:-30px;
+    z-index: 4;
+}
+
 .details2{
     width:25%;
     height: 100%;
@@ -194,7 +208,7 @@ a:hover .result_element{
 }
 
 
-@media (max-width: 400px){
+@media (max-width: 100px){
     *{
         margin:0%;
     }
@@ -204,6 +218,7 @@ a:hover .result_element{
         width:100%;
         background: #e7e7e7;
         overflow-y: scroll;
+        
     }
     
     .wrapper {
@@ -211,6 +226,7 @@ a:hover .result_element{
       margin: 0 auto;
       height:auto;
       width:100%;
+      
     }
     
     header {
@@ -228,6 +244,7 @@ a:hover .result_element{
         border-bottom:solid 2px transparent;
         box-sizing: border-box;
         z-index: 400;
+        
     }
         .header2{
             position: absolute;
@@ -253,6 +270,7 @@ a:hover .result_element{
         background:blue;
         position: relative;
         z-index: 10;
+        
     }
         .date_text{
             float: right;
@@ -270,6 +288,7 @@ a:hover .result_element{
             border-bottom:solid 1px transparent;
             box-sizing: border-box;
             z-index: 10;
+            
         }
     
         .header_text{
@@ -396,7 +415,7 @@ a:hover .result_element{
     }
     
     .details1{
-        background: transparent;
+        background: transparreent;
         width:75%;
         height:100%;
         float: left;
@@ -478,6 +497,7 @@ a:hover .result_element{
     display: block;
     height:100%;
     background: #e7e7e7;
+    margin-bottom:100px;
 }
 
 .result_counter{
@@ -490,6 +510,7 @@ a:hover .result_element{
     padding: 5px 2% 5px 2%; 
     border-left:solid 1px #ABABAB; 
     box-sizing: border-box;
+    /* pointer-events: none; */
 }
 
 .R_count_text{
@@ -556,78 +577,91 @@ table .td_error{
 }
 
 .result_table{
-    height:100%;
-    width:90%;
+    height:auto;
+    width:55%;
+    padding-bottom: 100px;
     background: transparent;
-    position: relative;
-    margin:0 auto;
-    margin-top:25px;
+    position: absolute;
+    margin-left:2.5%;
     z-index: 0;
     overflow:hidden;
     margin-bottom:10px;
-    border-bottom:solid 10px #325fb3;
+    /* border-bottom:solid 10px #325fb3; */
 }
 
 .nav-links{
-    position: relative;
     height:40px;
-    width:72%;
+    width:100%;
     background: transparent;
     margin:0 auto;
-    margin-bottom:30px;
-    margin-top:20px;
+    padding-bottom: 30px;
+    /* margin-bottom:30px;
+    margin-top:20px; */
     display: table;
+    position: absolute;/*←絶対位置*/
+    bottom: 0; /*下に固定*/
 }
 
 .page_box{
-    height:40px;
-    width:40px;
+    height:calc(30px + auto);
+    width:calc(30px + auto);
     background: white;
     border: solid 1px #999;
     border-radius: 10px 10px 10px 10px;
     box-sizing: border-box;
-    float: left;
+    display:inline-block;
     margin-right:3px;
-    line-height: 40px;
+    line-height: 15px;
     text-align: center;
+    font-size: calc(10px + .5vw);
+}
+
+.nav-links {
+    text-align: center;
+  }
+.nav-links li {
+display: inline-block;
 }
 
  .detail_link_current{
-    height:40px;
-    width:40px;
+    height:calc(30px + auto);
+    width:calc(30px + auto);
     background: #BBB;
     border: solid 1px #999;
     border-radius: 10px 10px 10px 10px;
     box-sizing: border-box;
-    float: left;
+    display:inline-block;
     margin-right:3px;
-    line-height: 40px;
+    line-height: 15px;
     text-align: center;
+    font-size: calc(10px + .5vw);
 }
 
 .result_table_dai{
     height:50px;
-    width:54%;
+    width:55%;
     border-bottom:solid 3px orange;
     position: fixed;
-    z-index:30;
+    z-index:5;
     box-sizing: border-box;
     border-radius: 0 0 5px 5px;
     font-size: 18px;
     background-color: #ffedc6;
     background-image: -webkit-gradient(linear, 0 0, 100% 100%,color-stop(.25, #fff3da), color-stop(.25, transparent),color-stop(.5, transparent), color-stop(.5, #fff3da),color-stop(.75, #fff3da), color-stop(.75, transparent),to(transparent));
     -webkit-background-size: 14px 14px;
+    margin-left:2.5%;
 }
 
 .dai1{
     height:100%;
-    width:35%;
+    width:34%;
     float: left;
     background: transparent;
     text-align: center;
     line-height:50px;
-    border-right: dotted 1px #f1f1f1;
+    border-right: dotted 1px red;
     box-sizing: border-box;
+    font-size: calc(10px + .5vw);
 }
 
 .dai2{
@@ -637,8 +671,9 @@ table .td_error{
     background: transparent;
     text-align: center;
     line-height:50px;
-    border-right: dotted 1px #E2E2E2;
+    border-right: dotted 1px red;
     box-sizing: border-box;
+    font-size: calc(10px + .5vw);
 }
 
 .dai3{
@@ -648,8 +683,9 @@ table .td_error{
     background: transparent;
     text-align: center;
     line-height:50px;
-    border-right: dotted 1px #f1f1f1;
+    border-right: dotted 1px red;
     box-sizing: border-box;
+    font-size: calc(10px + .5vw);
 }
 
 .dai4{
@@ -659,6 +695,7 @@ table .td_error{
     background: transparent;
     text-align: center;
     line-height:50px;
+    font-size: calc(10px + .5vw);
 }
 
 .result_elementbox {
@@ -722,12 +759,6 @@ table .td_error{
 
 /*///////////////////TOP////////////////////////*/
 
-.top_details{
-    height:100%;
-    width:100%;
-    
-    background: #e7e7e7;
-}
 
 
 /*///////////////////////night_mode/////////////////////////*/
@@ -925,7 +956,6 @@ table .td_error{
     background: transparent;
     margin:0 0 0 42%;
     pointer-events: none;
-    margin-top:100px;
     position: fixed;
 }
 
@@ -939,25 +969,48 @@ table .td_error{
 
 
 .picture_1{
-    width:90%;
+    width:85%;
     height: auto;
-    pointer-events: none;
+    /* pointer-events: none; */
     position: relative;
     margin-top: 30px;
     z-index: 60;
 }
 
 .picture_2{
-    width:90%;
+    width:85%;
     height:auto;
-    pointer-events: none;
+    /* pointer-events: none; */
     z-index: 60;
     position: relative;
 }
 
-.popup_detail::-webkit-scrollbar {
-    display:none;
+
+.scroll_inner::-webkit-scrollbar {
+    width: 7px;
+    overflow: hidden;
   }
+  
+.scroll_inner::-webkit-scrollbar-thumb {
+
+    background: linear-gradient(0deg,#664951,#664951);
+    overflow: hidden;
+    border-radius: 3px;
+
+}
+
+.scroll_inner::-webkit-scrollbar-track {
+    overflow: hidden;
+    background: rgba(100,100,100, .5);
+    
+}
+
+.popup_detail .scroll_inner{
+    margin-top:97px;
+    width:100%;
+    height:calc(100% - 100px);
+    overflow: auto;
+}
 
 .popup{
     height:100%;
@@ -1036,17 +1089,29 @@ table .td_error{
     display: inline;
     display: table-cell;
     vertical-align: middle;
-    font-size: 2vmax;
+    font-size: calc(21px + .8vw);
     color:black;
 }
 
 .popup_ENV{
-    height:100px;
+    height:calc(100px + auto);
     width:72%;
     background: #EFEFEF;
     position: fixed;
     border-radius: 20px 20px 0 0 ;
     z-index: 60;
+}
+
+#env_text{
+    margin-top:3px;
+}
+
+.pop_ENV_text{
+    height:100%;
+    width:90%;
+    position: relative;
+    margin:0 auto ;
+    background: transparent;
 }
 
 .details_search{
@@ -1103,54 +1168,146 @@ details[open] summary{
     margin:10px;
 }
 
+.popup_left{
+    background: transparent;
+    float:left;
+    height:calc(100% - 30px);
+    width:58%;
+    margin-top: 30px;
+}
+
 .popup_table_field{
     height:auto;
-    width:60%;
-    background: palegreen;
+    width:100%;
+    background: transparent;
     pointer-events: none;
-    margin-top:100px;
-    position: absolute;
-    margin-top:110px;
+    position: relative;
+
 }
 
 .popup_inspection_name{
     height:30px;
     width:90%;
-    margin-top:10px;
     background: transparent;
     position: relative;
     margin:0 auto;
     font-size: 20px;
-    padding-bottom: 10px;
 }
 
 .popup_table{
     height:auto;
     width:90%;
-    background: rgb(255, 208, 146);
+    background: transparent;
     position: relative;
     margin:0 auto;
+    min-width: 100%;
+    display:  inline-block ;
 }
 
 .popup_table table {
+    height:auto;
+    width:90%;
     border-collapse: collapse;
     border: solid 2px orange;/*表全体を線で囲う*/
     text-align: center;
+    position: relative;
+    margin:0 auto;
+
   }
-.popup_table  table th, table td {
+.popup_table  table th{
     border: dashed 1px orange;/**/
     /*破線 1px オレンジ*/
+    background: #fbe5d6;
   }
 
- .popup_table  table td{
-    background: white;
- }
+ /* .popup_table table td{
+    background: transparent;
+ } */
 
  /* .popup_table td:nth-child(2){
     text-align: left;
  } */
 
- .popup_table td:nth-child(3){
+ /* .popup_table td:nth-child(3){
     color:blue;
- }
+ } */
 
+ /* .popup_table table trtd{
+    background: #f2f2f8;
+}
+  */
+.popup_table table tr:nth-child(even) td{
+    background: white;
+}
+
+.popup_table table tr td:nth-child(1){
+    width:70%;
+}
+
+.popup_table td:nth-child(2){
+    font-weight: bolder;
+    color: #385723;
+}
+
+
+.popup_table .font_red td:nth-child(2){
+    color:red;
+}
+
+
+ .top_details{
+    height:100px;
+    width:200px;
+    position: relative;
+    background: #a01616;
+}
+
+
+
+ div.slide-show {
+    width: 100%; /* スライドショーの幅 */
+    height:200px;
+    max-width: 100%; /* スマホで表示が欠けないように */
+    margin: 10px auto; /* 中央揃え */
+    position: absolute;
+    margin-top:0;
+}
+ 
+.slide-show img { 
+    animation: show 30s infinite; /* 12秒のスライドショーを繰り返し */
+    max-width: 100%;
+    height: 100%;
+    width:100%;
+    object-fit:cover;
+    opacity: 0;
+    position: absolute; /* 画像を重ねて表示 */
+    left: 0;
+    top: 0;
+}
+ 
+@keyframes show {
+    0% {opacity: 0}
+    17% {opacity: 1}
+    33% {opacity: 1}
+    50% {opacity: 0}
+}
+ 
+.slide-show img:nth-of-type(1) {
+    position: relative;
+}
+ 
+.slide-show img:nth-of-type(2) {
+    animation-delay: 0s;
+}
+ 
+.slide-show img:nth-of-type(3) {
+    animation-delay: 10s;
+}
+ 
+.slide-show img:nth-of-type(4) {
+    animation-delay: 20s;
+}
+
+button {
+    pointer-events: fill;
+}

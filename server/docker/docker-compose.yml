@@ -13,7 +13,7 @@ services:
       driver: json-file
       options:
         max-file: '1'
-        max-size: 3m
+        max-size: 400k
     restart: always
   db:
     container_name: sqlserver2017
@@ -35,7 +35,7 @@ services:
       driver: json-file
       options:
         max-file: '1'
-        max-size: 3m
+        max-size: 400k
     restart: always
 
   websocket:
@@ -61,5 +61,5 @@ services:
       driver: json-file
       options:
         max-file: '1'
-        max-size: 3m
+        max-size: 400k
     restart: always

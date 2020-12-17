@@ -14,7 +14,7 @@ def img_get(pipe):
 
 	while(True):
 		frame = vs.read()
-		pipe = [frame]
+		pipe["img"] = frame
 		frame = imutils.resize(frame, width=WIDTH)
 		cv2.imshow("Frame", frame)
 		key = cv2.waitKey(1) & 0xFF
