@@ -3,17 +3,18 @@
 }
 
 html{
-    /* height:100%; */
-    height:2000px;
+    height:100%;
     width:100%;
     background: #e7e7e7;
     overflow-y: scroll;
+    margin-bottom: 1px;
 }
 
 html, body {
     overflow: auto;
     height: 100%;
-  }
+}
+
 
 .wrapper {
   max-width: 100%;
@@ -560,6 +561,7 @@ table {
     width:100%;
     border-collapse: collapse;
     border: solid 2px  #ed6f1e;/*表全体を線で囲う*/
+    text-align: center;
 }
 
 table td {
@@ -568,12 +570,20 @@ table td {
     /*破線 1px オレンジ*/
     background: whitesmoke;
 }
+table th{
+    background: #f5ebe5;
+    border: solid 1px  #ed6f1e;/**/
+    font-weight:normal;
+    border-top: double 3px #ed6f1e;
+}
 table .td_error{
     background:rgb(255, 147, 147);
 }
-    table .td_num{
+
+table .td_num{
     text-align: right;
     width:50%;
+    text-align: center;
 }
 
 .result_table{
@@ -595,8 +605,6 @@ table .td_error{
     background: transparent;
     margin:0 auto;
     padding-bottom: 30px;
-    /* margin-bottom:30px;
-    margin-top:20px; */
     display: table;
     position: absolute;/*←絶対位置*/
     bottom: 0; /*下に固定*/
@@ -606,15 +614,16 @@ table .td_error{
     height:calc(30px + auto);
     width:calc(30px + auto);
     background: white;
-    border: solid 1px #999;
+    border: solid 1px transparent;
     border-radius: 10px 10px 10px 10px;
     box-sizing: border-box;
     display:inline-block;
-    margin-right:3px;
+    margin-right:5px;
     line-height: 15px;
     text-align: center;
     font-size: calc(10px + .5vw);
 }
+
 
 .nav-links {
     text-align: center;
@@ -626,15 +635,16 @@ display: inline-block;
  .detail_link_current{
     height:calc(30px + auto);
     width:calc(30px + auto);
-    background: #BBB;
-    border: solid 1px #999;
+    background: #ffb171;
+    border: solid 1px transparent;
     border-radius: 10px 10px 10px 10px;
     box-sizing: border-box;
     display:inline-block;
-    margin-right:3px;
+    margin-right:5px;
     line-height: 15px;
     text-align: center;
     font-size: calc(10px + .5vw);
+    
 }
 
 .result_table_dai{
@@ -652,26 +662,38 @@ display: inline-block;
     margin-left:2.5%;
 }
 
-.dai1{
+.dai0{
     height:100%;
-    width:34%;
+    width:10%;
     float: left;
     background: transparent;
     text-align: center;
     line-height:50px;
-    border-right: dotted 1px red;
+    border-right: dotted 1px #dedede;
+    box-sizing: border-box;
+    font-size: calc(10px + .5vw);
+}
+
+.dai1{
+    height:100%;
+    width:30%;
+    float: left;
+    background: transparent;
+    text-align: center;
+    line-height:50px;
+    border-right: dotted 1px  #dedede;
     box-sizing: border-box;
     font-size: calc(10px + .5vw);
 }
 
 .dai2{
     height:100%;
-    width:25%;
+    width:20%;
     float: left;
     background: transparent;
     text-align: center;
     line-height:50px;
-    border-right: dotted 1px red;
+    border-right: dotted 1px  #dedede;
     box-sizing: border-box;
     font-size: calc(10px + .5vw);
 }
@@ -683,7 +705,7 @@ display: inline-block;
     background: transparent;
     text-align: center;
     line-height:50px;
-    border-right: dotted 1px red;
+    border-right: dotted 1px  #dedede;
     box-sizing: border-box;
     font-size: calc(10px + .5vw);
 }
@@ -697,6 +719,8 @@ display: inline-block;
     line-height:50px;
     font-size: calc(10px + .5vw);
 }
+
+
 
 .result_elementbox {
     position: relative;
@@ -716,12 +740,28 @@ display: inline-block;
     border-bottom:solid 1px #E2E2E2;
     box-sizing: border-box;
     border-radius: 5px 5px 5px 5px;
+
+}
+
+.result_element .dai4{
+    font-weight: bolder;
+    color: #385723;;
+}
+
+.result_element .bad {
+    font-weight: bolder;
+    color: red;
 }
 
 .result_element:hover{
     background: #f8f9fa;
 }
 
+.result_elementbox .dai0{
+    height:100%;
+    line-height:40px;
+    text-align: center;
+}
 .result_elementbox .dai1{
     height:100%;
     line-height:40px;   /*.result_elementのheightと同じ値にする(下3つも)*/
@@ -740,6 +780,12 @@ display: inline-block;
     text-align: center;
 }
 .result_elementbox .dai4{
+    height:100%;
+    line-height:40px;
+    text-align: center;
+}
+
+.dai4 .font_red{
     height:100%;
     color:red;
     line-height:40px;
@@ -1265,7 +1311,7 @@ details[open] summary{
 
 
  div.slide-show {
-    width: 100%; /* スライドショーの幅 */
+    width: 80%; /* スライドショーの幅 */
     height:200px;
     max-width: 100%; /* スマホで表示が欠けないように */
     margin: 10px auto; /* 中央揃え */
@@ -1310,4 +1356,11 @@ details[open] summary{
 
 button {
     pointer-events: fill;
+}
+
+.neko{
+    height:auto;
+    width:100%;
+    position: absolute;/*←絶対位置*/
+    bottom: 0; /*下に固定*/
 }

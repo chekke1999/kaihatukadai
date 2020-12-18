@@ -10,6 +10,8 @@ var page_cnt;
 var cnt_b = 0;
 var cnt_g = 0;
 
+var display_num = 20;　/////データ表示数
+
 let arr_details = [];
 
 var now_page = 1;
@@ -27,6 +29,8 @@ let env_atm = 0;
 let env_temp = 0;
 let arr_parts = 0;
 var hoge;
+
+var now_page_cnt = 0;
 
 const inspectionList = [
     { name: "mounted_parts", display: '検査項目：部品の位置' },
@@ -51,7 +55,7 @@ const inspectionIndex = inspection => {
 const req = {
     "sql" : {
         "db":"piscan",
-        "query" :"SELECT top 10 scan_id,plc_mac,datetime,scan_data FROM pi_camera;",
+        "query" :"SELECT TOP " + display_num + " scan_id,plc_mac,datetime,scan_data FROM pi_camera;",
         "commit":false
     }
     // "sql" : {
@@ -85,7 +89,7 @@ socket.onopen = function (event) {
 
 function getId(ele){
 
-    
+    //console.log(ele.id)
     let box = document.getElementById("box");//読み込みたい位置を指定
 
     let h;
@@ -112,8 +116,11 @@ function getId(ele){
 }
 
 function page_html_send(ele){
+
     let box = document.getElementById("inpe_window");//読み込みたい位置を指定
     const add_details = document.getElementById("add_details");
+
+
     const add_page = document.getElementById("add_page");
 
     add_details.remove();
@@ -121,21 +128,25 @@ function page_html_send(ele){
 
     let last_get_page = 0;
 
-    var now_page_cnt = (now_page - 1) * 10;
+    now_page_cnt = (now_page - 1) * display_num;
     let h;
 
     if(now_page == page_cnt){
-        last_get_page = data_cnt_max % 10 + now_page_cnt;
+        last_get_page = data_cnt_max % display_num + now_page_cnt;
 
     }else{
-        last_get_page = (now_page_cnt + 10);
+        last_get_page = (now_page_cnt + display_num);
+    }
+
+    for(i in arr_details){
+        arr_details[i] = '';
     }
 
 
     h = "SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera WHERE"
-        +   " scan_id >= "
+        +   " scan_id > "
         +   now_page_cnt
-        +   " AND scan_id < "
+        +   " AND scan_id <= "
         +   last_get_page
         +   ";"
 
@@ -150,13 +161,11 @@ function page_html_send(ele){
     cnt_b = 0;
     cnt_g = 0;
 
-
-    console.log(h);
-    console.log("inpe削除完了");
     socket.send(JSON.stringify(req_2)); 
     cnt = 0;
-    //ccc = 0;
-    page_generate()
+    window.scrollTo(0, 0);  //ページ上部に移動
+    page_generate();
+
 }
 
 function getId_close(){
@@ -170,123 +179,63 @@ window.addEventListener('beforeunload', function(e){
 });
 
 
-function previous(ele ){
-    (now_page <= 1)? now_page = 1:now_page = ele;
-    page_html_send();
-}
-function next_page(ele){
+function page_Move(ele){
     now_page = ele;
     page_html_send();
 }
-function page_max(ele){
-    //if(now_page != 1){
-        now_page = page_cnt;
-    //}
-    page_html_send();
-}
-function page_min(ele){
-    //if(now_page != 1){
-        now_page = 1;
-    //}
-    page_html_send();
-}
-
-function previous_page_Arrow(ele){
-    if(now_page != 1){
-        now_page = now_page - 1;
-    }
-    page_html_send();
-}
-
-function next_page_Arrow(ele){
-    now_page = now_page + 1;
-    page_html_send();
-}
-
-
 
 function page_generate(){
     
     const pages_attach = document.getElementById('nav-links');
 
-
+    var i = 0;
     var previous_page;
     (now_page <= 1)? previous_page = 1:previous_page = now_page - 1 ;
 
     var next_page = now_page + 1;
-    if(page_cnt > 4){
-        page_max_text = '<li class="page_box ">...</li>'
-                        +   '<li class="page_box detail_link_last" onclick="page_max(this);">'
-                        +   page_cnt  
-                        +   '</li>';
-    }else if(page_cnt == 4){
-        page_max_text = '<li class="page_box detail_link_last" onclick="page_max(this);">'
-                        +   page_cnt  
-                        +   '</li>';
-    }else{
-        page_max_text = '';
+    var data_division = 0;
+    var page_max = 0;
+    var page_html = '<div id="add_page"><ul>';
+    var for_num = 1;
+    var i_cnt = 1;
+
+    (data_cnt_max % display_num == 0)? data_division = page_cnt - 1:data_division = page_cnt;
+
+    console.log(data_division);
+
+    if(now_page >= 7){
+        for_num = now_page - 5;
+        if(data_division - now_page <= 4){
+            for_num = data_division - now_page;
+        }
     }
 
-    var page_html = '<div id="add_page"><ul><li class="page_box " onclick="previous_page_Arrow();">《</li>'
-    +   '<li class="page_box detail_link_previous" onclick="previous('
-    +   previous_page
-    +   ');">'
-    +   previous_page
-    +   '</li>'
-    +   '<li class="page_box detail_link_current">'
-    +   now_page
-    +   '</li>'
-    +   '<li class="page_box detail_link_next" onclick="next_page('
-    +   next_page
-    +   ');">'
-    +   next_page
-    +   '</li>'
-    +   page_max_text
-    +   '<li class="page_box"onclick="next_page_Arrow();">》</li></ul><div>';
+    console.log("data_division"+data_division);
+    console.log("now_page"+now_page);
+    console.log("for_num"+for_num);
 
 
-
-    if(now_page == 1){
-        page_html = '<div id="add_page"><ul><li class="page_box " onclick="previous_page_Arrow();">《</li>'
-        +   '<li class="page_box detail_link_current">'
-        +   now_page
-        +   '</li>'
-        +   '<li class="page_box detail_link_next" onclick="next_page('
-        +   next_page
-        +   ');">'
-        +   next_page
-        +   '</li>'
-        +   page_max_text
-        +   '<li class="page_box"onclick="next_page_Arrow();">》</li></ul><div>';
-    }else if(now_page == page_cnt){
-
-        page_html = '<div id="add_page"><ul><li class="page_box " onclick="previous_page_Arrow();">《</li>'
-        +   '<li class="page_box detail_link_last" onclick="page_min(this);">1</li>'
-        +   '<li class="page_box ">...</li>'
-        +   '<li class="page_box detail_link_current">'
-        +   now_page
-        +   '</li>'
-        +   '<li class="page_box"onclick="next_page_Arrow();">》</li></ul><div>';
+    for(i=for_num;i_cnt<=10;i++){
+        i_cnt++;
+        if(i == now_page){
+            page_html   =   page_html +   '<li class="page_box detail_link_current" onclick="page_Move(' + i + ');">' + i + '</li>';
+        }else{
+            page_html   =   page_html + '<li class="page_box" onclick="page_Move(' + i + ');">' + i　+ '</li>';
+        }   
     }
 
-    if(page_cnt == 1){
-        page_html = '<div id="add_page"><ul><li class="page_box ">《</li>'
-        +   '<li class="page_box detail_link_current">'
-        +   now_page
-        +   '</li>'
-        +   '<li class="page_box ">》</li></ul><div>';
-
-    }
-
+    page_html   =   page_html +'</ul><div>';
     pages_attach.insertAdjacentHTML("afterbegin", page_html);
-    console.log(now_page)
 
 }
 window.onload = function (e) {
+    const disp_num = document.getElementById('disp_num');
+    console.log(display_num + '件中');
+    disp_num.insertAdjacentHTML("afterbegin",  display_num + '件中');
+    
     var cnt_page_processing = 0;
     let box = document.getElementsByClassName('container')[0];//読み込みたい位置を指定
     const inpe_attach = document.getElementById('inpe_window');
-
 
 
 
@@ -300,7 +249,6 @@ window.onload = function (e) {
     xhr.send();
     
     // const result_attach_2 = document.getElementById('result_picture2');
-
     // メッセージの待ち受け
     socket.onmessage = function (event) {
         var h;
@@ -310,22 +258,22 @@ window.onload = function (e) {
             data_cnt_max =  jdata[1] - 1;
             //console.log(data_cnt_max);
             data_cnt = 1;
-            console.log(data_cnt_max);
+            console.log('全データ数:' + data_cnt_max);
         }
 
         if(cnt_page_processing==0){
- 
-
             var page_max_text;
             cnt_page_processing = 1;
-            page_cnt = parseInt(jdata[1] / 10) + 1 ;
+            page_cnt = parseInt(jdata[1] / display_num) + 1 ;
             //page_cnt = 6;
             page_generate(page_cnt);
-
         }
 
         for(var key in jdata){
             if(key == "img"){
+
+                var cnt_arr = 0;
+
                 const result_attach_1 = document.getElementById('result_picture1');
                 const result_attach_2 = document.getElementById('result_picture2');
                 const detail_title = document.getElementById('detail_title');
@@ -339,11 +287,17 @@ window.onload = function (e) {
                         +   jdata["img"][1]
                         +   '" class="picture_2">';
 
-                    data.arr = arr_j[id_value][3];
-                    data.date = arr_j[id_value][2];
+                    console.log(id_value);
+
+                    cnt_arr = Number(id_value) - Number(now_page_cnt);
+                    console.log(cnt_arr);
+                    console.log(arr_j[cnt_arr][3]);
+
+                    data.arr = arr_j[cnt_arr][3];
+                    data.date = arr_j[cnt_arr][2];
                     data.status = JSON.parse(data.arr);
                     data.type = data.status.type;
-                    data.number = id_value;
+                    data.number = cnt_arr;
                     let O_N = 0;
         
                     day = data.date.split('T');
@@ -354,19 +308,19 @@ window.onload = function (e) {
                     day.time = day.hours.split(":");
                     day.time[2] = Math.floor(day.time[2]);
 
-                    //console.log(jdata["img"][0])
+
 
                     // arr_j[id_value][3]
-                    let arr_table = arr_j[id_value][3];
+                    let arr_table = arr_j[cnt_arr][3];
                     arr_table = JSON.parse(arr_table)
 
                 h =  day.detail[0] 
                     + '/' 
-                    + day.detail[1] + '/' + day.detail[2] 
+                    + ( '00' + day.detail[1] ).slice( -2 ) + '/' + ( '00' + day.detail[2] ).slice( -2 )
                     + "  " 
-                    + day.time[0] + ':' + day.time[1] + ':' + day.time[2];
-                    // +   '　ID.'
-                    // +   id_value;
+                    + ( '00' + day.time[0] ).slice( -2 )  + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
+                    +   '　基板ID.'
+                    +   id_value;
 
                 // var h2  =   '気温:'
                 //         +   data.arr[1]
@@ -387,7 +341,7 @@ window.onload = function (e) {
                 result_attach_1.insertAdjacentHTML("afterbegin", p);
                 result_attach_2.insertAdjacentHTML("afterbegin", p2);
 
-                hoge = JSON.parse(arr_j[id_value][3]);
+                hoge = JSON.parse(arr_j[cnt_arr][3]);
                 //console.log(hoge);
                 result_generate(hoge.parts);
 
@@ -401,6 +355,7 @@ window.onload = function (e) {
         }
 
         if(cnt == 0){
+            
             h = '<div id="add_details">'
             + arr_details.join("") ;
             +'</div>';
@@ -408,9 +363,10 @@ window.onload = function (e) {
             cnt = 1;
         }
     }
+
 }
 function html_generate(key,jdata,event){
-
+    //key = Number(now_page_cnt) + Number(key);
 
     // const search_date_o = document.getElementById('S_date_year_old');
     // const search_date_n = document.getElementById('S_date_year_new');
@@ -419,6 +375,7 @@ function html_generate(key,jdata,event){
     const cnt_result = document.getElementById('cnt_result');
     const cnt_good = document.getElementById('cnt_good');
     const cnt_bad = document.getElementById('cnt_bad');
+
     const inpe_attach = document.getElementById('inpe_window');
 
 
@@ -430,8 +387,10 @@ function html_generate(key,jdata,event){
     // search_date_n.value = today.getFullYear() + "/" + (today.getMonth()+1) + "/" + today.getDate();
     // search_time_o.value = "00:00";
     // search_time_n.value = today.getHours() + ":" + today.getMinutes();
+    //console.log(key);
     
     data.arr = JSON.parse(event.data)[key][3];
+    //console.log(jdata[key]);
 
     data.date = jdata[key][2];
     data.status = JSON.parse(data.arr);
@@ -450,6 +409,7 @@ function html_generate(key,jdata,event){
 
 
     var false_cnt = 0;
+    var gb_t = '';
     false_cnt = jdata[key][3].indexOf("false");
 
     if(false_cnt <= 0){
@@ -460,11 +420,12 @@ function html_generate(key,jdata,event){
         O_N = '×';
         cnt_b++;
         G_B_text = '<div class="dai4 bad">'
+        gb_t = 'bad';
     }
 
     arr_j[key] = jdata[key];
 
-    //console.log(arr_j[key][0])
+    //console.log(jdata[key])
     
     let fuga = JSON.parse(jdata[key][3]);
 
@@ -474,10 +435,15 @@ function html_generate(key,jdata,event){
     env_temp = fuga.status.temp;//温度
 
     h = '<div id="'
-    +  data.number
-    + '" class="result_element" onclick="getId(this);">'
+    +  arr_j[key][0]
+    + '" class="result_element '
+    + gb_t
+    + '" onclick="getId(this);">'
+    + '<div class="dai0">'
+    +   String(arr_j[key][0])
+    + '</div>'
     + '<div class="dai1">'
-    + arr_j[key][0] + '//'+day.detail[0] + '/' + ( '00' + day.detail[1] ).slice( -2 ) + '/' +( '00' + day.detail[2] ).slice( -2 )
+    +   day.detail[0] + '/' + ( '00' + day.detail[1] ).slice( -2 ) + '/' +( '00' + day.detail[2] ).slice( -2 )
     + '</div>'
     + '<div class="dai2">'
     + ( '00' + day.time[0] ).slice( -2 ) + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
@@ -490,13 +456,16 @@ function html_generate(key,jdata,event){
     + '</div>'
     + '</div>';
 
+
+
     arr_details[key] = h;
 
     inpe = document.getElementById(data.number);
-    cnt_result.innerHTML = data_cnt_max - 1;//data_cnt_max;
+
+    cnt_result.innerHTML = data_cnt_max ;//data_cnt_max;
     cnt_good.innerHTML = cnt_g;
     cnt_bad.innerHTML = cnt_b;
-    ccc++;
+    console.log();
 }
 
 function search(){
@@ -537,6 +506,7 @@ function result_generate(arr_parts){
                     f_t = '×'; font_red = 'class="font_red"';
                 }else{ f_t = '〇'}
                 table_element   =   table_element + '<tr ' + font_red + '><td>' + key + '</td><td>' + f_t + '</td></tr>';
+                
                 font_red = '';
             }
             cnt++;

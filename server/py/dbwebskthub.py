@@ -67,6 +67,7 @@ def recv(client, server, message):
             ind = dict_data[jkey]
             imgdict = sql(ind["db"],f"SELECT top_img_path,slanting_img_path FROM pi_camera WHERE scan_id={ind['id']}",False)
             cnt = 0
+            print("imgpath :",imgdict)
             for imgpath in imgdict[1]:
                 with open(imgpath,"rb") as imgf:
                     imgdict[1][cnt] = base64.b64encode(imgf.read()).decode('utf-8')
