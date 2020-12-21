@@ -10,7 +10,8 @@ var page_cnt;
 var cnt_b = 0;
 var cnt_g = 0;
 
-var display_num = 20;　/////データ表示数
+var display_num = 0;　/////データ表示数
+
 
 let arr_details = [];
 
@@ -28,6 +29,7 @@ let env_lux = 0;
 let env_atm = 0;
 let env_temp = 0;
 let arr_parts = 0;
+let page_cnt_arr = 0;
 var hoge;
 
 var now_page_cnt = 0;
@@ -44,6 +46,39 @@ const inspectionList = [
 var filename = 'test_CSV';
 
 
+function getCookieArray(){
+    var arr = new Array();
+    if(document.cookie != ''){
+      var tmp = document.cookie.split('; ');
+      for(var i=0;i<tmp.length;i++){
+        var data = tmp[i].split('=');
+        arr[data[0]] = decodeURIComponent(data[1]);
+      }
+    }
+    return arr;
+}
+
+if(document.cookie == ""){
+    display_num = 50;
+}else{
+    var arr = getCookieArray();
+    var result = arr["display_num"];
+    console.log(result)
+
+    display_num = result;
+}
+
+
+
+function check(){
+    (input_message.value == "")? display_num = display_num : display_num = input_message.value;
+    (input_message.value > data_cnt_max)? display_num = data_cnt_max : display_num = input_message.value;
+    console.log(display_num)
+    document.cookie = "display_num=" + display_num;
+    location.reload();
+}
+
+
 const inspectionIndex = inspection => {
     const inspectionNumber = inspectionList.find(p => p.name === inspection.name).display;
   
@@ -58,11 +93,6 @@ const req = {
         "query" :"SELECT TOP " + display_num + " scan_id,plc_mac,datetime,scan_data FROM pi_camera;",
         "commit":false
     }
-    // "sql" : {
-    //     "db":"piscan",
-    //     "query" :"DELETE FROM pi_camera WHERE scan_id > 3;",
-    //     "commit":true
-    // }
 }
 
 const req3 = {
@@ -81,9 +111,7 @@ socket.onopen = function (event) {
 
     if(data_cnt == 0){
         socket.send(JSON.stringify(req3)); 
-
     }
-
     socket.send(JSON.stringify(req)); 
 };
 
@@ -117,6 +145,7 @@ function getId(ele){
 
 function page_html_send(ele){
 
+
     let box = document.getElementById("inpe_window");//読み込みたい位置を指定
     const add_details = document.getElementById("add_details");
 
@@ -135,7 +164,7 @@ function page_html_send(ele){
         last_get_page = data_cnt_max % display_num + now_page_cnt;
 
     }else{
-        last_get_page = (now_page_cnt + display_num);
+        last_get_page = (now_page_cnt + parseInt(display_num));
     }
 
     for(i in arr_details){
@@ -160,6 +189,11 @@ function page_html_send(ele){
     //console.log("現在のページ = " + last_get_page);
     cnt_b = 0;
     cnt_g = 0;
+    console.log(h)
+    console.log(now_page_cnt)
+    console.log(page_cnt)
+    console.log(last_get_page)
+    console.log(display_num)
 
     socket.send(JSON.stringify(req_2)); 
     cnt = 0;
@@ -180,6 +214,8 @@ window.addEventListener('beforeunload', function(e){
 
 
 function page_Move(ele){
+    //document.cookie = "page"+ page_cnt_arr + "=" + now_page;
+    page_cnt_arr++;
     now_page = ele;
     page_html_send();
 }
@@ -192,30 +228,34 @@ function page_generate(){
     var previous_page;
     (now_page <= 1)? previous_page = 1:previous_page = now_page - 1 ;
 
-    var next_page = now_page + 1;
     var data_division = 0;
-    var page_max = 0;
     var page_html = '<div id="add_page"><ul>';
     var for_num = 1;
     var i_cnt = 1;
+    var ten_page = 10;
 
     (data_cnt_max % display_num == 0)? data_division = page_cnt - 1:data_division = page_cnt;
 
-    console.log(data_division);
+    // console.log(data_division);
 
     if(now_page >= 7){
         for_num = now_page - 5;
-        if(data_division - now_page <= 4){
-            for_num = data_division - now_page;
+        if(now_page + 4 > data_division){
+            for_num = data_division-9;
+            data_division
         }
     }
+    
+    if(data_division < 10){
+        ten_page = data_division;
+    }
 
-    console.log("data_division"+data_division);
-    console.log("now_page"+now_page);
-    console.log("for_num"+for_num);
+    // console.log("data_division" + data_division);
+    // console.log("now_page" + now_page);
+    // console.log("for_num" + for_num);
 
 
-    for(i=for_num;i_cnt<=10;i++){
+    for(i=for_num;i_cnt<=ten_page;i++){
         i_cnt++;
         if(i == now_page){
             page_html   =   page_html +   '<li class="page_box detail_link_current" onclick="page_Move(' + i + ');">' + i + '</li>';
@@ -223,21 +263,17 @@ function page_generate(){
             page_html   =   page_html + '<li class="page_box" onclick="page_Move(' + i + ');">' + i　+ '</li>';
         }   
     }
-
     page_html   =   page_html +'</ul><div>';
     pages_attach.insertAdjacentHTML("afterbegin", page_html);
-
 }
+
+
 window.onload = function (e) {
     const disp_num = document.getElementById('disp_num');
-    console.log(display_num + '件中');
-    disp_num.insertAdjacentHTML("afterbegin",  display_num + '件中');
-    
+
     var cnt_page_processing = 0;
     let box = document.getElementsByClassName('container')[0];//読み込みたい位置を指定
     const inpe_attach = document.getElementById('inpe_window');
-
-
 
 	xhr.open("GET", "./menu.html", true);
 	xhr.onreadystatechange = function () {
@@ -255,11 +291,17 @@ window.onload = function (e) {
         jdata = JSON.parse(event.data);
 
         if(data_cnt == 0){
-            data_cnt_max =  jdata[1] - 1;
+            data_cnt_max =  jdata[1];
             //console.log(data_cnt_max);
             data_cnt = 1;
             console.log('全データ数:' + data_cnt_max);
         }
+
+        (data_cnt_max >= 50)?display_num = 50:display_num = data_cnt_max;
+        
+
+        (display_num > data_cnt_max)?display_num = data_cnt_max:display_num = display_num;
+
 
         if(cnt_page_processing==0){
             var page_max_text;
@@ -285,7 +327,7 @@ window.onload = function (e) {
 
                 var p2 =    '<image src="data:image/png;base64,'
                         +   jdata["img"][1]
-                        +   '" class="picture_2">';
+                        +   '" class="picture_2" onclick="picture_pop(1)">';
 
                     console.log(id_value);
 
@@ -361,8 +403,11 @@ window.onload = function (e) {
             +'</div>';
             inpe_attach.insertAdjacentHTML("afterbegin", h);
             cnt = 1;
+
         }
+        
     }
+    disp_num.insertAdjacentHTML("afterbegin",  display_num + '件中');
 
 }
 function html_generate(key,jdata,event){
@@ -462,7 +507,7 @@ function html_generate(key,jdata,event){
 
     inpe = document.getElementById(data.number);
 
-    cnt_result.innerHTML = data_cnt_max ;//data_cnt_max;
+    cnt_result.innerHTML = data_cnt_max;//data_cnt_max;
     cnt_good.innerHTML = cnt_g;
     cnt_bad.innerHTML = cnt_b;
     console.log();

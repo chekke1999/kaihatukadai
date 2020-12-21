@@ -1364,3 +1364,46 @@ button {
     position: absolute;/*←絶対位置*/
     bottom: 0; /*下に固定*/
 }
+
+.cp_iptxt {
+	position: relative;
+    width: 100%;
+}
+
+.cp_iptxt input[type=text] {
+	font: 15px/24px sans-serif;
+	box-sizing: border-box;
+	width: 60%;
+	margin: 8px 0;
+	padding: 0.3em;
+	transition: 0.3s;
+	border: 2px solid #ed6f1e;
+	border-radius: 4px;
+    outline: none;
+    float: left;
+}
+
+.cp_iptxt input[type=text]:focus {
+	border-color: #da3c41;
+}
+
+.cp_iptxt input[type=button] {
+	font: 15px/24px sans-serif;
+	box-sizing: border-box;
+	width: 38%;
+    margin: 8px 0;
+    margin-left: 2%;
+	padding: 0.3em;
+	transition: 0.3s;
+	border: 2px solid #ed6f1e;
+	border-radius: 4px;
+    outline: none;
+    float: left;
+    background: #ed6f1e;
+    color: white;
+    font-weight:bolder;
+}
+
+.cp_iptxt input[type=text]:focus {
+	border-color: #da3c41;
+}
