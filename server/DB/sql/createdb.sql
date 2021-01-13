@@ -10,3 +10,10 @@ create table pi_camera(
     scan_data nvarchar(max)
 );
 go
+create table pi_probe(
+    scan_id  BIGINT NOT NULL IDENTITY(1,1) PRIMARY KEY,
+    plc_mac char(17),
+    datetime datetime default getdate(),
+    scan_data nvarchar(max)
+);
+go

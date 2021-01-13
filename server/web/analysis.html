@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <link rel="stylesheet" href="style\test.css">
     <script src="js\jquery-3.5.1.min.js"></script>
-    <script src="js\script.js"></script>
+    <script src="js\analysis.js"></script>
     <link rel="shortcut icon" href="favicon.ico">
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -20,13 +20,10 @@
                         <span class="TOPname">新たな生産システムに関する教材開発（生産ロボットシステムコース）</span>
                     </div>
                 </a>
-                <!-- <div class="header3">
-                    <span id="view_clock" style="float: right; font-size:1em">2000年00月00日00時00分00秒</span>
-                </div> -->
             </div>
             <div class="header">
                 <div class="header4">
-                    <span class="header_text">部品検査結果</span>
+                    <span class="header_text">分析</span>
 
                 </div>
         </header>
@@ -37,14 +34,6 @@
             <div class="details1">
 
                 <div class="result_box_main">
-                    <div class="hide_result"></div>
-                    <div class="result_table_dai">
-                        <div class="dai dai0">No.</div>
-                        <div class="dai dai1">日付</div>
-                        <div class="dai dai2">時間</div>
-                        <div class="dai dai3">基板タイプ</div>
-                        <div class="dai dai4">判定</div>
-                    </div>
                     <div class="result_table">
 
 
@@ -62,23 +51,12 @@
             <div class="details2">
                 <div class="result_counter">
                     <div class="R_count_text">
-                        <ul>
-                            <li>検索結果</li>
-                        </ul>
-                    </div>
+                        <form id="form1" action="#">
+                            <input type="text" id="term" value="">
+                            <input type="button" onclick="func1()" value="送信">
+                          </form>
 
-                    <!-- <a href="javaScript:setCell()">セル内容を変更する</a><br> -->
-                    <table id="result_num" border="1">
-                        <tr>
-                            <td>取得件数</td><td id="cnt_result" class="td_num">--</td>
-                        </tr>
-                        <tr>
-                            <td>可</td><td id="cnt_good" class="td_num">--</td>
-                        </tr>
-                        <tr>
-                            <td>不可</td><td id="cnt_bad" class="td_error td_num">--</td>
-                        </tr>
-                      </table>
+                    </div>
 
                       <img id="neko" src="test.png" />
                 </div>

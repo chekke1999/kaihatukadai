@@ -90,7 +90,7 @@ header {
 
     .header_text{
         margin:50% 0 50% 3% ;
-        font-size: 200%;
+        font-size: calc(25px + .8vw);
         background: transparent;
         color:rgb(4, 20, 71);
     }
@@ -133,7 +133,7 @@ header {
   
     100% {opacity: 1} /*アニメーション終了時は不透明度100%*/
   
-  }
+}
 
 .menu_title{
     position: relative;
@@ -178,7 +178,7 @@ a:hover .result_element{
 }
 
 .details {
-    background:  #ababab;
+    background:  transparent;
     width: 80%;
     height:100%;
     margin:100px 0 0 auto;
@@ -429,7 +429,7 @@ a:hover .result_element{
         float: left;
     }
 
-  }
+}
 
 .details_top{
     background: transparent;
@@ -437,8 +437,6 @@ a:hover .result_element{
     height:100%;
     float: left;
 }
-
-
 
   /*///////////////////sesarch/////////////////////*/
 
@@ -526,20 +524,20 @@ a:hover .result_element{
 ul{
     padding: 0;
     position: relative;
-  }
+}
   
-  ul li{
-    margin-top:10px;
-    color: black;
-    border-left: solid 8px #ed6f1e;/*左側の線*/
-    background: whitesmoke;/*背景色*/
-    margin-bottom: 5px;/*下のバーとの余白*/
-    line-height: 1.5;
-    border-radius: 0 15px 15px 0;/*右側の角だけ丸く*/
-    padding: 0.5em;
-    list-style-type: none!important;
-    widows: 50%;
-  }
+ul li{
+margin-top:10px;
+color: black;
+border-left: solid 8px #ed6f1e;/*左側の線*/
+background: whitesmoke;/*背景色*/
+margin-bottom: 5px;/*下のバーとの余白*/
+line-height: 1.5;
+border-radius: 0 15px 15px 0;/*右側の角だけ丸く*/
+padding: 0.5em;
+list-style-type: none!important;
+widows: 50%;
+}
 
 .search_count{
     display: inline-block;
@@ -569,16 +567,35 @@ table td {
     padding: 10px;/*上下左右10pxずつ*/
     /*破線 1px オレンジ*/
     background: whitesmoke;
+    cursor: text;
 }
+
+table tr{
+    cursor: text;
+}
+
 table th{
     background: #f5ebe5;
     border: solid 1px  #ed6f1e;/**/
     font-weight:normal;
     border-top: double 3px #ed6f1e;
+    cursor: text;
 }
+
 table .td_error{
     background:rgb(255, 147, 147);
 }
+
+td#cnt_bad:hover + #neko{
+    opacity: 1;
+}
+#neko{
+    opacity: 0;
+    transition: 1.0s ;
+    height:80%;
+    width:80%;
+}
+
 
 table .td_num{
     text-align: right;
@@ -629,7 +646,7 @@ table .td_num{
     text-align: center;
   }
 .nav-links li {
-display: inline-block;
+    display: inline-block;
 }
 
  .detail_link_current{
@@ -644,7 +661,6 @@ display: inline-block;
     line-height: 15px;
     text-align: center;
     font-size: calc(10px + .5vw);
-    
 }
 
 .result_table_dai{
@@ -720,7 +736,78 @@ display: inline-block;
     font-size: calc(10px + .5vw);
 }
 
+/*////probe///*/
+.dai0_probe{
+    height:100%;
+    width:15%;
+    float: left;
+    background: transparent;
+    text-align: center;
+    line-height:50px;
+    border-right: dotted 1px #dedede;
+    box-sizing: border-box;
+    font-size: calc(10px + .5vw);
+}
 
+.dai1_probe{
+    height:100%;
+    width:30%;
+    float: left;
+    background: transparent;
+    text-align: center;
+    line-height:50px;
+    border-right: dotted 1px  #dedede;
+    box-sizing: border-box;
+    font-size: calc(10px + .5vw);
+}
+
+.dai2_probe{
+    height:100%;
+    width:30%;
+    float: left;
+    background: transparent;
+    text-align: center;
+    line-height:50px;
+    border-right: dotted 1px  #dedede;
+    box-sizing: border-box;
+    font-size: calc(10px + .5vw);
+}
+
+.dai3_probe{
+    height:100%;
+    width:25%;
+    float: left;
+    background: transparent;
+    text-align: center;
+    line-height:50px;
+    box-sizing: border-box;
+    font-size: calc(10px + .5vw);
+}
+
+.result_elementbox .dai0_probe{
+    height:100%;
+    line-height:40px;
+    text-align: center;
+}
+.result_elementbox .dai1_probe{
+    height:100%;
+    line-height:40px;   /*.result_elementのheightと同じ値にする(下3つも)*/
+    color:000;
+    text-align: center;
+}
+.result_elementbox .dai2_probe{
+    height:100%;
+    line-height:40px;
+    color:000;
+    text-align: center;
+}
+.result_elementbox .dai3_probe{
+    height:100%;
+    line-height:40px;
+    text-align: center;
+}
+
+/*/////probe//////*/
 
 .result_elementbox {
     position: relative;
@@ -779,6 +866,7 @@ display: inline-block;
     line-height:40px;
     text-align: center;
 }
+
 .result_elementbox .dai4{
     height:100%;
     line-height:40px;
@@ -804,8 +892,6 @@ display: inline-block;
 }
 
 /*///////////////////TOP////////////////////////*/
-
-
 
 /*///////////////////////night_mode/////////////////////////*/
 
@@ -994,7 +1080,7 @@ display: inline-block;
     box-sizing: border-box;
     border-radius: 0 10px 0 10px;
     border: solid 2px #e9bc40;
-  }
+}
 
 .display_picture{
     height:70%;
@@ -1031,24 +1117,20 @@ display: inline-block;
     position: relative;
 }
 
-
 .scroll_inner::-webkit-scrollbar {
     width: 7px;
     overflow: hidden;
   }
   
 .scroll_inner::-webkit-scrollbar-thumb {
-
     background: linear-gradient(0deg,#664951,#664951);
     overflow: hidden;
     border-radius: 3px;
-
 }
 
 .scroll_inner::-webkit-scrollbar-track {
     overflow: hidden;
     background: rgba(100,100,100, .5);
-    
 }
 
 .popup_detail .scroll_inner{
@@ -1083,7 +1165,6 @@ display: inline-block;
     margin:30px 0 4% 4%;
     /* overflow-y:visible; */
     overflow-x:hidden ;
-
 }
 
 .header_detali{
@@ -1135,8 +1216,9 @@ display: inline-block;
     display: inline;
     display: table-cell;
     vertical-align: middle;
-    font-size: calc(21px + .8vw);
+    font-size: calc(19px + .8vw);
     color:black;
+    line-height:1.1em;
 }
 
 .popup_ENV{
@@ -1150,6 +1232,7 @@ display: inline-block;
 
 #env_text{
     margin-top:3px;
+    font-size: calc(8px + .7vw);
 }
 
 .pop_ENV_text{
@@ -1228,7 +1311,6 @@ details[open] summary{
     background: transparent;
     pointer-events: none;
     position: relative;
-
 }
 
 .popup_inspection_name{
@@ -1237,7 +1319,8 @@ details[open] summary{
     background: transparent;
     position: relative;
     margin:0 auto;
-    font-size: 20px;
+    font-size: calc(15px + .4vw);
+    white-space: nowrap;
 }
 
 .popup_table{
@@ -1258,30 +1341,15 @@ details[open] summary{
     text-align: center;
     position: relative;
     margin:0 auto;
+    cursor: help;
+}
 
-  }
 .popup_table  table th{
     border: dashed 1px orange;/**/
     /*破線 1px オレンジ*/
     background: #fbe5d6;
-  }
-
- /* .popup_table table td{
-    background: transparent;
- } */
-
- /* .popup_table td:nth-child(2){
-    text-align: left;
- } */
-
- /* .popup_table td:nth-child(3){
-    color:blue;
- } */
-
- /* .popup_table table trtd{
-    background: #f2f2f8;
 }
-  */
+
 .popup_table table tr:nth-child(even) td{
     background: white;
 }
@@ -1300,17 +1368,14 @@ details[open] summary{
     color:red;
 }
 
-
- .top_details{
+.top_details{
     height:100px;
     width:200px;
     position: relative;
     background: #a01616;
 }
 
-
-
- div.slide-show {
+div.slide-show {
     width: 80%; /* スライドショーの幅 */
     height:200px;
     max-width: 100%; /* スマホで表示が欠けないように */
@@ -1358,7 +1423,7 @@ button {
     pointer-events: fill;
 }
 
-.neko{
+.harotore{
     height:auto;
     width:100%;
     position: absolute;/*←絶対位置*/

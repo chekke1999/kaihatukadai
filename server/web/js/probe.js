@@ -58,14 +58,7 @@ function getCookieArray(){
     return arr;
 }
 
-if(document.cookie == ""){
-    display_num = 50;
-}else{
-    var arr = getCookieArray();
-    var result = arr["display_num"];
-    //console.log(result)
-    display_num = result;
-}
+
 
 
 
@@ -97,7 +90,7 @@ const inspectionIndex = inspection => {
 const req = {
     "sql" : {
         "db":"piscan",
-        "query" :"SELECT TOP " + display_num + " scan_id,plc_mac,datetime,scan_data FROM pi_camera;",
+        "query" :"SELECT * FROM pi_probe;",
         "commit":false
     }
 }
@@ -105,7 +98,7 @@ const req = {
 const req3 = {
     "sql" : {
         "db":"piscan",
-        "query" :"SELECT COUNT(*) FROM pi_camera;",
+        "query" :"SELECT COUNT(*) FROM pi_probe;",
         "commit":false
     }
 }
@@ -194,8 +187,14 @@ function page_html_send(ele){
             "commit":false
         }
     }
+    //console.log("現在のページ = " + last_get_page);
     cnt_b = 0;
     cnt_g = 0;
+    // console.log(h)
+    // console.log(now_page_cnt)
+    // console.log(page_cnt)
+    // console.log(last_get_page)
+    // console.log(display_num)
 
     socket.send(JSON.stringify(req_2)); 
     cnt = 0;
@@ -215,6 +214,7 @@ window.addEventListener('beforeunload', function(e){
 
 
 function page_Move(ele){
+    //document.cookie = "page"+ page_cnt_arr + "=" + now_page;
     page_cnt_arr++;
     now_page = ele;
     page_html_send();
@@ -235,8 +235,9 @@ function page_generate(){
     var ten_page = 10;
 
     (data_cnt_max % display_num == 0)? data_division = page_cnt - 1:data_division = page_cnt;
+    // console.log(display_num);
 
-    console.log(data_division);
+    //console.log(data_division);
 
     if(now_page >= 7){
         for_num = now_page - 5;
@@ -260,10 +261,23 @@ function page_generate(){
     }
     page_html   =   page_html +'</ul><div>';
     pages_attach.insertAdjacentHTML("afterbegin", page_html);
+    // console.log(ten_page)
 }
 
 
 window.onload = function (e) {
+
+    if(document.cookie == ""){
+        display_num = 50;
+    }else{
+        var arr = getCookieArray();
+        var result = arr["display_num"];
+        //console.log(result)
+        display_num = result;
+    }
+
+    console.log("display_num=" + display_num);
+
     const disp_num = document.getElementById('disp_num');
 
     var cnt_page_processing = 0;
@@ -278,18 +292,17 @@ window.onload = function (e) {
 		}
 	};
     xhr.send();
-    
     // const result_attach_2 = document.getElementById('result_picture2');
     // メッセージの待ち受け
+
     socket.onmessage = function (event) {
         var h;
 
         if(data_cnt == 0){
             jdata_cnt = JSON.parse(event.data);
             data_cnt_max =  jdata_cnt[1];
-            //console.log(data_cnt_max);
             data_cnt = 1;
-            // console.log('全データ数:' + data_cnt_max);
+            //console.log('全データ数:' + data_cnt_max);
         }
 
         (data_cnt_max >= 50)?display_num = 50:display_num = data_cnt_max;
@@ -308,50 +321,39 @@ window.onload = function (e) {
             jdata = JSON.parse(event.data);
 
             for(var key in jdata){
-                if(key == "img"){
 
+                if(key == "img"){
                     var cnt_arr = 0;
 
                     const result_attach_1 = document.getElementById('result_picture1');
                     const result_attach_2 = document.getElementById('result_picture2');
                     const detail_title = document.getElementById('detail_title');
                     const env_text = document.getElementById('env_text');
+                    let mac_add = '';
 
-                    var p =    '<image src="data:image/png;base64,'
-                            +   jdata["img"][0]
-                            +   '" class="picture_1">';
+                    cnt_arr = Number(id_value) - Number(now_page_cnt);
 
-                    var p2 =    '<image src="data:image/png;base64,'
-                            +   jdata["img"][1]
-                            +   '" class="picture_2">';
+                    data.arr = arr_j[cnt_arr][3];
+                    data.date = arr_j[cnt_arr][2];
+                    data.status = JSON.parse(data.arr);
+                    data.type = data.status.type;
+                    data.number = cnt_arr;
+        
+                    day = data.date.split('T');
+                    day.date = day[0];
+                    day.hours = day[1];
+        
+                    day.detail = day.date.split("-");
+                    day.time = day.hours.split(":");
+                    day.time[2] = Math.floor(day.time[2]);
 
-                        // console.log(id_value);
+                    data.mac = arr_j[cnt_arr][1];
+                    (data.mac == null)? mac_add = '――':mac_add = 'A';
 
-                        cnt_arr = Number(id_value) - Number(now_page_cnt);
-                        // console.log(cnt_arr);
-                        // console.log(arr_j[cnt_arr][3]);
-
-                        data.arr = arr_j[cnt_arr][3];
-                        data.date = arr_j[cnt_arr][2];
-                        data.status = JSON.parse(data.arr);
-                        data.type = data.status.type;
-                        data.number = cnt_arr;
-                        let O_N = 0;
-            
-                        day = data.date.split('T');
-                        day.date = day[0];
-                        day.hours = day[1];
-            
-                        day.detail = day.date.split("-");
-                        day.time = day.hours.split(":");
-                        day.time[2] = Math.floor(day.time[2]);
-
-
-
-                        // arr_j[id_value][3]
-                        let arr_table = arr_j[cnt_arr][3];
-                        arr_table = JSON.parse(arr_table)
-                        let id = 'P' + id_value;
+                    // arr_j[id_value][3]
+                    let arr_table = arr_j[cnt_arr][3];
+                    arr_table = JSON.parse(arr_table)
+                    let id = '' + id_value;
 
                     h =  day.detail[0] 
                         + '/' 
@@ -372,42 +374,38 @@ window.onload = function (e) {
                             +   env_atm
                             +   'hPa / 輝度:'
                             +   env_lux
-                            +   'lx / 基板タイプ:'
-                            +   data.type;
+                            +   'lx / 検査ステーション:'
+                            +   mac_add;
 
                     detail_title.insertAdjacentHTML("afterbegin", h);
                     env_text.insertAdjacentHTML("afterbegin",env)
-                    result_attach_1.insertAdjacentHTML("afterbegin", p);
-                    result_attach_2.insertAdjacentHTML("afterbegin", p2);
 
                     hoge = JSON.parse(arr_j[cnt_arr][3]);
-                    //console.log(hoge);
-                    result_generate(hoge.parts);
+                    // console.log(hoge.measured_value);
+                    result_generate(hoge.measured_value);
 
                 }else{
                     html_generate(key,jdata,event);
-                    
-                    //console.log(jdata[key])
                 }
 
             }
 
-        if(cnt == 0){
-            
-            h = '<div id="add_details">'
-            + arr_details.join("") ;
-            +'</div>';
-            inpe_attach.insertAdjacentHTML("afterbegin", h);
-            cnt = 1;
+            if(cnt == 0){
+                
+                h = '<div id="add_details">'
+                + arr_details.join("") ;
+                +'</div>';
+                inpe_attach.insertAdjacentHTML("afterbegin", h);
+                cnt = 1;
 
+            }
         }
+        
     }
-    }
-
-
 
 }
 function html_generate(key,jdata,event){
+
     //key = Number(now_page_cnt) + Number(key);
 
     // const search_date_o = document.getElementById('S_date_year_old');
@@ -419,6 +417,9 @@ function html_generate(key,jdata,event){
     const cnt_bad = document.getElementById('cnt_bad');
 
     const inpe_attach = document.getElementById('inpe_window');
+    let mac_add = 0;
+
+    
 
 
     var today = new Date();
@@ -436,11 +437,11 @@ function html_generate(key,jdata,event){
     data.date = jdata[key][2];
     
     data.status = JSON.parse(data.arr);
-    data.type = data.status.type;
+    data.mac = jdata[key][1];
 
-   　//console.log(jdata[key]);
     data.number = key;
-    let O_N = 0;
+
+    (data.mac == null)? mac_add = '---':mac_add = 'A';
 
     day = data.date.split('T');
     day.date = day[0];
@@ -450,33 +451,10 @@ function html_generate(key,jdata,event){
     day.time = day.hours.split(":");
     day.time[2] = Math.floor(day.time[2]);
 
-    var yearStr = day.detail[0] ;
-    var monthStr = day.detail[1] ;
-    var dayStr = day.detail[2];
-    var jsMonth = monthStr - 1 ;
-    var date_week = new Date( yearStr, jsMonth , dayStr );
-    // console.log(dayOfWeekStrJP[date_week.getDay()] + '曜日');
-    day.week = date_week.getDay();
-
-    var false_cnt = 0;
-    var gb_t = '';
-    false_cnt = jdata[key][3].indexOf("false");
-
-    if(false_cnt <= 0){
-        O_N = '〇';
-        cnt_g++;
-        G_B_text = '<div class="dai4">'
-    }else{
-        O_N = '×';
-        cnt_b++;
-        G_B_text = '<div class="dai4 bad">'
-        gb_t = 'bad';
-    }
 
     arr_j[key] = jdata[key];
 
-    console.log(jdata[key])
-    console.log(day.week)
+    //console.log(jdata[key])
     
     let fuga = JSON.parse(jdata[key][3]);
 
@@ -485,89 +463,75 @@ function html_generate(key,jdata,event){
     env_atm = fuga.status.atm;//気圧
     env_temp = fuga.status.temp;//温度
 
+    var yearStr = day.detail[0] ;
+    var monthStr = day.detail[1] ;
+    var dayStr = day.detail[2];
+    var jsMonth = monthStr - 1 ;
+    var date_week = new Date( yearStr, jsMonth , dayStr );
+    day.week = date_week.getDay();
+
     h = '<div id="'
     +  arr_j[key][0]
-    + '" class="result_element '
-    + gb_t
-    + '" onclick="getId(this);">'
-    + '<div class="dai0">'
+    + '" class="result_element" onclick="getId(this);">'
+    + '<div class="dai0_probe">'
     +   String(arr_j[key][0])
     + '</div>'
-    + '<div class="dai1">'
+    + '<div class="dai1_probe">'
     +   day.detail[0] + '/' + ( '00' + day.detail[1] ).slice( -2 ) + '/' +( '00' + day.detail[2] ).slice( -2 )
     + '</div>'
-    + '<div class="dai2">'
+    + '<div class="dai2_probe">'
     + ( '00' + day.time[0] ).slice( -2 ) + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
     + '</div>'
-    + '<div class="dai3">'
-    + data.type
-    + '</div>'
-    + G_B_text
-    + O_N
+    + '<div class="dai3_probe">'
+    + mac_add
     + '</div>'
     + '</div>';
-
-
 
     arr_details[key] = h;
 
     inpe = document.getElementById(data.number);
-
+    console.log(data_cnt_max[0])
     cnt_result.innerHTML = data_cnt_max;//data_cnt_max;
-    cnt_good.innerHTML = cnt_g;
-    cnt_bad.innerHTML = cnt_b;
 }
+
 function result_generate(arr_parts){
     const table_ganerate = document.getElementById('popup_table_field');
+    const result_attach_1 = document.getElementById('result_picture1');
     var table_element = '';
     var table_th;
-    var f_t = 0;
-    var font_red = '';
-    var i;
     var cnt = 0;
-    var insp = '';
 
-    for(var key in arr_parts){
-        var arr_key = arr_parts[key];
-    }
-    for(i=0;i<Math.max(Object.keys(arr_key).length);i++){
-        const inspection = {
-            name: Object.keys(arr_key)[i]
-        };
-        insp = Object.keys(arr_key)[i];
+    console.log(arr_parts[14]);
+
+
         table_th    =   '<div class="popup_inspection_name">'
-            +    inspectionIndex(inspection)
-            +   '</div><div class="popup_table"><table border="1"><tr><th>部品名</th><th>判定</th></tr>';
+            +   '電圧・周波数測定'
+            +   '</div><div class="popup_table"><table border="1"><tr><th>ピン名</th><th>電圧</th><th>周波数</th></tr>';
 
         for(var key in arr_parts){
             var arr_key = arr_parts[key]
-            if (insp in arr_key) {
-                if(arr_key[insp] == false){
-                    f_t = '×'; font_red = 'class="font_red"';
-                }else{ f_t = '〇'}
-                table_element   =   table_element + '<tr ' + font_red + '><td>' + key + '</td><td>' + f_t + '</td></tr>';
-                
-                font_red = '';
-            }
+            console.log(arr_key["Frequency"]);
+            console.log(arr_key["Voltage"]);
+                table_element   =   table_element + '<tr><td>' + key + '</td><td>' + arr_key["Voltage"] + '</td><td>' + arr_key["Frequency"] + '</td></tr>';
             cnt++;
         }
         table_element = table_element + "</table></div>";
         table_ganerate.insertAdjacentHTML("beforeend",table_th + table_element);
         table_element = '';
-    }
+        
+    var p =    '<image src="'
+    +   'img_pro.png'
+    +   '" class="picture_1">';
+    result_attach_1.insertAdjacentHTML("afterbegin", p);
 }
 
 
 //jsonをcsv文字列に編集する
 function jsonToCsv(json, delimiter) {
-    //console.log("ok");
-    //console.log(json);
     var header = [];
     for(var key in arr_j){
         header[key] = arr_j[key] + '\n';
-        //console.log(arr_j[key]);
     }
-    // console.log(header);
 
     return header;
 }
@@ -608,12 +572,11 @@ function exportCSV(items, delimiter, filename) {
 var filename = 'testCSV';
 
 function output(){
-    console.log("クリックok");
     exportCSV(arr_j,',', filename);
-    console.log("処理完了")
 }
 
 // const timer = 6000;    // ミリ秒で間隔の時間を指定
 // window.addEventListener('load',function(){
 //   setInterval('location.reload()',timer);
 // });
+

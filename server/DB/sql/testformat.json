@@ -1,0 +1,30 @@
+{
+	"status": {
+		"temp": 33,
+		"hr": 50,
+		"atm": 1013.25,
+		"luminance": 20000
+	},
+	"measured_value": {
+        "9": {
+            "Voltage": 5.00,
+            "Frequency": 1000000
+        },
+        "10": {
+            "Voltage": 4.58,
+            "Frequency": 1000000
+        },
+        "11": {
+            "Voltage": 4.97,
+            "Frequency": 1000000
+        },
+        "12": {
+            "Voltage": 4.65,
+            "Frequency": 1000000
+        },
+        "13": {
+            "Voltage": 5.00,
+            "Frequency": 1000000
+        }
+	}
+}
