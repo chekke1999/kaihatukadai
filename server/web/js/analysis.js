@@ -105,7 +105,7 @@ const req = {
 const req3 = {
     "sql" : {
         "db":"piscan",
-        "query" :"SELECT COUNT(*) FROM pi_camera;",
+        "query" :"SELECT * FROM pi_camera;",
         "commit":false
     }
 }
@@ -120,7 +120,7 @@ socket.onopen = function (event) {
         socket.send(JSON.stringify(req3)); 
         
     }
-    socket.send(JSON.stringify(req)); 
+    console.log(req3)
 };
 
 function getId(ele){
@@ -274,7 +274,6 @@ function page_generate(){
 
 window.onload = function (e) {
     const disp_num = document.getElementById('disp_num');
-    const term = document.getElementById('term');
 
     var cnt_page_processing = 0;
     let box = document.getElementsByClassName('container')[0];//読み込みたい位置を指定
@@ -288,6 +287,7 @@ window.onload = function (e) {
 		}
 	};
     xhr.send();
+    func1();
     
     // // const result_attach_2 = document.getElementById('result_picture2');
     // // メッセージの待ち受け
@@ -416,6 +416,32 @@ window.onload = function (e) {
     // }
     // disp_num.insertAdjacentHTML("afterbegin",  display_num + '件中');
 
+
+
+}
+
+function func1() {
+    var term1 = document.getElementById("term1").value;
+    var term2 = document.getElementById("term2").value;
+    var term3 = document.getElementById("term3").value;
+    var term4 = document.getElementById("term4").value;
+    send_data_term(term1,term2,term3,term4);
+}
+
+
+function send_data_term(s_date,e_date,s_time,e_time){
+    console.log(s_date);
+    console.log(e_date);
+    console.log(s_time);
+    console.log(e_time);
+
+    socket.onmessage = function (event) {
+        jdata = JSON.parse(event.data);
+        for(var key in jdata){
+            console.log(jdata[key]) 
+        }
+        console.log("ok")
+    }
 }
 
 function result_generate(arr_parts){
