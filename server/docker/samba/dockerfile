@@ -1,0 +1,12 @@
+FROM alpine
+ENV USERNAME=banana2020
+ENV PASSWD=banana
+
+RUN apk --no-cache add samba
+
+COPY ./smb.conf /etc/samba/
+COPY ./start_samba_system.sh /usr/local/bin
+
+EXPOSE 139 445
+ENTRYPOINT [ "/bin/ash" ]
+CMD [ "/usr/local/bin/start_samba_system.sh" ]

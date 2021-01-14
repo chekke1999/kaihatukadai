@@ -435,6 +435,23 @@ function send_data_term(s_date,e_date,s_time,e_time){
     console.log(s_time);
     console.log(e_time);
 
+    h = "SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera WHERE"
+        +   " scan_id > "
+        +   now_page_cnt
+        +   " AND scan_id <= "
+        +   last_get_page
+        +   ";"
+
+    const req_2 = {
+        "sql" : {
+            "db":"piscan",
+            "query" :h,
+            "commit":false
+        }
+    }
+    
+    socket.send(JSON.stringify(req_2)); 
+
     socket.onmessage = function (event) {
         jdata = JSON.parse(event.data);
         for(var key in jdata){

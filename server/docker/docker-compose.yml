@@ -14,7 +14,7 @@ services:
       options:
         max-file: '1'
         max-size: 400k
-    restart: always
+    restart: unless-stopped
   db:
     container_name: sqlserver2017
     image: mcr.microsoft.com/mssql/server:2017-latest
@@ -36,7 +36,7 @@ services:
       options:
         max-file: '1'
         max-size: 400k
-    restart: always
+    restart: unless-stopped
 
   websocket:
     build: 
@@ -62,4 +62,24 @@ services:
       options:
         max-file: '1'
         max-size: 400k
-    restart: always
+    restart: unless-stopped
+  samba:
+    build: 
+      context: ./samba
+      dockerfile: ./dockerfile
+    container_name: samba
+    environment:
+      TZ: Asia/Tokyo
+    tmpfs:
+      - /tmp
+    network_mode: host
+    stdin_open: true
+    tty: true
+    volumes:
+      - /home/banana2020:/mnt/banana:z
+    logging:
+      driver: json-file
+      options:
+        max-file: '1'
+        max-size: 300k
+    restart: unless-stopped
