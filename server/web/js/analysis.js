@@ -428,6 +428,13 @@ function func1() {
     send_data_term(term1,term2,term3,term4);
 }
 
+function func_reset(){
+    document.getElementById("term1").value = "";
+    document.getElementById("term2").value = "";
+    document.getElementById("term3").value = "";
+    document.getElementById("term4").value = "";
+}
+
 
 function send_data_term(s_date,e_date,s_time,e_time){
     console.log(s_date);
@@ -435,12 +442,7 @@ function send_data_term(s_date,e_date,s_time,e_time){
     console.log(s_time);
     console.log(e_time);
 
-    h = "SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera WHERE"
-        +   " scan_id > "
-        +   now_page_cnt
-        +   " AND scan_id <= "
-        +   last_get_page
-        +   ";"
+    h = "SELECT * FROM pi_camera;";
 
     const req_2 = {
         "sql" : {
@@ -449,8 +451,7 @@ function send_data_term(s_date,e_date,s_time,e_time){
             "commit":false
         }
     }
-    
-    socket.send(JSON.stringify(req_2)); 
+    socket.onopen = () => socket.send(JSON.stringify(req_2)); //バリバリ大事
 
     socket.onmessage = function (event) {
         jdata = JSON.parse(event.data);
