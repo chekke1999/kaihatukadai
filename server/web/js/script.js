@@ -434,7 +434,7 @@ function html_generate(key,jdata,event){
     data.arr = JSON.parse(event.data)[key][3];
 
     data.date = jdata[key][2];
-    
+    console.log(data.arr)
     data.status = JSON.parse(data.arr);
     data.type = data.status.type;
 
@@ -476,7 +476,7 @@ function html_generate(key,jdata,event){
     arr_j[key] = jdata[key];
 
     console.log(jdata[key])
-    console.log(day.week)
+    //console.log(day.week)
     
     let fuga = JSON.parse(jdata[key][3]);
 

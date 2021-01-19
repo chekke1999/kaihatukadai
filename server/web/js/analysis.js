@@ -288,7 +288,9 @@ window.onload = function (e) {
 	};
     xhr.send();
     func1();
-    
+    chart_generate();
+
+
     // // const result_attach_2 = document.getElementById('result_picture2');
     // // メッセージの待ち受け
     // socket.onmessage = function (event) {
@@ -435,12 +437,39 @@ function func_reset(){
     document.getElementById("term4").value = "";
 }
 
+function time_Divide(value){
+    var counter = function(str,seq){
+        return str.split(seq).length - 1;
+    }
+    console.log(counter(value,"/"))
+
+    var result = value.split( '/' );
+
+    if(result[0].length == 4 && result[1].length == 2 && result[2].length == 2 && counter(value,"/") == 2 && (value.split( '/' )|| value.match(/[^0-9]/))){
+        // var result = value.split( '/' );
+        var result = value.replace(/\//g,'-');
+        console.log(result)
+    }else{
+        console.log('error');
+    }
+    
+}
 
 function send_data_term(s_date,e_date,s_time,e_time){
     console.log(s_date);
     console.log(e_date);
     console.log(s_time);
     console.log(e_time);
+
+    let sel_str_Sdate ="";
+    let sel_str_Edate ="";
+    let sel_str_Stime ="";
+    let sel_str_Etime ="";
+
+    (s_date == "")? sel_str_Sdate = "*":sel_str_Sdate=time_Divide(s_date);
+    (e_date == "")? sel_str_Edate = "*":sel_str_Edate=time_Divide(e_date);
+
+// console.log("str_sdata="+sel_str_Sdate)    
 
     h = "SELECT * FROM pi_camera;";
 
@@ -456,10 +485,49 @@ function send_data_term(s_date,e_date,s_time,e_time){
     socket.onmessage = function (event) {
         jdata = JSON.parse(event.data);
         for(var key in jdata){
-            console.log(jdata[key]) 
+            // console.log(jdata[key]) 
         }
         console.log("ok")
     }
+}
+
+function chart_generate(){
+    var mydata = {
+        labels: ["１月", "２月", "３月", "４月", "５月"],
+        datasets: [
+          {
+            label: '数量',
+            hoverBackgroundColor: "rgba(255,99,132,0.3)",
+            data: [65, 59, 80, 81, 56],
+          }
+        ]
+      };
+      
+      //「オプション設定」
+      var options = {
+        animation: {
+            duration: 0
+        },
+        title: {    
+          display: true,
+          text: 'サンプルチャート'
+        }
+      };
+      
+      const canvas = document.getElementById('canvas');
+      console.log(canvas)
+      var chart = new Chart(canvas, {
+      
+        type: 'bar',  //グラフの種類
+        data: mydata,  //表示するデータ
+        options: options  //オプション設定
+      
+      });
+      
+      var dataURL = canvas.toDataURL();
+    //   console.log(dataURL);
+
+    //   '<image src="data:image/png;base64,' + dataURL
 }
 
 function result_generate(arr_parts){

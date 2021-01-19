@@ -1472,3 +1472,8 @@ button {
 .cp_iptxt input[type=text]:focus {
 	border-color: #da3c41;
 }
+
+
+#canvas{
+    display: block;
+}
