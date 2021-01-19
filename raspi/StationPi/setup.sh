@@ -16,6 +16,7 @@ export http_proxy=http://192.168.10.120:8080
 export https_proxy=$http_proxy
 export no_proxy=192.168.11.0/24
 EOF
+source /etc/profile.d/proxy.sh
 
 #pakage install
 apt install isc-dhcp-server dnsmasq -y

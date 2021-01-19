@@ -437,7 +437,7 @@ function func_reset(){
     document.getElementById("term4").value = "";
 }
 
-function time_Divide(value){
+function date_Divide(value){
     var counter = function(str,seq){
         return str.split(seq).length - 1;
     }
@@ -451,6 +451,10 @@ function time_Divide(value){
     }
 }
 
+function time_Divide(value){
+    
+}
+
 function send_data_term(s_date,e_date,s_time,e_time){
     console.log(s_date);
     console.log(e_date);
@@ -462,8 +466,11 @@ function send_data_term(s_date,e_date,s_time,e_time){
     let sel_str_Stime ="";
     let sel_str_Etime ="";
 
-    (s_date == "")? sel_str_Sdate = "*":sel_str_Sdate=time_Divide(s_date);
-    (e_date == "")? sel_str_Edate = "*":sel_str_Edate=time_Divide(e_date);
+    (s_date == "")? sel_str_Sdate = "*":sel_str_Sdate=date_Divide(s_date);
+    (e_date == "")? sel_str_Edate = "*":sel_str_Edate=date_Divide(e_date);
+    (s_time == "")? sel_str_Stime = "*":sel_str_Stime=time_Divide(s_time);
+    (e_time == "")? sel_str_Etime = "*":sel_str_Etime=time_Divide(e_time);
+
 
 // console.log("str_sdata="+sel_str_Sdate)    
 
