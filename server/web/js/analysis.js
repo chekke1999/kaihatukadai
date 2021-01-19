@@ -441,10 +441,7 @@ function time_Divide(value){
     var counter = function(str,seq){
         return str.split(seq).length - 1;
     }
-    console.log(counter(value,"/"))
-
     var result = value.split( '/' );
-
     if(result[0].length == 4 && result[1].length == 2 && result[2].length == 2 && counter(value,"/") == 2 && (value.split( '/' )|| value.match(/[^0-9]/))){
         // var result = value.split( '/' );
         var result = value.replace(/\//g,'-');
@@ -452,7 +449,6 @@ function time_Divide(value){
     }else{
         console.log('error');
     }
-    
 }
 
 function send_data_term(s_date,e_date,s_time,e_time){
