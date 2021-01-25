@@ -156,8 +156,7 @@ class CamPi:
                 send["flag"] = True
             print("End of loop time:",time.time() - start,"[sec]")
             #time.sleep(10)
-class ProbePi:
-    def Main():
+
         
 
 
