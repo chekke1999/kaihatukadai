@@ -34,8 +34,8 @@ subnet 114.51.4.0 netmask 255.255.255.0 {
 EOF
 
 # DHCP Server NIC config
-sed -ie 's/v4="";/v4="eth0";/' /etc/default/isc-dhcp-server
-sed -ie 's/INTERFACESv6;/#INTERFACESv6;/' /etc/default/isc-dhcp-server
+sed -ie 's/v4=""/v4="eth0"/' /etc/default/isc-dhcp-server
+sed -ie 's/INTERFACESv6/#INTERFACESv6/' /etc/default/isc-dhcp-server
 
 # StaticIP setting
 cat << EOF >> /etc/dhcpcd.conf

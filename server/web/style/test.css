@@ -527,16 +527,16 @@ ul{
 }
   
 ul li{
-margin-top:10px;
-color: black;
-border-left: solid 8px #ed6f1e;/*左側の線*/
-background: whitesmoke;/*背景色*/
-margin-bottom: 5px;/*下のバーとの余白*/
-line-height: 1.5;
-border-radius: 0 15px 15px 0;/*右側の角だけ丸く*/
-padding: 0.5em;
-list-style-type: none!important;
-widows: 50%;
+    margin-top:10px;
+    color: black;
+    border-left: solid 8px #ed6f1e;/*左側の線*/
+    background: whitesmoke;/*背景色*/
+    margin-bottom: 5px;/*下のバーとの余白*/
+    line-height: 1.5;
+    border-radius: 0 15px 15px 0;/*右側の角だけ丸く*/
+    padding: 0.5em;
+    list-style-type: none!important;
+    widows: 50%;
 }
 
 .search_count{
@@ -1476,4 +1476,93 @@ button {
 
 #canvas{
     display: block;
+}
+
+.canvas-container{
+    background-color:blue;
+    height:auto;
+    width:100%;
+}
+
+.chart_list{
+    position: relative;
+    font-size: calc(8px + .6vw);
+    width: 100%;
+    height:100%;
+    float:right;
+}
+
+.canvas-box-photo{
+    background-color:red;
+    height:calc(50px - 1vw);
+    width:calc(100% / 3);
+    border-radius: 20px 20px 20px 20px;
+    position: relative;
+    float: left;
+}
+.canvas-box-probe{
+    background-color:red;
+    height:calc(50px - 1vw);
+    width:50%;
+    border-radius: 20px 20px 20px 20px;
+    position: relative;
+    float: left;
+}
+
+.canvas-box-photo:nth-of-type(2){background-color: #f8407e;}
+.canvas-box-photo:nth-of-type(3){background-color: #f86d3f;}
+.canvas-box-photo:nth-of-type(4){background-color: #9b2475;}
+.canvas-box-probe:nth-of-type(2){background-color: #99cc00;}
+.canvas-box-probe:nth-of-type(3){background-color: #00b0f0;}
+
+.canvas_text{
+    list-style: none;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1vw;
+    color: white;
+}
+
+.canvas-container-photo{
+    background-color:#dedede;
+    height:auto;
+    width: 58%;
+    float: left;
+    border-radius: 10px 10px 10px 10px;
+    text-align: center;
+    border: dashed 2px #afbec3;
+}
+
+.canvas-container-probe{
+    background-color:#dedede;
+    height:auto;
+    width: 38%;
+    float: left;
+    border-radius: 10px 10px 10px 10px;
+    text-align: center;
+    border: dashed 2px #afbec3;
+}
+
+.plot_area{
+    height: auto;
+    width: 100%;
+    background-color: white;
+    margin-top: 100px;
+    position: relative;
+}
+
+#plot_resultdata{
+    position: relative;
+    width:100%;
+    height: 500px;
+    background-color: transparent;
+}
+
+#result_title_plot{
+    font-size: 25px;
+    padding-top:5px;
+    margin:0 0 0 20px;
 }

@@ -112,7 +112,6 @@ const req3 = {
 
 
 
-
 // 接続が開いたときのイベント
 socket.onopen = function (event) {
 
@@ -287,138 +286,20 @@ window.onload = function (e) {
 		}
 	};
     xhr.send();
-    func1();
-    chart_generate();
+    false_cnt();
+    Pareto_generate();
 
 
     // // const result_attach_2 = document.getElementById('result_picture2');
     // // メッセージの待ち受け
-    // socket.onmessage = function (event) {
-    //     var h;
-
-    //     if(data_cnt == 0){
-    //         jdata_cnt = JSON.parse(event.data);
-    //         data_cnt_max =  jdata_cnt[1];
-    //         //console.log(data_cnt_max);
-    //         data_cnt = 1;
-    //         // console.log('全データ数:' + data_cnt_max);
-    //     }
-
-    //     (data_cnt_max >= 50)?display_num = 50:display_num = data_cnt_max;
+    socket.onmessage = function (event) {
+        console.log("onmessage_ok")
+        jdata = JSON.parse(event.data);
+        for(var key in jdata){
+            arr_j[key] = jdata[key];
+        }
         
-
-    //     (display_num > data_cnt_max)?display_num = data_cnt_max:display_num = display_num;
-
-
-    //     if(cnt_page_processing==0){
-    //         var page_max_text;
-    //         cnt_page_processing = 1;
-    //         page_cnt = parseInt(jdata_cnt[1] / display_num) + 1 ;
-    //         //page_cnt = 6;
-    //         page_generate(page_cnt);
-    //     }else{
-    //         jdata = JSON.parse(event.data);
-
-    //         for(var key in jdata){
-    //             if(key == "img"){
-
-    //                 var cnt_arr = 0;
-
-    //                 const result_attach_1 = document.getElementById('result_picture1');
-    //                 const result_attach_2 = document.getElementById('result_picture2');
-    //                 const detail_title = document.getElementById('detail_title');
-    //                 const env_text = document.getElementById('env_text');
-
-    //                 var p =    '<image src="data:image/png;base64,'
-    //                         +   jdata["img"][0]
-    //                         +   '" class="picture_1">';
-
-    //                 var p2 =    '<image src="data:image/png;base64,'
-    //                         +   jdata["img"][1]
-    //                         +   '" class="picture_2">';
-
-    //                     // console.log(id_value);
-
-    //                     cnt_arr = Number(id_value) - Number(now_page_cnt);
-    //                     // console.log(cnt_arr);
-    //                     // console.log(arr_j[cnt_arr][3]);
-
-    //                     data.arr = arr_j[cnt_arr][3];
-    //                     data.date = arr_j[cnt_arr][2];
-    //                     data.status = JSON.parse(data.arr);
-    //                     data.type = data.status.type;
-    //                     data.number = cnt_arr;
-    //                     let O_N = 0;
-            
-    //                     day = data.date.split('T');
-    //                     day.date = day[0];
-    //                     day.hours = day[1];
-            
-    //                     day.detail = day.date.split("-");
-    //                     day.time = day.hours.split(":");
-    //                     day.time[2] = Math.floor(day.time[2]);
-
-
-
-    //                     // arr_j[id_value][3]
-    //                     let arr_table = arr_j[cnt_arr][3];
-    //                     arr_table = JSON.parse(arr_table)
-    //                     let id = 'P' + id_value;
-
-    //                 h =  day.detail[0] 
-    //                     + '/' 
-    //                     + ( '00' + day.detail[1] ).slice( -2 ) + '/' + ( '00' + day.detail[2] ).slice( -2 )
-    //                     + "  " 
-    //                     + ( '00' + day.time[0] ).slice( -2 )  + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
-    //                     +   '　基板ID.'
-    //                     +   id;
-
-    //                 // var h2  =   '気温:'
-    //                 //         +   data.arr[1]
-
-    //                 var env =   '気温:'
-    //                         +   env_temp
-    //                         +   '℃ / 湿度:'
-    //                         +   env_rh
-    //                         +   '% / 気圧:'
-    //                         +   env_atm
-    //                         +   'hPa / 輝度:'
-    //                         +   env_lux
-    //                         +   'lx / 基板タイプ:'
-    //                         +   data.type;
-
-    //                 detail_title.insertAdjacentHTML("afterbegin", h);
-    //                 env_text.insertAdjacentHTML("afterbegin",env)
-    //                 result_attach_1.insertAdjacentHTML("afterbegin", p);
-    //                 result_attach_2.insertAdjacentHTML("afterbegin", p2);
-
-    //                 hoge = JSON.parse(arr_j[cnt_arr][3]);
-    //                 //console.log(hoge);
-    //                 result_generate(hoge.parts);
-
-    //             }else{
-    //                 html_generate(key,jdata,event);
-                    
-    //                 //console.log(jdata[key])
-    //             }
-
-    //         }
-
-    //     if(cnt == 0){
-            
-    //         h = '<div id="add_details">'
-    //         + arr_details.join("") ;
-    //         +'</div>';
-    //         inpe_attach.insertAdjacentHTML("afterbegin", h);
-    //         cnt = 1;
-
-    //     }
-    // }
-        
-    // }
-    // disp_num.insertAdjacentHTML("afterbegin",  display_num + '件中');
-
-
+    }
 
 }
 
@@ -437,44 +318,53 @@ function func_reset(){
     document.getElementById("term4").value = "";
 }
 
+function plot(){
+    console.log("ok");
+}
+
 function date_Divide(value){
     var counter = function(str,seq){
         return str.split(seq).length - 1;
     }
     var result = value.split( '/' );
     if(result[0].length == 4 && result[1].length == 2 && result[2].length == 2 && counter(value,"/") == 2 && (value.split( '/' )|| value.match(/[^0-9]/))){
-        // var result = value.split( '/' );
         var result = value.replace(/\//g,'-');
-        console.log(result)
     }else{
         console.log('error');
     }
+    return result;
 }
 
 function time_Divide(value){
-    
+    var counter = function(str,seq){
+
+        return str.split(seq).length - 1;
+    }
+
+    var result = value.split( ':' );
+    if(result[0].length == 2 && result[1].length == 2 && counter(value,":") == 1 && (value.split( ':' )|| value.match(/[^0-9]/))){
+        var result = value.replace(/\//g,'-');
+    }else{
+        console.log('error');
+    }
+    return result;
 }
 
-function send_data_term(s_date,e_date,s_time,e_time){
-    console.log(s_date);
-    console.log(e_date);
-    console.log(s_time);
-    console.log(e_time);
 
-    let sel_str_Sdate ="";
-    let sel_str_Edate ="";
-    let sel_str_Stime ="";
-    let sel_str_Etime ="";
+function send_data_term(s_date,e_date,s_time,e_time){
+    const result_table1 = document.getElementById("result_timetable1");
+    const result_table2 = document.getElementById("result_timetable2");
 
     (s_date == "")? sel_str_Sdate = "*":sel_str_Sdate=date_Divide(s_date);
     (e_date == "")? sel_str_Edate = "*":sel_str_Edate=date_Divide(e_date);
     (s_time == "")? sel_str_Stime = "*":sel_str_Stime=time_Divide(s_time);
     (e_time == "")? sel_str_Etime = "*":sel_str_Etime=time_Divide(e_time);
 
+    result_table1.innerHTML = "期間："+ sel_str_Sdate + "~" + sel_str_Edate;
+    result_table2.innerHTML = "時間："+ sel_str_Stime + "~" + sel_str_Etime;
 
-// console.log("str_sdata="+sel_str_Sdate)    
+    h = "SELECT * FROM pi_camera while scan_id <= 10;";
 
-    h = "SELECT * FROM pi_camera;";
 
     const req_2 = {
         "sql" : {
@@ -484,54 +374,74 @@ function send_data_term(s_date,e_date,s_time,e_time){
         }
     }
     socket.onopen = () => socket.send(JSON.stringify(req_2)); //バリバリ大事
-
+    var startMsec = new Date();
     socket.onmessage = function (event) {
         jdata = JSON.parse(event.data);
         for(var key in jdata){
-            // console.log(jdata[key]) 
+            arr_j[key] = jdata[key];
         }
-        console.log("ok")
     }
 }
+function false_cnt(){
+    let arr_insp = [0];
+    let cnt = 0;
+    let mounted_parts_cnt = 0;
+    let misalignment_cnt = 0;
+    // let angle_cnt = 0;
+    let foreign_matter_cnt = 0;
+    let scratch_cnt = 0;
+    let soiled_cnt = 0;
+    let other = 0;
 
-function chart_generate(){
-    var mydata = {
-        labels: ["１月", "２月", "３月", "４月", "５月"],
-        datasets: [
-          {
-            label: '数量',
-            hoverBackgroundColor: "rgba(255,99,132,0.3)",
-            data: [65, 59, 80, 81, 56],
-          }
-        ]
-      };
-      
-      //「オプション設定」
-      var options = {
-        animation: {
-            duration: 0
-        },
-        title: {    
-          display: true,
-          text: 'サンプルチャート'
+
+    for(key in arr_j){
+
+        // console.log(arr_j[key]);
+        arr_key = JSON.parse(arr_j[key][5]).parts;
+
+        for(i=0;i<Math.max(Object.keys(arr_key).length);i++){
+            const inspection = {
+                name: Object.keys(arr_key)[i]
+            };
+            insp = Object.keys(arr_key)[i];
+            for(key in arr_key[insp]){
+                // console.log("---"+insp+"---")
+                if(arr_key[insp][key] == false){
+                    // console.log(arr_key[insp][key])
+                    if(key == "mounted_parts"){mounted_parts_cnt++;arr_insp[0]++;}
+                    else if(key == "misalignment"){misalignment_cnt++;arr_insp[0]++;}
+                    else if(key == "foreign_matter"){foreign_matter_cnt++;arr_insp[0]++;}
+                    else if(key == "scratch"){scratch_cnt++;arr_insp[0]++;}
+                    else if(key == "soiled"){soiled_cnt++;arr_insp[0]++;}
+                    else{other++;arr_insp[0]++;}
+
+                }
+            }
         }
-      };
-      
-      const canvas = document.getElementById('canvas');
-      console.log(canvas)
-      var chart = new Chart(canvas, {
-      
-        type: 'bar',  //グラフの種類
-        data: mydata,  //表示するデータ
-        options: options  //オプション設定
-      
-      });
-      
-      var dataURL = canvas.toDataURL();
-    //   console.log(dataURL);
+    }
+    arr_insp[1] = mounted_parts_cnt;
+    arr_insp[2] = misalignment_cnt;
+    arr_insp[3] = foreign_matter_cnt;
+    arr_insp[4] = scratch_cnt;
+    arr_insp[5] = soiled_cnt;
+    arr_insp[6] = other;
 
-    //   '<image src="data:image/png;base64,' + dataURL
+    return arr_insp
 }
+
+function Cumulative_ratio(arr_parts){
+    let ratio = [0];
+    let before = 0;
+    for(i = 0;i<6;i++){
+        ratio[i] = arr_parts[i+1] / arr_parts[0] + before;
+        before = ratio[i];
+    }
+
+    return ratio
+}
+
+
+
 
 function result_generate(arr_parts){
     const table_ganerate = document.getElementById('popup_table_field');
@@ -573,3 +483,70 @@ function result_generate(arr_parts){
     }
 }
 
+function Pareto_generate(){
+    const plot_resultdata = document.getElementById('plot_resultdata');
+    const result_title_plot = document.getElementById("result_title_plot");
+    let arr_insp = false_cnt();
+    var counter = function(str,seq){
+        return str.split(seq).length - 1;
+    }
+    const Pareto = document.getElementById('Pareto');//パレート
+
+    var salesData = [0];
+
+    for(let i = 0;i<6;i++){
+        salesData[i] = arr_insp[i+1];
+    }
+
+    var labels = ["部品の位置", "値・型", "異物","傷", "汚れ","その他"];
+
+    var percentage = Cumulative_ratio(arr_insp);
+    var chart = new Chart(Pareto,{
+    type: 'bar',
+    data: {
+        labels: labels,
+        datasets: [{
+            label: '比率の累計',
+            data: percentage,
+            backgroundColor: 'rgba(99, 132, 255, 0)',
+            borderColor: 'rgba(99, 132, 255, 1)',
+            pointBackgroundColor:'rgba(99, 132, 255, 1)',
+            borderWidth: 2,
+            type: 'line',
+            yAxisID: 'y-axis-percentage'
+        },{
+        label: '不良品数',
+        data: salesData,
+        backgroundColor: 'rgba(255, 99, 132, 1)',
+        borderColor: 'rgba(255, 99, 132, 1)',
+        borderWidth: 1,
+        yAxisID: 'y-axis-sales'
+        }]
+    },
+    options: {
+        scales: {
+        yAxes: [{
+            id: 'y-axis-sales',
+            type: 'linear',
+            display: true,
+            position: 'left',
+            ticks: {
+            beginAtZero: true
+            }
+        }, {
+            id: 'y-axis-percentage',
+            type: 'linear',
+            display: true,
+            position: 'right',
+            ticks: {
+            beginAtZero: true
+            }
+        }]
+        }
+    }
+    });
+    
+    let plot_h = "<div class="+"result_title_plot"+">結果</div>";
+    result_title_plot.remove();
+    plot_resultdata.insertAdjacentHTML("afterbegin",plot_h);
+}

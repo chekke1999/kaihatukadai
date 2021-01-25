@@ -125,6 +125,21 @@ socket.onopen = function (event) {
 
 function getId(ele){
 
+
+
+
+
+
+
+
+
+
+
+
+    
+
+    
+
     //console.log(ele.id)
     let box = document.getElementById("box");//読み込みたい位置を指定
 
@@ -317,13 +332,7 @@ window.onload = function (e) {
                     const detail_title = document.getElementById('detail_title');
                     const env_text = document.getElementById('env_text');
 
-                    var p =    '<image src="data:image/png;base64,'
-                            +   jdata["img"][0]
-                            +   '" class="picture_1">';
 
-                    var p2 =    '<image src="data:image/png;base64,'
-                            +   jdata["img"][1]
-                            +   '" class="picture_2">';
 
                         // console.log(id_value);
 
@@ -377,12 +386,20 @@ window.onload = function (e) {
 
                     detail_title.insertAdjacentHTML("afterbegin", h);
                     env_text.insertAdjacentHTML("afterbegin",env)
-                    result_attach_1.insertAdjacentHTML("afterbegin", p);
-                    result_attach_2.insertAdjacentHTML("afterbegin", p2);
+
 
                     hoge = JSON.parse(arr_j[cnt_arr][3]);
                     //console.log(hoge);
                     result_generate(hoge.parts);
+                    var p =    '<image src="data:image/png;base64,'
+                    +   jdata["img"][0]
+                    +   '" class="picture_1">';
+
+            var p2 =    '<image src="data:image/png;base64,'
+                    +   jdata["img"][1]
+                    +   '" class="picture_2">';
+                    result_attach_1.insertAdjacentHTML("afterbegin", p);
+                    result_attach_2.insertAdjacentHTML("afterbegin", p2);
 
                 }else{
                     html_generate(key,jdata,event);
@@ -529,7 +546,7 @@ function result_generate(arr_parts){
 
     for(var key in arr_parts){
         var arr_key = arr_parts[key];
-    }
+    }            console.log(arr_key)
     for(i=0;i<Math.max(Object.keys(arr_key).length);i++){
         const inspection = {
             name: Object.keys(arr_key)[i]

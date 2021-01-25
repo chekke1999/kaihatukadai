@@ -37,13 +37,32 @@
                     <div class="result_table">
 
 
-                            <div class="result_elementbox" style="height:100%;background-color: yellow;">
-                                <div id="inpe_window"></div>
-                                <!-- <div id="canvas-container" style="height: 200px;width: 200px;background-color: red;"> -->
-                                    <canvas id="canvas" style="height:100;background-color:white;"><canvas>
-                                <!-- </div> -->
-                            </div>
 
+
+
+
+                                <div class="canvas-container-photo">
+                                    <div class="chart_list list_photo">画像検査</div>
+                                    <div class="canvas-box-photo" onclick="Pareto_generate()"><li class="canvas_text">パレート図</li></div>
+                                    <div class="canvas-box-photo" onclick="plot()"><li class="canvas_text">散布図</li></div>
+                                    <div class="canvas-box-photo" onclick="plot()"><li class="canvas_text">異常値検知</li></div>
+                                </div>
+                                <div class="canvas-container-probe">
+                                    <div class="chart_list">プローブ検査</div>
+                                    <div class="canvas-box-probe" onclick="plot()"><li class="canvas_text">フーリエ変換</li></div>
+                                    <div class="canvas-box-probe" onclick="plot()"><li class="canvas_text">異常値検知</li></div>
+                                </div>
+
+                                <div class="plot_area">
+                                    <canvas id="Pareto"><canvas>
+                                    <!-- <canvas id=sty"Scatter" le="height:100;background-color:white;"><canvas>
+                                    <canvas id="Outliers_photo" style="height:100;background-color:white;"><canvas>
+                                    <canvas id="Fourier" style="height:100;background-color:white;"><canvas>
+                                    <canvas id="Outliers_probe" style="height:100;background-color:white;"><canvas> -->
+                                </div>
+                                <div id="plot_resultdata">
+                                    <div id="result_title_plot">123</div>
+                                </div>
                         <div id="nav-links" class="nav-links"></div>
                     </div>
 
@@ -64,9 +83,10 @@
                             <input type="text" id="term3" placeholder="＊＊:＊＊" style="width:100%;">
                             <input type="text" id="term4" placeholder="＊＊:＊＊" style="width:100%;">
                         </form><br>
-                        <input type="button" onclick="func1()" value="変更" style="width:110%;">
+                        <input type="button" onclick="func1()" value="設定" style="width:110%;">
                         <input type="button" onclick="func_reset()" value="リセット" style="width:110%;">
-
+                        <div id="result_timetable1"></div>
+                        <div id="result_timetable2"></div>
                     </div>
 
                       <img id="neko" src="test.png" />
