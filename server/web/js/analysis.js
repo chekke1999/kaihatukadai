@@ -119,7 +119,7 @@ socket.onopen = function (event) {
         socket.send(JSON.stringify(req3)); 
         
     }
-    console.log(req3)
+    // console.log(req3)
 };
 
 function getId(ele){
@@ -293,7 +293,7 @@ window.onload = function (e) {
     // // const result_attach_2 = document.getElementById('result_picture2');
     // // メッセージの待ち受け
     socket.onmessage = function (event) {
-        console.log("onmessage_ok")
+        // console.log("onmessage_ok")
         jdata = JSON.parse(event.data);
         for(var key in jdata){
             arr_j[key] = jdata[key];
@@ -383,14 +383,27 @@ function send_data_term(s_date,e_date,s_time,e_time){
     }
 }
 function false_cnt(){
-    let arr_insp = [0];
-    let cnt = 0;
-    let mounted_parts_cnt = 0;
-    let misalignment_cnt = 0;
+    // let arr_insp = new Object();
+    // arr_insp.value = 0;
+    // arr_insp.sum = 0;
+    var arr_insp = {
+        sum:0,
+        value:{
+            mounted_parts:0,
+            misalignment:0,
+            angle:0,
+            foreign_matter:0,
+            scratch:0,
+            soiled:0
+        }
+    }
+    // let cnt = 0;
+    // let mounted_parts_cnt = 0;
+    // let misalignment_cnt = 0;
     // let angle_cnt = 0;
-    let foreign_matter_cnt = 0;
-    let scratch_cnt = 0;
-    let soiled_cnt = 0;
+    // let foreign_matter_cnt = 0;
+    // let scratch_cnt = 0;
+    // let soiled_cnt = 0;
     let other = 0;
 
 
@@ -408,23 +421,23 @@ function false_cnt(){
                 // console.log("---"+insp+"---")
                 if(arr_key[insp][key] == false){
                     // console.log(arr_key[insp][key])
-                    if(key == "mounted_parts"){mounted_parts_cnt++;arr_insp[0]++;}
-                    else if(key == "misalignment"){misalignment_cnt++;arr_insp[0]++;}
-                    else if(key == "foreign_matter"){foreign_matter_cnt++;arr_insp[0]++;}
-                    else if(key == "scratch"){scratch_cnt++;arr_insp[0]++;}
-                    else if(key == "soiled"){soiled_cnt++;arr_insp[0]++;}
-                    else{other++;arr_insp[0]++;}
+                    if(key == "mounted_parts"){arr_insp.value.mounted_parts++;arr_insp.sum++;}
+                    else if(key == "misalignment"){arr_insp.value.misalignment++;arr_insp.sum++;}
+                    else if(key == "angle"){arr_insp.value.angle++;arr_insp.sum++;}
+                    else if(key == "foreign_matter"){arr_insp.value.foreign_matter++;arr_insp.sum++;}
+                    else if(key == "scratch"){arr_insp.value.scratch++;arr_insp.sum++;}
+                    else if(key == "soiled"){arr_insp.value.soiled++;arr_insp.sum++;}
+                    else{other++;arr_insp.sum++;}
 
                 }
             }
         }
     }
-    arr_insp[1] = mounted_parts_cnt;
-    arr_insp[2] = misalignment_cnt;
-    arr_insp[3] = foreign_matter_cnt;
-    arr_insp[4] = scratch_cnt;
-    arr_insp[5] = soiled_cnt;
-    arr_insp[6] = other;
+    // arr_insp[1] = mounted_parts_cnt;
+    // arr_insp.value[2] = foreign_matter_cnt;
+    // arr_insp.value[3] = scratch_cnt;
+    // arr_insp.value[4] = soiled_cnt;
+    // arr_insp.value[5] = other;
 
     return arr_insp
 }
@@ -432,11 +445,11 @@ function false_cnt(){
 function Cumulative_ratio(arr_parts){
     let ratio = [0];
     let before = 0;
-    for(i = 0;i<6;i++){
-        ratio[i] = arr_parts[i+1] / arr_parts[0] + before;
+    for(i = 0;i<5;i++){
+        ratio[i] = arr_parts[i+1] / arr_parts[0]*100 + before;
         before = ratio[i];
     }
-
+    // console.log(arr_parts)
     return ratio
 }
 
@@ -487,20 +500,34 @@ function Pareto_generate(){
     const plot_resultdata = document.getElementById('plot_resultdata');
     const result_title_plot = document.getElementById("result_title_plot");
     let arr_insp = false_cnt();
+
     var counter = function(str,seq){
         return str.split(seq).length - 1;
     }
     const Pareto = document.getElementById('Pareto');//パレート
 
     var salesData = [0];
+    
 
-    for(let i = 0;i<6;i++){
-        salesData[i] = arr_insp[i+1];
+
+    var arr = Object.keys(arr_insp.value).map(function (key) {return arr_insp.value[key]});
+    
+    Object.keys(arr_insp.value).map(key => arr_insp.value[key])
+    
+    var arr = Object.values(arr_insp.value);
+    arr.sort(function(a,b){
+        if( a > b ) return -1;
+        if( a < b ) return 1;
+        return 0;
+    });
+
+    for(i = 0;i < 5;i++){
+        salesData[i] = arr[i];
     }
 
-    var labels = ["部品の位置", "値・型", "異物","傷", "汚れ","その他"];
+    var labels = ["部品の位置", "値・型", "角度", "異物","傷", "汚れ"];
 
-    var percentage = Cumulative_ratio(arr_insp);
+    var percentage = Cumulative_ratio(arr);
     var chart = new Chart(Pareto,{
     type: 'bar',
     data: {
@@ -531,7 +558,12 @@ function Pareto_generate(){
             display: true,
             position: 'left',
             ticks: {
-            beginAtZero: true
+                beginAtZero: true,
+
+            },
+            scalelabel: {                 //追加部分
+                display: true,              //追加部分
+                labelString: '縦軸ラベル1',  //追加部分
             }
         }, {
             id: 'y-axis-percentage',
@@ -546,7 +578,124 @@ function Pareto_generate(){
     }
     });
     
-    let plot_h = "<div class="+"result_title_plot"+">結果</div>";
-    result_title_plot.remove();
-    plot_resultdata.insertAdjacentHTML("afterbegin",plot_h);
+    // let plot_h = "<div class="+"result_title_plot"+">結果</div>";
+    // result_title_plot.remove();
+    // plot_resultdata.insertAdjacentHTML("afterbegin",plot_h);
+}
+
+// const output_csv = document.getElementById('color_list');
+
+function getCSV() {
+    console.log("getCSV")
+    //Form要素を取得する
+    var form = document.forms.myform;
+    
+    form.myfile.addEventListener( 'change', function(e) {
+ 
+        //読み込んだファイル情報を取得
+        var result = e.target.files;
+     
+        splitCSV(result.responseText)
+    })
+}
+
+
+function Fourier_generate(){
+    console.log("Fourier_generate")
+    var file = document.getElementById('file');
+    var result = document.getElementById('result');
+    var h="";
+
+    if(window.File && window.FileReader && window.FileList && window.Blob) {
+        function loadLocalCsv(e) {
+            // ファイル情報を取得
+            var fileData = e.target.files[0];
+            console.log(fileData); // 取得した内容の確認用
+     
+            // CSVファイル以外は処理を止める
+            if(!fileData.name.match('.csv$')) {
+                alert('CSVファイルを選択してください');
+                return;
+            }
+     
+            // FileReaderオブジェクトを使ってファイル読み込み
+            var reader = new FileReader();
+
+            // ファイル読み込みに成功したときの処理
+            reader.onload = function() {
+                var cols = reader.result.split('\n');
+                var data = [];
+                for (var i = 0; i < cols.length; i++) {
+                    data[i] = cols[i].split(',');
+                }
+                // var insert = createTable(data);
+                // result.appendChild(insert);
+                for(i = 0;i < data.length-1;i++){
+                    h = h + '"'+ data[i] + '",'
+                    
+                }
+                data = h
+
+                const Pareto = document.getElementById('Pareto');//パレート
+                var data1 = {
+                    labels: ["1月", "2月", "3月", "4月", "5月",5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],
+                    datasets: [{
+                        label: 'プリンター販売台数',
+                        data: data,
+                        borderColor: 'rgba(255, 100, 100, 1)'
+                    }]
+                };
+                console.log(h)
+                var options = {};
+                
+                var ex_chart = new Chart(Pareto, {
+                    type: 'line',
+                    data: data1,
+                    options:  {
+                        scales: {
+                          yAxes: [
+                            {
+                              ticks: {
+                                beginAtZero: true,
+                                min: 0,
+                                max: 10
+                              }
+                            }
+                          ]
+                        }
+                      }
+                    });
+
+
+
+
+            }
+            // ファイル読み込みを実行
+            reader.readAsText(fileData, 'Shift_JIS');
+
+        }
+        file.addEventListener('change', loadLocalCsv, false);
+                 console.log("ok")
+    } else {
+        file.style.display = 'none';
+        result.innerHTML = 'File APIに対応したブラウザでご確認ください';
+    }
+
+    const Pareto = document.getElementById('Pareto');//パレート
+    var data1 = {
+        labels: ["1月", "2月", "3月", "4月", "5月"],
+        datasets: [{
+            label: 'プリンター販売台数',
+            data: [880, 740, 900, 520, 930],
+            borderColor: 'rgba(255, 100, 100, 1)'
+        }]
+    };
+    
+    var options = {};
+    
+    var ex_chart = new Chart(Pareto, {
+        type: 'line',
+        data: data1,
+        options: options
+    });
 }

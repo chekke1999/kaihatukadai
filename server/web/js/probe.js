@@ -382,7 +382,7 @@ window.onload = function (e) {
 
                     hoge = JSON.parse(arr_j[cnt_arr][3]);
                     // console.log(hoge.measured_value);
-                    result_generate(hoge.measured_value);
+                    result_generate(hoge);
 
                 }else{
                     html_generate(key,jdata,event);
@@ -405,13 +405,6 @@ window.onload = function (e) {
 
 }
 function html_generate(key,jdata,event){
-
-    //key = Number(now_page_cnt) + Number(key);
-
-    // const search_date_o = document.getElementById('S_date_year_old');
-    // const search_date_n = document.getElementById('S_date_year_new');
-    // const search_time_o = document.getElementById('S_date_start_H');
-    // const search_time_n = document.getElementById('S_date_now_H');
     const cnt_result = document.getElementById('cnt_result');
     const cnt_good = document.getElementById('cnt_good');
     const cnt_bad = document.getElementById('cnt_bad');
@@ -426,11 +419,6 @@ function html_generate(key,jdata,event){
 
     var G_B_text;
 
-    // search_date_o.value = "*";
-    // search_date_n.value = today.getFullYear() + "/" + (today.getMonth()+1) + "/" + today.getDate();
-    // search_time_o.value = "00:00";
-    // search_time_n.value = today.getHours() + ":" + today.getMinutes();
-    //console.log(key);
     
     data.arr = JSON.parse(event.data)[key][3];
 
@@ -508,10 +496,12 @@ function result_generate(arr_parts){
             +   '電圧・周波数測定'
             +   '</div><div class="popup_table"><table border="1"><tr><th>ピン名</th><th>電圧</th><th>周波数</th></tr>';
 
+        console.log(arr_parts)  
+
         for(var key in arr_parts){
             var arr_key = arr_parts[key]
-            console.log(arr_key["Frequency"]);
-            console.log(arr_key["Voltage"]);
+            console.log(arr_key[key]);
+            console.log(arr_key);
                 table_element   =   table_element + '<tr><td>' + key + '</td><td>' + arr_key["Voltage"] + '</td><td>' + arr_key["Frequency"] + '</td></tr>';
             cnt++;
         }

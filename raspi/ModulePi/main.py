@@ -8,11 +8,10 @@ from multiprocessing import Pipe, Process, Manager
 import netifaces as ni
 import scapy.all as scapy
 from PIL import Image
+from pprint import pprint
 from jsongen import genjson
 from impro import Mcc
-
-
-
+from probe import main as Probe
 
 def _TcpSend(target_ip="127.0.0.1",target_port=8080):
     buffer_size = 4096
@@ -40,11 +39,33 @@ async def _Send(url,jlist):
             await websocket.send(sendj)
         else:
             print("Send complete successfully:",time.time() - start,"[sec]")
-            print ("return:",recv_data)
-        #return recv_data
-def PlcValue():
-    time.sleep(10)
-    return True
+            return recv_data
+class ChildWebs:
+    def __init__(self):
+        manager = Manager()
+        self.data = manager.dict()
+        self.data["flag"] = False 
+        self.data["data"] = None
+        self.cpro = Process(target=self._sendpro)
+        self.cpro.start()
+        print(self.data)
+    def OneBeforeSendWait(self,data):
+        while self.data["flag"]:
+            pass
+        if self.data["flag"] == False:
+            self.data["data"] = data
+            self.data["flag"] = True
+    def _sendpro(self):
+        loop = asyncio.get_event_loop()
+        while True:
+            if self.data["flag"]:
+                print("return:",loop.run_until_complete(_Send("ws://192.168.11.199:8080",self.data["data"])))
+                self.data["flag"] = False
+            else:
+                pass
+    @staticmethod
+    def AllKill(p):
+        p.kill()
 
 class NetInfo:
     PLC_MAC = ["58:52:8a"]
@@ -64,7 +85,7 @@ class NetInfo:
         self.mymac = ':'.join(re.split('(..)', format(uuid.getnode(), 'x'))[1::2])
 
     @staticmethod
-    def Arp(ip):
+    def arp(ip):
         #cls.ip = ip
         mac_list = {}
         print(ip)
@@ -82,37 +103,13 @@ class NetInfo:
         return mac_list
 
 class CamPi:
-    @staticmethod
-    def _sendpro(send_data):
-        loop = asyncio.get_event_loop()
-        while True:
-            if send_data["flag"]:
-                loop.run_until_complete(_Send("ws://192.168.11.199:8080",send_data["data"]))
-                send_data["flag"] = False
-            else:
-                pass
-    @staticmethod
-    def AllKill(p):
-        p.kill()
-    @classmethod
-    def sendprocess(cls):
-        manager = Manager()
-        d = manager.dict()
-        d["flag"] = False 
-        d["shoot"] = False 
-        d["data"] = None
-        camera_p = Process(target=cls._sendpro, args=[d])
-        camera_p.start()
-        print(d,camera_p)
-        return d,camera_p
     @classmethod
     def _shoot(cls):
         start = time.time()
-        png = io.BytesIO()
         print("Please wait until the shooting is completed...",end="")
         img_data = full_img()
         print("\rshooting complete successfully:",time.time() - start,"[sec]")
-        return img_data
+        return img_data 
     @staticmethod
     def _gendata(img_data):
         start = time.time()
@@ -140,30 +137,63 @@ class CamPi:
             }
         }
         return send_d
-        
+
     @classmethod
-    def Main(cls):
+    def run(cls):
         #プロセスの分離とプロセス間通信用マネージャ
-        send,send_p = cls.sendprocess()
-        atexit.register(cls.AllKill,p=send_p)
+        subp = ChildWebs()
+        atexit.register(subp.AllKill,p=subp.cpro)
         while(True):
             start = time.time()
-            send_d = cls._gendata(cls._shoot())
-            while send["flag"]:
-                pass
-            if send["flag"] == False:
-                send["data"] = send_d
-                send["flag"] = True
+            subp.OneBeforeSendWait(cls._gendata(cls._shoot()))
             print("End of loop time:",time.time() - start,"[sec]")
             #time.sleep(10)
-
-        
-
+class ProbePi:
+    @staticmethod
+    def _gendata(probe_data):
+        jdict = {
+            "status":{"temp":33,"hr":50,"atm":1013.25,"luminance":20000},
+            "measured_value":probe_data["denkyoku"],
+        }
+        insert_str = f"""\
+INSERT INTO pi_probe(
+    plc_mac,
+    scan_data
+) VALUES( 
+    '58:52:8a:d6:69:a1',
+    '{json.dumps(jdict)}'
+);
+"""
+        send_d = {
+            "sql" : {
+                "db":"piscan",
+                "query":insert_str,
+                "commit":True
+            }
+        }
+        return send_d
+    @classmethod
+    def run(cls):
+        subp = ChildWebs()
+        atexit.register(subp.AllKill,p=subp.cpro)
+        while True:
+            time.sleep(10)
+            start = time.time()
+            print("Scan probe...")
+            send_d = cls._gendata(Probe())
+            print("Scan complete successfully:",time.time() - start,"[sec]")
+            subp.OneBeforeSendWait(send_d)
+            print("End of loop time:",time.time() - start,"[sec]")
 
 if __name__ == '__main__':
     if argv[1] == "-c":
-        CamPi.Main()
-        # if net.plcmac != None:
-        #     CamPi.Main()
-        # else:
-        #     exit()
+        CamPi.run()
+    elif argv[1] == "-p":
+        ProbePi.run()
+    elif argv[1] == "-pint":
+        while True:
+            full_img()
+    else:
+        print("引数を指定してください")
+        print("-p:プローブモード,-c:カメラモード")
+        exit()

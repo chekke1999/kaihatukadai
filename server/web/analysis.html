@@ -44,14 +44,17 @@
                                 <div class="canvas-container-photo">
                                     <div class="chart_list list_photo">画像検査</div>
                                     <div class="canvas-box-photo" onclick="Pareto_generate()"><li class="canvas_text">パレート図</li></div>
-                                    <div class="canvas-box-photo" onclick="plot()"><li class="canvas_text">散布図</li></div>
+                                    <div class="canvas-box-photo" onclick="Fourier_generate()"><li class="canvas_text">散布図</li></div>
                                     <div class="canvas-box-photo" onclick="plot()"><li class="canvas_text">異常値検知</li></div>
                                 </div>
                                 <div class="canvas-container-probe">
                                     <div class="chart_list">プローブ検査</div>
-                                    <div class="canvas-box-probe" onclick="plot()"><li class="canvas_text">フーリエ変換</li></div>
+                                    <div class="canvas-box-probe" onclick="Fourier_generate()"><li class="canvas_text">フーリエ変換</li></div>
                                     <div class="canvas-box-probe" onclick="plot()"><li class="canvas_text">異常値検知</li></div>
                                 </div>
+                                
+                                <input type="file" name="file" id="file">
+                                <div id="result"></div>
 
                                 <div class="plot_area">
                                     <canvas id="Pareto"><canvas>
@@ -61,7 +64,7 @@
                                     <canvas id="Outliers_probe" style="height:100;background-color:white;"><canvas> -->
                                 </div>
                                 <div id="plot_resultdata">
-                                    <div id="result_title_plot">123</div>
+                                    <!-- <div id="result_title_plot">123</div> -->
                                 </div>
                         <div id="nav-links" class="nav-links"></div>
                     </div>
