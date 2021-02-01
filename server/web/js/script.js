@@ -135,7 +135,6 @@ function getId(ele){
 
 
 
-
     
 
     
@@ -150,10 +149,13 @@ function getId(ele){
             let restxt=xhr.responseText;//重要
             //console.log(restxt);
             box.insertAdjacentHTML("afterbegin", restxt);
+            pop_up(id_value)
 		}
 	};
     xhr.send();
     id_value = ele.id; // eleのプロパティとしてidを取得
+    
+
     //console.log(id_value); //「id01」
     const req2 = {
         "get_img" : {
@@ -161,10 +163,76 @@ function getId(ele){
             "id":id_value
         }
     }
-
     socket.send(JSON.stringify(req2)); 
-
 }
+function pop_up(id_value){
+    var cnt_arr = 0;
+    const detail_title = document.getElementById('detail_title');
+    const env_text = document.getElementById('env_text');
+
+        cnt_arr = Number(id_value) - Number(now_page_cnt);
+
+        // console.log(arr_j[cnt_arr][3]);
+
+        data.arr = arr_j[cnt_arr][3];
+        data.date = arr_j[cnt_arr][2];
+        data.status = JSON.parse(data.arr);
+        data.type = data.status.type;
+        data.number = cnt_arr;
+        let O_N = 0;
+
+        day = data.date.split('T');
+        day.date = day[0];
+        day.hours = day[1];
+
+        day.detail = day.date.split("-");
+        day.time = day.hours.split(":");
+        day.time[2] = Math.floor(day.time[2]);
+
+        // arr_j[id_value][3]
+        let arr_table = arr_j[cnt_arr][3];
+        arr_table = JSON.parse(arr_table)
+        let id = 'P' + id_value;
+
+
+        let fuga = JSON.parse(arr_j[cnt_arr][3]);
+
+        env_rh = fuga.status.hr;//湿度
+        env_lux = fuga.status.luminance;//輝度
+        env_atm = fuga.status.atm;//気圧
+        env_temp = fuga.status.temp;//温度
+
+    h =  day.detail[0] 
+        + '/' 
+        + ( '00' + day.detail[1] ).slice( -2 ) + '/' + ( '00' + day.detail[2] ).slice( -2 )
+        + "  " 
+        + ( '00' + day.time[0] ).slice( -2 )  + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
+        +   '　基板ID.'
+        +   id;
+
+    // var h2  =   '気温:'
+    //         +   data.arr[1]
+
+    var env =   '気温:'
+            +   env_temp
+            +   '℃ / 湿度:'
+            +   env_rh
+            +   '% / 気圧:'
+            +   env_atm
+            +   'hPa / 輝度:'
+            // +   env_lux
+            +   496.487
+            +   'lx / 基板タイプ:'
+            +   data.type;
+    // console.log(env_text);
+    detail_title.insertAdjacentHTML("afterbegin", h);
+    env_text.insertAdjacentHTML("afterbegin",env)
+
+    hoge = JSON.parse(arr_j[cnt_arr][3]);
+
+    result_generate(hoge.parts);
+}
+
 
 function page_html_send(ele){
 
@@ -251,7 +319,6 @@ function page_generate(){
 
     (data_cnt_max % display_num == 0)? data_division = page_cnt - 1:data_division = page_cnt;
 
-    console.log(data_division);
 
     if(now_page >= 7){
         for_num = now_page - 5;
@@ -325,77 +392,13 @@ window.onload = function (e) {
             for(var key in jdata){
                 if(key == "img"){
 
-                    var cnt_arr = 0;
-
                     const result_attach_1 = document.getElementById('result_picture1');
                     const result_attach_2 = document.getElementById('result_picture2');
-                    const detail_title = document.getElementById('detail_title');
-                    const env_text = document.getElementById('env_text');
-
-
-
-                        // console.log(id_value);
-
-                        cnt_arr = Number(id_value) - Number(now_page_cnt);
-                        // console.log(cnt_arr);
-                        // console.log(arr_j[cnt_arr][3]);
-
-                        data.arr = arr_j[cnt_arr][3];
-                        data.date = arr_j[cnt_arr][2];
-                        data.status = JSON.parse(data.arr);
-                        data.type = data.status.type;
-                        data.number = cnt_arr;
-                        let O_N = 0;
-            
-                        day = data.date.split('T');
-                        day.date = day[0];
-                        day.hours = day[1];
-            
-                        day.detail = day.date.split("-");
-                        day.time = day.hours.split(":");
-                        day.time[2] = Math.floor(day.time[2]);
-
-
-
-                        // arr_j[id_value][3]
-                        let arr_table = arr_j[cnt_arr][3];
-                        arr_table = JSON.parse(arr_table)
-                        let id = 'P' + id_value;
-
-                    h =  day.detail[0] 
-                        + '/' 
-                        + ( '00' + day.detail[1] ).slice( -2 ) + '/' + ( '00' + day.detail[2] ).slice( -2 )
-                        + "  " 
-                        + ( '00' + day.time[0] ).slice( -2 )  + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
-                        +   '　基板ID.'
-                        +   id;
-
-                    // var h2  =   '気温:'
-                    //         +   data.arr[1]
-
-                    var env =   '気温:'
-                            +   env_temp
-                            +   '℃ / 湿度:'
-                            +   env_rh
-                            +   '% / 気圧:'
-                            +   env_atm
-                            +   'hPa / 輝度:'
-                            +   env_lux
-                            +   'lx / 基板タイプ:'
-                            +   data.type;
-
-                    detail_title.insertAdjacentHTML("afterbegin", h);
-                    env_text.insertAdjacentHTML("afterbegin",env)
-
-
-                    hoge = JSON.parse(arr_j[cnt_arr][3]);
-                    //console.log(hoge);
-                    result_generate(hoge.parts);
                     var p =    '<image src="data:image/png;base64,'
                     +   jdata["img"][0]
                     +   '" class="picture_1">';
 
-            var p2 =    '<image src="data:image/png;base64,'
+                    var p2 =    '<image src="data:image/png;base64,'
                     +   jdata["img"][1]
                     +   '" class="picture_2">';
                     result_attach_1.insertAdjacentHTML("afterbegin", p);
@@ -451,7 +454,7 @@ function html_generate(key,jdata,event){
     data.arr = JSON.parse(event.data)[key][3];
 
     data.date = jdata[key][2];
-    console.log(data.arr)
+    // console.log(data.arr)
     data.status = JSON.parse(data.arr);
     data.type = data.status.type;
 
@@ -477,7 +480,7 @@ function html_generate(key,jdata,event){
 
     var false_cnt = 0;
     var gb_t = '';
-    false_cnt = jdata[key][3].indexOf("false");
+    false_cnt = jdata[key][3].indexOf(-1);
 
     if(false_cnt <= 0){
         O_N = '〇';
@@ -492,15 +495,10 @@ function html_generate(key,jdata,event){
 
     arr_j[key] = jdata[key];
 
-    console.log(jdata[key])
-    //console.log(day.week)
-    
-    let fuga = JSON.parse(jdata[key][3]);
 
-    env_rh = fuga.status.hr;//湿度
-    env_lux = fuga.status.luminance;//輝度
-    env_atm = fuga.status.atm;//気圧
-    env_temp = fuga.status.temp;//温度
+    console.log(jdata[key])
+    
+
 
     h = '<div id="'
     +  arr_j[key][0]
@@ -539,14 +537,17 @@ function result_generate(arr_parts){
     var table_element = '';
     var table_th;
     var f_t = 0;
-    var font_red = '';
+    var font_red_x = '';
+    var font_red_y = '';
     var i;
     var cnt = 0;
     var insp = '';
+    var x = 0;
+    var y = 0;
 
     for(var key in arr_parts){
         var arr_key = arr_parts[key];
-    }            console.log(arr_key)
+    }
     for(i=0;i<Math.max(Object.keys(arr_key).length);i++){
         const inspection = {
             name: Object.keys(arr_key)[i]
@@ -554,15 +555,34 @@ function result_generate(arr_parts){
         insp = Object.keys(arr_key)[i];
         table_th    =   '<div class="popup_inspection_name">'
             +    inspectionIndex(inspection)
-            +   '</div><div class="popup_table"><table border="1"><tr><th>部品名</th><th>判定</th></tr>';
+            +   '</div><div class="popup_table"><table border="1"><tr><th>部品名</th><th>X軸</th><th>Y軸</th><th>判定</th></tr>';
 
         for(var key in arr_parts){
             var arr_key = arr_parts[key]
             if (insp in arr_key) {
-                if(arr_key[insp] == false){
-                    f_t = '×'; font_red = 'class="font_red"';
-                }else{ f_t = '〇'}
-                table_element   =   table_element + '<tr ' + font_red + '><td>' + key + '</td><td>' + f_t + '</td></tr>';
+                for(i = 0;i < 2;i++){
+                    if(arr_key[insp][0] > -1){
+                        x = arr_key[insp][0];
+                    }else{
+                        x = "×";
+                    }
+
+                    if(arr_key[insp][1] > -1){
+                        y = arr_key[insp][1];
+                    }else{
+                        y = "×";
+                    }
+
+                    false_cnt = arr_key[insp].indexOf(-1);
+                }
+                if(false_cnt == -1){
+                    f_t = "〇";
+                    font_red = ''
+                }else{
+                    f_t = "×";
+                    font_red = 'class="font_red"';
+                }
+                table_element   =   table_element + '<tr ' + font_red +'><td>' + key + '</td><td ' + font_red_x + '>' + x + '</td><td>' + y + '</td><td>' + f_t + '</td></tr>';
                 
                 font_red = '';
             }

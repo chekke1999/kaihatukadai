@@ -9,9 +9,9 @@ import netifaces as ni
 import scapy.all as scapy
 from PIL import Image
 from pprint import pprint
-from jsongen import genjson
 from impro import Mcc
 from probe import main as Probe
+from sensor import Hard as Sensor
 
 def _TcpSend(target_ip="127.0.0.1",target_port=8080):
     buffer_size = 4096
@@ -103,31 +103,18 @@ class NetInfo:
         return mac_list
 
 class CamPi:
-    @classmethod
-    def _shoot(cls):
-        start = time.time()
-        print("Please wait until the shooting is completed...",end="")
-        img_data = full_img()
-        print("\rshooting complete successfully:",time.time() - start,"[sec]")
-        return img_data 
     @staticmethod
-    def _gendata(img_data):
-        start = time.time()
-        print("Run Image processing...")
-        prodata = Mcc.Start(img=img_data)
-        print("Image processing complete successfully:",time.time() - start,"[sec]")
+    def _gendata(img_data,prodata):
         png = io.BytesIO()
         try:
             Image.fromarray(prodata["img"]).save(png,"PNG")
-        except TypeError as e:
+        except Exception as e:
             print(f"Error:{e}")
             Image.fromarray(img_data).save(png,"PNG")
         b_frame = png.getvalue()
-        jdict = {
-            "status":{"temp":33,"hr":50,"atm":1013.25,"luminance":20000},
-            "type":prodata["type"],
-            "parts":prodata["parts"]
-        }
+        jdict = Sensor.main()
+        del prodata["img"]
+        jdict.update(prodata)
         send_d = {
             "in_data" : {
                 "db":"piscan",
@@ -145,16 +132,20 @@ class CamPi:
         atexit.register(subp.AllKill,p=subp.cpro)
         while(True):
             start = time.time()
-            subp.OneBeforeSendWait(cls._gendata(cls._shoot()))
+            print("Please wait until the shooting is completed...",end="")
+            img_data = full_img()
+            print("\rshooting complete successfully:",time.time() - start,"[sec]")
+            print("Run Image processing...")
+            prodata = Mcc.Start(img=img_data)
+            print("Image processing complete successfully:",time.time() - start,"[sec]")
+            subp.OneBeforeSendWait(cls._gendata(img_data,prodata))
             print("End of loop time:",time.time() - start,"[sec]")
             #time.sleep(10)
 class ProbePi:
     @staticmethod
-    def _gendata(probe_data):
-        jdict = {
-            "status":{"temp":33,"hr":50,"atm":1013.25,"luminance":20000},
-            "measured_value":probe_data["denkyoku"],
-        }
+    def _gendata():
+        jdict = Sensor.main()
+        jdict.update(Probe())
         insert_str = f"""\
 INSERT INTO pi_probe(
     plc_mac,
@@ -180,7 +171,7 @@ INSERT INTO pi_probe(
             time.sleep(10)
             start = time.time()
             print("Scan probe...")
-            send_d = cls._gendata(Probe())
+            send_d = cls._gendata()
             print("Scan complete successfully:",time.time() - start,"[sec]")
             subp.OneBeforeSendWait(send_d)
             print("End of loop time:",time.time() - start,"[sec]")

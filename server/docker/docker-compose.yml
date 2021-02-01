@@ -28,8 +28,7 @@ services:
      - TZ=Asia/Tokyo
      - PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/mssql-tools/bin/
     command: bash -c
-      "`sleep 20;sqlcmd -S localhost -U SA -P 'MyPass@2020' -i /root/dbfile/sql/createdb.sql;
-      sqlcmd -S localhost -U SA -P 'MyPass@2020' -i /root/dbfile/sql/testdatainsert.sql` & 
+      "`sleep 20;sqlcmd -S localhost -U SA -P 'MyPass@2020' -i /root/dbfile/sql/createdb.sql` & 
       /opt/mssql/bin/sqlservr"
     logging:
       driver: json-file

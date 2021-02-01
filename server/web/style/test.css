@@ -1344,6 +1344,10 @@ details[open] summary{
     cursor: help;
 }
 
+table.tttbe{
+    font-size: calc(1px + .8vw);
+}
+
 .popup_table  table th{
     border: dashed 1px orange;/**/
     /*破線 1px オレンジ*/
@@ -1358,7 +1362,7 @@ details[open] summary{
     width:20%;
 }
 
-.popup_table td:nth-child(2){
+/* .popup_table td:nth-child(2){
     font-weight: bolder;
     color: #385723;
 }
@@ -1366,7 +1370,7 @@ details[open] summary{
 
 .popup_table .font_red td:nth-child(2){
     color:red;
-}
+} */
 
 .top_details{
     height:100px;

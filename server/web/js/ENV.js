@@ -138,19 +138,87 @@ window.onload = function (e) {
     xhr.send();
     false_cnt();
 
-
+    var arr_temp = [0];
+    var arr_no=[0];
+    var i = 0;
     // // const result_attach_2 = document.getElementById('result_picture2');
     // // メッセージの待ち受け
     socket.onmessage = function (event) {
         // console.log("onmessage_ok")
         jdata = JSON.parse(event.data);
         for(var key in jdata){
-            arr_j[key] = jdata[key];
-            console.log(JSNpararr_j[key][5])
+            // console.log(jdata[key])
+            arr_j[key] = JSON.parse(jdata[key][5])
+            for(var key in arr_j){
+                // console.log(arr_j[key].status);
+            }
+            arr_temp[i] = arr_j[key].status.temp;
+            arr_no[i] = i;
+            i++;
+            // console.log(arr_j[key].status.temp)
         }
-        console.log(arr_j.status)
+        // console.log(arr_temp)
+
+        plot_ENV(arr_temp,arr_no);
     }
 
+}
+
+
+function plot_ENV(arr,arr_no){
+    var ctx = document.getElementById("temp");
+    var length_ticks = (arr_no.length)/10;
+    console.log(length_ticks)
+    var myLineChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: arr_no,
+          datasets: [
+            {
+              label: '気温(度）',
+              data: arr,
+              spanGaps: true,
+              borderColor: "rgba(255,0,0,1)",
+              backgroundColor: "rgba(0,0,0,0)",
+              fill: false,
+              borderWidth: 1.7,
+
+            }
+          ],
+        },
+        options: {
+          title: {
+            display: true,
+            text: '気温'
+          },
+          elements: {
+            point:{
+            radius: 0
+            }
+        },
+          scales: {
+            yAxes: [{
+              ticks: {
+                suggestedMax: 40,
+                suggestedMin: 0,
+                stepSize: 10,
+                callback: function(value, index, values){
+                  return  value +  '度'
+                }
+              }
+            }],
+            xAxes:[{
+                ticks:{
+                    minRotation: 0,   // ┐表示角度水平
+                    maxRotation: 0,   // ┘
+                    autoSkip: true,  //なくてもよい
+                    maxTicksLimit: length_ticks
+                }
+            }]
+            
+          },
+        }
+      });
 }
 
 function func1() {

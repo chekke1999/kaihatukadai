@@ -45,7 +45,6 @@ const inspectionList = [
 
 var filename = 'test_CSV';
 
-
 function getCookieArray(){
     var arr = new Array();
     if(document.cookie != ''){
@@ -58,7 +57,14 @@ function getCookieArray(){
     return arr;
 }
 
-
+if(document.cookie == ""){
+    display_num = 50;
+}else{
+    var arr = getCookieArray();
+    var result = arr["display_num"];
+    //console.log(result)
+    display_num = result;
+}
 
 
 
@@ -90,7 +96,7 @@ const inspectionIndex = inspection => {
 const req = {
     "sql" : {
         "db":"piscan",
-        "query" :"SELECT * FROM pi_probe;",
+        "query" :"SELECT TOP " + display_num + " * FROM pi_probe;",
         "commit":false
     }
 }
@@ -116,9 +122,8 @@ socket.onopen = function (event) {
     socket.send(JSON.stringify(req)); 
 };
 
-function getId(ele){
+function getid(ele){
 
-    //console.log(ele.id)
     let box = document.getElementById("box");//読み込みたい位置を指定
 
     let h;
@@ -127,21 +132,85 @@ function getId(ele){
 		if(xhr.readyState === 4 && xhr.status === 200) {
             let restxt=xhr.responseText;//重要
             //console.log(restxt);
+
             box.insertAdjacentHTML("afterbegin", restxt);
-		}
+            pop_up(id_value)
+        }
+
 	};
     xhr.send();
     id_value = ele.id; // eleのプロパティとしてidを取得
-    //console.log(id_value); //「id01」
-    const req2 = {
-        "get_img" : {
-            "db":"piscan",
-            "id":id_value
-        }
-    }
 
-    socket.send(JSON.stringify(req2)); 
+    // function isOpen(ws) { return ws.readyState === ws.OPEN }
+    // if (!isOpen(socket)) return;
 
+}
+function pop_up(id){
+    var cnt_arr = 0;
+    // console.log(arr_j[id]);
+    const result_attach_1 = document.getElementById('result_picture1');
+    const result_attach_2 = document.getElementById('result_picture2');
+    const detail_title = document.getElementById('detail_title');
+    const env_text = document.getElementById('env_text');
+    let mac_add = '';
+
+    cnt_arr = Number(id_value) - Number(now_page_cnt);
+
+    data.arr = arr_j[cnt_arr][3];
+    data.date = arr_j[cnt_arr][2];
+    data.status = JSON.parse(data.arr);
+    data.type = data.status.type;
+    data.number = cnt_arr;
+
+    day = data.date.split('T');
+    day.date = day[0];
+    day.hours = day[1];
+
+    day.detail = day.date.split("-");
+    day.time = day.hours.split(":");
+    day.time[2] = Math.floor(day.time[2]);
+
+    data.mac = arr_j[cnt_arr][1];
+    (data.mac == null)? mac_add = '――':mac_add = 'A';
+
+    // arr_j[id_value][3]
+    let arr_table = arr_j[cnt_arr][3];
+
+    arr_table = JSON.parse(arr_table)
+    id = '' + cnt_arr;
+
+    h =  day.detail[0] 
+        + '/' 
+        + ( '00' + day.detail[1] ).slice( -2 ) + '/' + ( '00' + day.detail[2] ).slice( -2 )
+        + "  " 
+        + ( '00' + day.time[0] ).slice( -2 )  + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
+        +   '　基板ID.'
+        +   id;
+
+    let fuga = JSON.parse(arr_j[cnt_arr][3]);
+    console.log(fuga)
+    
+    env_rh = fuga.status.hr;//湿度
+    env_lux = fuga.status.luminance;//輝度
+    env_atm = fuga.status.atm;//気圧
+    env_temp = fuga.status.temp;//温度
+    var h2  =   '気温:'
+    //         +   data.arr[1]
+
+    var env =   '気温:'
+            +   env_temp
+            +   '℃ / 湿度:'
+            +   env_rh
+            +   '% / 気圧:'
+            +   env_atm
+            +   'hPa / 検査ステーション:'
+            +   mac_add;
+
+    detail_title.insertAdjacentHTML("afterbegin", h);
+    env_text.insertAdjacentHTML("afterbegin",env)
+
+
+    result_generate(fuga,id);
 }
 
 function page_html_send(ele){
@@ -173,7 +242,7 @@ function page_html_send(ele){
     }
 
 
-    h = "SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera WHERE"
+    h = "SELECT * FROM pi_probe WHERE"
         +   " scan_id > "
         +   now_page_cnt
         +   " AND scan_id <= "
@@ -187,14 +256,9 @@ function page_html_send(ele){
             "commit":false
         }
     }
-    //console.log("現在のページ = " + last_get_page);
+    console.log(h);
     cnt_b = 0;
     cnt_g = 0;
-    // console.log(h)
-    // console.log(now_page_cnt)
-    // console.log(page_cnt)
-    // console.log(last_get_page)
-    // console.log(display_num)
 
     socket.send(JSON.stringify(req_2)); 
     cnt = 0;
@@ -261,22 +325,11 @@ function page_generate(){
     }
     page_html   =   page_html +'</ul><div>';
     pages_attach.insertAdjacentHTML("afterbegin", page_html);
-    // console.log(ten_page)
+    console.log(now_page)
 }
 
 
 window.onload = function (e) {
-
-    if(document.cookie == ""){
-        display_num = 50;
-    }else{
-        var arr = getCookieArray();
-        var result = arr["display_num"];
-        //console.log(result)
-        display_num = result;
-    }
-
-    console.log("display_num=" + display_num);
 
     const disp_num = document.getElementById('disp_num');
 
@@ -310,7 +363,6 @@ window.onload = function (e) {
 
         (display_num > data_cnt_max)?display_num = data_cnt_max:display_num = display_num;
 
-
         if(cnt_page_processing==0){
             var page_max_text;
             cnt_page_processing = 1;
@@ -321,68 +373,10 @@ window.onload = function (e) {
             jdata = JSON.parse(event.data);
 
             for(var key in jdata){
-
+                // console.log(key)
                 if(key == "img"){
-                    var cnt_arr = 0;
 
-                    const result_attach_1 = document.getElementById('result_picture1');
-                    const result_attach_2 = document.getElementById('result_picture2');
-                    const detail_title = document.getElementById('detail_title');
-                    const env_text = document.getElementById('env_text');
-                    let mac_add = '';
 
-                    cnt_arr = Number(id_value) - Number(now_page_cnt);
-
-                    data.arr = arr_j[cnt_arr][3];
-                    data.date = arr_j[cnt_arr][2];
-                    data.status = JSON.parse(data.arr);
-                    data.type = data.status.type;
-                    data.number = cnt_arr;
-        
-                    day = data.date.split('T');
-                    day.date = day[0];
-                    day.hours = day[1];
-        
-                    day.detail = day.date.split("-");
-                    day.time = day.hours.split(":");
-                    day.time[2] = Math.floor(day.time[2]);
-
-                    data.mac = arr_j[cnt_arr][1];
-                    (data.mac == null)? mac_add = '――':mac_add = 'A';
-
-                    // arr_j[id_value][3]
-                    let arr_table = arr_j[cnt_arr][3];
-                    arr_table = JSON.parse(arr_table)
-                    let id = '' + id_value;
-
-                    h =  day.detail[0] 
-                        + '/' 
-                        + ( '00' + day.detail[1] ).slice( -2 ) + '/' + ( '00' + day.detail[2] ).slice( -2 )
-                        + "  " 
-                        + ( '00' + day.time[0] ).slice( -2 )  + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
-                        +   '　基板ID.'
-                        +   id;
-
-                    // var h2  =   '気温:'
-                    //         +   data.arr[1]
-
-                    var env =   '気温:'
-                            +   env_temp
-                            +   '℃ / 湿度:'
-                            +   env_rh
-                            +   '% / 気圧:'
-                            +   env_atm
-                            +   'hPa / 輝度:'
-                            +   env_lux
-                            +   'lx / 検査ステーション:'
-                            +   mac_add;
-
-                    detail_title.insertAdjacentHTML("afterbegin", h);
-                    env_text.insertAdjacentHTML("afterbegin",env)
-
-                    hoge = JSON.parse(arr_j[cnt_arr][3]);
-                    // console.log(hoge.measured_value);
-                    result_generate(hoge);
 
                 }else{
                     html_generate(key,jdata,event);
@@ -405,6 +399,7 @@ window.onload = function (e) {
 
 }
 function html_generate(key,jdata,event){
+    // console.log(key)
     const cnt_result = document.getElementById('cnt_result');
     const cnt_good = document.getElementById('cnt_good');
     const cnt_bad = document.getElementById('cnt_bad');
@@ -412,19 +407,16 @@ function html_generate(key,jdata,event){
     const inpe_attach = document.getElementById('inpe_window');
     let mac_add = 0;
 
-    
 
 
     var today = new Date();
 
     var G_B_text;
 
-    
-    data.arr = JSON.parse(event.data)[key][3];
 
     data.date = jdata[key][2];
     
-    data.status = JSON.parse(data.arr);
+    // data.status = JSON.parse(data.arr);
     data.mac = jdata[key][1];
 
     data.number = key;
@@ -440,16 +432,6 @@ function html_generate(key,jdata,event){
     day.time[2] = Math.floor(day.time[2]);
 
 
-    arr_j[key] = jdata[key];
-
-    //console.log(jdata[key])
-    
-    let fuga = JSON.parse(jdata[key][3]);
-
-    env_rh = fuga.status.hr;//湿度
-    env_lux = fuga.status.luminance;//輝度
-    env_atm = fuga.status.atm;//気圧
-    env_temp = fuga.status.temp;//温度
 
     var yearStr = day.detail[0] ;
     var monthStr = day.detail[1] ;
@@ -458,11 +440,13 @@ function html_generate(key,jdata,event){
     var date_week = new Date( yearStr, jsMonth , dayStr );
     day.week = date_week.getDay();
 
+    console.log(jdata[key][0])
+
     h = '<div id="'
-    +  arr_j[key][0]
-    + '" class="result_element" onclick="getId(this);">'
+    +  jdata[key][0]
+    + '" class="result_element" onclick="getid(this);">'
     + '<div class="dai0_probe">'
-    +   String(arr_j[key][0])
+    +   jdata[key][0]
     + '</div>'
     + '<div class="dai1_probe">'
     +   day.detail[0] + '/' + ( '00' + day.detail[1] ).slice( -2 ) + '/' +( '00' + day.detail[2] ).slice( -2 )
@@ -478,95 +462,76 @@ function html_generate(key,jdata,event){
     arr_details[key] = h;
 
     inpe = document.getElementById(data.number);
-    console.log(data_cnt_max[0])
+    // console.log(data_cnt_max[0])
     cnt_result.innerHTML = data_cnt_max;//data_cnt_max;
+    arr_j[key] = jdata[key];
 }
 
-function result_generate(arr_parts){
+function result_generate(arr_parts,id){
+    // console.log("ok")
     const table_ganerate = document.getElementById('popup_table_field');
     const result_attach_1 = document.getElementById('result_picture1');
     var table_element = '';
     var table_th;
     var cnt = 0;
-
-    console.log(arr_parts[14]);
+    var MAX;
+    var MIN;
+    var AVG;
+    var SD;
+    var TP;
+    var hukidasi = '<div>';
 
 
         table_th    =   '<div class="popup_inspection_name">'
-            +   '電圧・周波数測定'
-            +   '</div><div class="popup_table"><table border="1"><tr><th>ピン名</th><th>電圧</th><th>周波数</th></tr>';
+            +   '電圧測定'
+            +   '</div><div class="popup_table"><table class="tttbe" border="1">\
+            <tr><th rowspan="2">ピン名</th>\
+            <th colspan="3">電圧(V)</th>\
+            <th rowspan="2">標準偏差</th>\
+            <th rowspan="2">シミュレーション比較(%)</th></tr>\
+            <tr><th>最大</th><th>最小</th><th>平均</th></tr>';
 
-        console.log(arr_parts)  
+            
+        // console.log(arr_parts["measured_value"][9]) 
+        
+        for(var key in arr_parts["measured_value"]){
+            for(var key2 in arr_parts["measured_value"][key]){
+                if(key2 == "MAX"){
+                    MAX = arr_parts["measured_value"][key][key2];
+                }else if(key2 == "MIN"){
+                    MIN = arr_parts["measured_value"][key][key2];
+                }else if(key2 == "AVG"){
+                    AVG = arr_parts["measured_value"][key][key2];
+                }else if(key2 == "SD"){
+                    SD = arr_parts["measured_value"][key][key2];
+                }else if(key2 == "TP"){
+                    TP = arr_parts["measured_value"][key][key2];
+                }
+                if(key == 10 || key >= 12){
+                    TP = "---";
+                    hukidasi = '<div>'
+                }else{
+                    hukidasi = '<div class="css-fukidashi">'
+                }
+                // console.log(arr_parts["measured_value"][key][key2])
+            }
+            table_element   =   table_element + '<tr class="' + key +'"><td>' + key + '</td><td>' + MAX + '</td><td>' + MIN + '</td><td>' + AVG + '</td><td>' + SD + '</td><td>' + TP + '</td></tr>';
+        }
 
         for(var key in arr_parts){
             var arr_key = arr_parts[key]
-            console.log(arr_key[key]);
-            console.log(arr_key);
-                table_element   =   table_element + '<tr><td>' + key + '</td><td>' + arr_key["Voltage"] + '</td><td>' + arr_key["Frequency"] + '</td></tr>';
+            for(var key in arr_key["9"]){
+                // console.log(key)
+            }
+                
             cnt++;
         }
         table_element = table_element + "</table></div>";
-        table_ganerate.insertAdjacentHTML("beforeend",table_th + table_element);
+        table_ganerate.insertAdjacentHTML("beforeend",table_th +table_element);
         table_element = '';
-        
+
     var p =    '<image src="'
     +   'img_pro.png'
     +   '" class="picture_1">';
     result_attach_1.insertAdjacentHTML("afterbegin", p);
 }
-
-
-//jsonをcsv文字列に編集する
-function jsonToCsv(json, delimiter) {
-    var header = [];
-    for(var key in arr_j){
-        header[key] = arr_j[key] + '\n';
-    }
-
-    return header;
-}
-
-//csv変換
-function exportCSV(items, delimiter, filename) {
-
-    //文字列に変換する
-    var csv = jsonToCsv(items, delimiter);
-    //console.log(csv);
-
-    //拡張子
-    var extention = delimiter==","?"csv":"tsv";
-
-    //出力ファイル名
-    var exportedFilenmae = (filename  || 'export') + '.' + extention;
-
-    //BLOBに変換
-    var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-
-    if (navigator.msSaveBlob) { // for IE 10+
-        navigator.msSaveBlob(blob, exportedFilenmae);
-    } else {
-        //anchorを生成してclickイベントを呼び出す。
-        var link = document.createElement("a");
-        if (link.download !== undefined) {
-            var url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", exportedFilenmae);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-    }
-}
-
-var filename = 'testCSV';
-
-function output(){
-    exportCSV(arr_j,',', filename);
-}
-
-// const timer = 6000;    // ミリ秒で間隔の時間を指定
-// window.addEventListener('load',function(){
-//   setInterval('location.reload()',timer);
-// });
-

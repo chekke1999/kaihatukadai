@@ -2,7 +2,6 @@
 import cv2
 import numpy as np
 
-
 class Mcc:
     """画像保存"""
     @staticmethod
@@ -31,7 +30,7 @@ class Mcc:
                     pt_return[2]=set_pt[j]
                 else:
                     pt_return[0]=set_pt[j]
-        print(pt_return)
+        print("pt_dec ",pt_return)
         return pt_return
     @staticmethod
     def _HSV_dec(img,hsv_max,hsv_min):
@@ -97,7 +96,7 @@ class Mcc:
             
             if max_val<0.5 :
                 cv2.rectangle(xp_img, (zoom_point[0],+zoom_point[1]), (zoom_point[2],zoom_point[3]),  (0,255,0),3) 
-                print("cv2 ERROR " + temp)
+                #print("cv2 ERROR ",temp,max_val)
                 return [0,0],max_val
 
             pt = (max_loc[0]+zoom_point[0],max_loc[1]+zoom_point[1])
@@ -141,7 +140,7 @@ class Mcc:
         cv2.rectangle(xp_img, (zoom_point[0],+zoom_point[1]), (zoom_point[2],zoom_point[3]),  (0,255,0),1) 
         if return_pt==[0,0,0,0]:
             cv2.rectangle(xp_img, (zoom_point[0],+zoom_point[1]), (zoom_point[2],zoom_point[3]),  (0,255,0),3) 
-            print("cv2 ERROR " + "C")
+            #print("cv2 ERROR " + "C")
             return [0,0]
 
         return return_pt
@@ -185,32 +184,71 @@ class Mcc:
         template=cv2.imread('img/temple/H_bol_4080.jpg')
         template=cv2.cvtColor(template,cv2.COLOR_BGR2GRAY)
 
+        cls._SAVE("XX_",cv2.threshold(set_img, 100, 255, cv2.THRESH_BINARY)[1])
         Y,X=set_img.shape[:2]
         Y_off=int (Y/2) 
         X_off=int (X/2)
-        print(Y_off)
-        XY_off_img=[
-            set_img[0:Y_off,0:X_off],
-            set_img[0:Y_off,X_off:X],
-            set_img[Y_off:Y,0:X_off],
-            set_img[Y_off:Y,X_off:X]
-            ]
         
         return_pt=[]
+        XY_off_img=[
+            set_img[200:600,400:900],
+            set_img[200:600,2900:3400],
+            set_img[2100:2500,400:900],
+            set_img[2100:2500,2900:3400]
+            ]
+        """
+            XY_off_img=[
+                set_img[0:Y_off,0:X_off],
+                set_img[0:Y_off,X_off:X],
+                set_img[Y_off:Y,0:X_off],
+                set_img[Y_off:Y,X_off:X]
+                ]
+        """
+        """
+            cv2.rectangle(xp_img,
+            (400,200),(800,600),
+            (255,255,0),2)
+            cv2.rectangle(xp_img,
+            (2900,200),(3300,600),
+            (255,255,0),2)
+            cv2.rectangle(xp_img,
+            (400,2100),(800,2500),
+            (255,255,0),2)
+            cv2.rectangle(xp_img,
+            (2900,2100),(3300,2500),
+            (255,255,0),2)
+            cls._SAVE("1XP_",xp_img)
+        """
+        
+
+
 
         for img_num in range(4):
             super_img = XY_off_img[img_num].copy()
-            offset_X=[0,int(X/2),0,int(X/2)]
-            offset_Y=[0,0,int(Y/2),int(Y/2)]
+            #############            
+            template = cv2.threshold(template, 100, 255, cv2.THRESH_BINARY)[1]
+            super_img = cv2.threshold(super_img, 100, 255, cv2.THRESH_BINARY)[1]
+            #cls._SAVE("X_temp",template)
+            cls._SAVE("X_"+str(img_num),super_img)
+            ########################
+            
+            offset_X=[400,2900,400,2900]
+            offset_Y=[200,200,2100,2100]
+            """
+            offset_X=[0,X_off,0,X_off]
+            offset_Y=[0,0,Y_off,Y_off]
+            """
             rows,cols = template.shape[:2]
+
 
             res=cv2.matchTemplate(super_img,template,cv2.TM_CCOEFF_NORMED)
 
             min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
             top_left = max_loc
             
-            if max_val<0.5 :
-                print ("\nBOL_ERROER\n")
+            if max_val<0.00 :
+                print ("\nBOL_ERROER",max_val,"\n")
+                return_pt=None
                 return return_pt,xp_img
             bottom_right = (top_left[0] + rows, top_left[1] +cols)
             
@@ -241,9 +279,9 @@ class Mcc:
         rows,cols,ch=img.shape
         #print(rows,cols)
         dst = cv2.warpAffine(img,M,(cols,rows))
-        dst=dst[0:pt_set[2][3]-pt_set[0][1],0:pt_set[1][2]-pt_set[0][0]]
-
-        dst=cv2.resize(dst,(2198,1696))
+        dst=dst[0:(int(pt_trans[2][1])),0:(int(pt_trans[1][0]))]
+        dst=cv2.resize(dst,(int(dst.shape[1]*0.81),int(dst.shape[0]*0.81)))
+        #dst=cv2.resize(dst,(2198,1696))
         return dst
     @classmethod
     def _Parts_serch(cls,img,xp_img,parts_name,parts_xywh):
@@ -267,43 +305,46 @@ class Mcc:
                     point=cls._MARCH_C(img,xp_img,parts_xywh[parts_name][i])
             else :
                 point,val=cls._MARCH_M(cls._H_dec(img),xp_img,parts_name+str(i),parts_xywh[parts_name][i])
+            ##################################
             if point[0]>0 or point[1]>0:
-                data[i]=[True,(point[0],point[1]),val]
+                data[i]=[(point[0],point[1])]
             else:
-                data[i]=[None,None,0]
+                data[i]=[(-1,-1)]
+            ##################################
         return data
     @classmethod 
     def _Parts_Select(cls):
+
         parts_point={
             "R":[
-                    [1000,600,1150,1100],
-                    [1000,1050,1150,1450],
-                    [1100,600,1500,750],
-                    [1100,875,1500,1025],
-                    [900,525,1300,675],
-                    [1200,1150,1300,1300],
-                    [1275,1150,1375,1300],
-                    [1275,1300,1375,1450],
-                    [1200,1300,1300,1450],
-                    [1600,475,2000,625],
-                    [1250,475,1650,625],
-                    [1775,1000,1925,1400],
-                    [1525,100,1675,500],
-                    [900,400,1300,550],
-                    [900,300,1300,450],
-                    [900,200,1300,350],
-                    [900,100,1300,250],
-                    [1600,375,2000,525]
+                    [900,600,1150,1100],#1
+                    [900,950,1150,1450],
+                    [1000,600,1500,750],
+                    [1000,875,1500,1025],
+                    [800,525,1300,675],
+                    [1150,1125,1300,1300],
+                    [1250,1125,1400,1300],
+                    [1250,1250,1400,1425],
+                    [1150,1250,1300,1425],
+                    [1500,475,2000,625],#10
+                    [1150,475,1650,625],
+                    [1650,1000,1900,1400],
+                    [1450,100,1675,500],
+                    [800,400,1300,550],
+                    [800,300,1300,450],
+                    [800,200,1300,350],
+                    [800,100,1300,250],
+                    [1500,375,2000,525]#18
                 ],
             "C":[
-                    [1450,900,1650,1000],
-                    [1600,1300,1800,1400],
-                    [1600,900,1800,1000]
+                    [1350,800,1650,1000],
+                    [1500,1200,1800,1400],
+                    [1500,800,1800,1000]
                 ],
             "D":[
-                    [900,600,1050,1000],
+                    [800,600,1050,1000],
                     [750,250,950,400],
-                    [1700,1400,2000,1600],
+                    [1700,1300,2000,1600],
                     [1700,100,2000,300]
                 ],
             "Q":[
@@ -311,8 +352,8 @@ class Mcc:
                     [1200,950,1400,1150]
                 ],
             "SW":[
-                    [400,150,800,550],
-                    [400,1150,800,1550]
+                    [300,100,900,600],
+                    [300,1100,900,1600]
                 ],
             "U":[
                     [1425,575,1825,925],
@@ -322,30 +363,21 @@ class Mcc:
         return parts_point
 
     @classmethod
-    def Start(cls,img,test=True):
-        img=cv2.resize(img,(4080,3040))###
-        #img=cv2.resize(img,(2040,1520))###
+    def Start(cls,img):
+        img=cv2.resize(img,(4080,3040))
         img_copy=img.copy()
         pro_img=img.copy()
         
-        cls._SAVE("1XP_",img_copy)
-        cls._SAVE("1H_dec",cls._H_dec(cls._HSV_dec (img,(120,250,255),(90,0,0))))
-        if test == True : 
-            #point_T,trancs_img=cls._MARCH_E_mono(cls._H_dec(img),img_copy)
-            point_T,trancs_img=cls._MARCH_E_mono(cls._H_dec(cls._HSV_dec (img,(120,250,255),(80,0,0))),img_copy)
-            if len(point_T)==4 :
-                pro_img=cls.Img_Transform(trancs_img,cls._Point_DEC(point_T))
-            else :
-                print("quit_4")
-                cls._SAVE("XP_",img_copy)
-                cls._SAVE("H_dec",cls._H_dec (img))
-                return
+        cls._SAVE("2XP_",cls._H_dec(img_copy))
 
-            img=pro_img.copy()
-            img_copy=img.copy()
-        else:
-            img=cv2.resize(img,(2200,1700))
-            img_copy=img.copy()
+        #point_T,trancs_img=cls._MARCH_E_mono(cls._H_dec(img),img_copy)
+        point_T,trancs_img=cls._MARCH_E_mono(cls._H_dec(cls._HSV_dec (img,(120,250,255),(0,0,0))),img_copy)
+
+        pro_img=cls.Img_Transform(trancs_img,cls._Point_DEC(point_T))
+
+        img=pro_img.copy()
+        img_copy=img.copy()
+
         parts_xywh=cls._Parts_Select()
         R_data=cls._Parts_serch(img,img_copy,"R",parts_xywh)
         C_data=cls._Parts_serch(img,img_copy,"C",parts_xywh)
@@ -362,15 +394,20 @@ class Mcc:
                     Q_data,
                     SW_data,
                 [ #U
-                    [True,False,0.0],
-                    [True,False,0.5]
+                    [(-1,-1)],
+                    [(-1,-1)]
                 ]
             ]
 
 
-        cls._SAVE("XP_",img_copy)
-        cls._SAVE("H_dec",cls._H_dec (img))
-        return cls._send_data(img_copy,send_value)
+        if point_T==None:
+            cls._SAVE("XP_",img)
+            cls._SAVE("H_dec",cls._H_dec (img))
+            return cls._send_data(img,send_value)
+        else:
+            cls._SAVE("XP_",img_copy)
+            cls._SAVE("H_dec",cls._H_dec (img))
+            return cls._send_data(img_copy,send_value)
 
     @classmethod
     def _send_data(cls,img,wark_data):
@@ -403,161 +440,100 @@ class Mcc:
                 "type":wark_type,
                 "parts":{
                     "R1":{
-                        "mounted_parts":R[0][0],
-                        "misalignment1":R[0][1],
-                        "misalignment2":R[0][2]
+                        "mounted_parts":R[0][0]
                     },
                     "R2":{
-                        "mounted_parts":R[1][0],
-                        "misalignment1":R[1][1],
-                        "misalignment2":R[1][2]
+                        "mounted_parts":R[1][0]
                     },
                     "R3":{
-                        "mounted_parts":R[2][0],
-                        "misalignment1":R[2][1],
-                        "misalignment2":R[2][2]
+                        "mounted_parts":R[2][0]
                     },
                     "R4":{
-                        "mounted_parts":R[3][0],
-                        "misalignment1":R[3][1],
-                        "misalignment2":R[3][2]
+                        "mounted_parts":R[3][0]
                     },
                     "R5":{
-                        "mounted_parts":R[4][0],
-                        "misalignment1":R[4][1],
-                        "misalignment2":R[4][2]
+                        "mounted_parts":R[4][0]
                     },
                     "R6":{
-                        "mounted_parts":R[5][0],
-                        "misalignment1":R[5][1],
-                        "misalignment2":R[5][2]
+                        "mounted_parts":R[5][0]
                     },
                     "R7":{
-                        "mounted_parts":R[6][0],
-                        "misalignment1":R[6][1],
-                        "misalignment2":R[6][2]
+                        "mounted_parts":R[6][0]
                     },
                     "R8":{
-                        "mounted_parts":R[7][0],
-                        "misalignment1":R[7][1],
-                        "misalignment2":R[7][2]
+                        "mounted_parts":R[7][0]
                     },
                     "R9":{
-                        "mounted_parts":R[8][0],
-                        "misalignment1":R[8][1],
-                        "misalignment2":R[8][2]
+                        "mounted_parts":R[8][0]
                     },
                     "R10":{
-                        "mounted_parts":R[9][0],
-                        "misalignment1":R[9][1],
-                        "misalignment2":R[9][2]
+                        "mounted_parts":R[9][0]
                     },
                     "R11":{
-                        "mounted_parts":R[10][0],
-                        "misalignment1":R[10][1],
-                        "misalignment2":R[10][2]
+                        "mounted_parts":R[10][0]
                     },
                     "R12":{
-                        "mounted_parts":R[11][0],
-                        "misalignment1":R[11][1],
-                        "misalignment2":R[11][2]
+                        "mounted_parts":R[11][0]
                     },
                     "R13":{
-                        "mounted_parts":R[12][0],
-                        "misalignment1":R[12][1],
-                        "misalignment2":R[12][2]
+                        "mounted_parts":R[12][0]
                     },
                     "R14":{
-                        "mounted_parts":R[13][0],
-                        "misalignment1":R[13][1],
-                        "misalignment2":R[13][2]
+                        "mounted_parts":R[13][0]
                     },
                     "R15":{
-                        "mounted_parts":R[14][0],
-                        "misalignment1":R[14][1],
-                        "misalignment2":R[14][2]
+                        "mounted_parts":R[14][0]
                     },
                     "R16":{
-                        "mounted_parts":R[15][0],
-                        "misalignment1":R[15][1],
-                        "misalignment2":R[15][2]
+                        "mounted_parts":R[15][0]
                     },
                     "R17":{
-                        "mounted_parts":R[16][0],
-                        "misalignment1":R[16][1],
-                        "misalignment2":R[16][2]
+                        "mounted_parts":R[16][0]
                     },
                     "R18":{
-                        "mounted_parts":R[17][0],
-                        "misalignment1":R[17][1],
-                        "misalignment2":R[17][2]
+                        "mounted_parts":R[17][0]
                     },
                     "Q1":{
-                        "mounted_parts":Q[0][0],
-                        "misalignment1":Q[0][1],
-                        "misalignment2":Q[0][2]
+                        "mounted_parts":Q[0][0]
                     },
                     "Q2":{
-                        "mounted_parts":Q[1][0],
-                        "misalignment1":Q[1][1],
-                        "misalignment2":Q[1][2]
+                        "mounted_parts":Q[1][0]
                     },
                     "D1":{
-                        "mounted_parts":D[0][0],
-                        "misalignment1":D[0][1],
-                        "misalignment2":D[0][2]
+                        "mounted_parts":D[0][0]
                     },
                     "D2":{
-                        "mounted_parts":D[1][0],
-                        "misalignment1":D[1][1],
-                        "misalignment2":D[1][2]
+                        "mounted_parts":D[1][0]
                     },
                     "D3":{
-                        "mounted_parts":D[2][0],
-                        "misalignment1":D[2][1],
-                        "misalignment2":D[2][2]
+                        "mounted_parts":D[2][0]
                     },
                     "D4":{
-                        "mounted_parts":D[3][0],
-                        "misalignment1":D[3][1],
-                        "misalignment2":D[3][2]
+                        "mounted_parts":D[3][0]
                     },
                     "C1":{
-                        "mounted_parts":C[0][0],
-                        "misalignment":C[0][1]
+                        "mounted_parts":C[0][0]
                     },
                     "C2":{
-                        "mounted_parts":C[1][0],
-                        "misalignment":C[1][1]
+                        "mounted_parts":C[1][0]
                     },
                     "C3":{
-                        "mounted_parts":C[2][0],
-                        "misalignment":C[2][1]
+                        "mounted_parts":C[2][0]
                     },
                     "SW1":{
-                        "mounted_parts":SW[0][0],
-                        "misalignment1":SW[0][1],
-                        "misalignment2":SW[0][2]
+                        "mounted_parts":SW[0][0]
                     },
                     "SW2":{
-                        "mounted_parts":SW[1][0],
-                        "misalignment1":SW[1][1],
-                        "misalignment2":SW[1][2]
+                        "mounted_parts":SW[1][0]
                     },
                     "IC1":{
-                        "mounted_parts":U[0][0],
-                        "misalignment":U[0][1],
-                        "angle":U[0][2]
+                        "mounted_parts":U[0][0]
                     },
                     "IC2":{
-                        "mounted_parts":U[0][0],
-                        "misalignment":U[0][1],
-                        "angle":U[0][2]
+                        "mounted_parts":U[1][0]
                     },
                 }
             }
-        
         except NameError:
             return send_data
         return send_data
-        
