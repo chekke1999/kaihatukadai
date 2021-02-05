@@ -148,8 +148,6 @@ function getid(ele){
 function pop_up(id){
     var cnt_arr = 0;
     // console.log(arr_j[id]);
-    const result_attach_1 = document.getElementById('result_picture1');
-    const result_attach_2 = document.getElementById('result_picture2');
     const detail_title = document.getElementById('detail_title');
     const env_text = document.getElementById('env_text');
     let mac_add = '';
@@ -345,7 +343,6 @@ window.onload = function (e) {
 		}
 	};
     xhr.send();
-    // const result_attach_2 = document.getElementById('result_picture2');
     // メッセージの待ち受け
 
     socket.onmessage = function (event) {
@@ -482,10 +479,15 @@ function result_generate(arr_parts,id){
     var hukidasi = '<div>';
 
 
-        table_th    =   '<div class="popup_inspection_name">'
-            +   '電圧測定'
-            +   '</div><div class="popup_table"><table class="tttbe" border="1">\
-            <tr><th rowspan="2">ピン名</th>\
+        // table_th    =   '<div class="popup_inspection_name">'
+        //     +   '電圧測定'
+        //     +   '</div><div class="popup_table"><table class="tttbe" border="1">\
+        //     <tr><th rowspan="2">ピン名</th>\
+        //     <th colspan="3">電圧(V)</th>\
+        //     <th rowspan="2">標準偏差</th>\
+        //     <th rowspan="2">シミュレーション比較(%)</th></tr>\
+        //     <tr><th>最大</th><th>最小</th><th>平均</th></tr>';
+        table_th    =   '<tr><th rowspan="2">ピン名</th>\
             <th colspan="3">電圧(V)</th>\
             <th rowspan="2">標準偏差</th>\
             <th rowspan="2">シミュレーション比較(%)</th></tr>\
@@ -515,7 +517,7 @@ function result_generate(arr_parts,id){
                 }
                 // console.log(arr_parts["measured_value"][key][key2])
             }
-            table_element   =   table_element + '<tr class="' + key +'"><td>' + key + '</td><td>' + MAX + '</td><td>' + MIN + '</td><td>' + AVG + '</td><td>' + SD + '</td><td>' + TP + '</td></tr>';
+            table_element   =   table_element + '<tr class="pro' + key +'"><td >' + key + '</td><td>' + MAX + '</td><td>' + MIN + '</td><td>' + AVG + '</td><td>' + SD + '</td><td>' + TP + '</td></tr>';
         }
 
         for(var key in arr_parts){
@@ -526,7 +528,7 @@ function result_generate(arr_parts,id){
                 
             cnt++;
         }
-        table_element = table_element + "</table></div>";
+        table_element = table_element;
         table_ganerate.insertAdjacentHTML("beforeend",table_th +table_element);
         table_element = '';
 

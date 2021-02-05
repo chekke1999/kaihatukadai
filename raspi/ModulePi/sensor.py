@@ -281,9 +281,6 @@ class Hard:
         gpio.output(17,True)
         Hard._SPI_DA_DEC(light)
     @classmethod
-    def Motor(cls,pwm_data):
-        Hard._Motor(1,100)
-    @classmethod
     def main(cls):
         Hard._GPIO_SETUP()
         lux=0

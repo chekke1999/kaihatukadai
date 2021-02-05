@@ -574,6 +574,7 @@ table tr{
     cursor: text;
 }
 
+
 table th{
     background: #f5ebe5;
     border: solid 1px  #ed6f1e;/**/
@@ -1303,14 +1304,17 @@ details[open] summary{
     height:calc(100% - 30px);
     width:58%;
     margin-top: 30px;
+    margin-left: 10px;
 }
 
 .popup_table_field{
-    height:auto;
-    width:100%;
+    font-size: calc(5px + .8vw);
     background: transparent;
-    pointer-events: none;
-    position: relative;
+    float:left;
+    height:auto;
+    width:50%;
+    margin-left: 6%;
+    margin-top:10px;
 }
 
 .popup_inspection_name{
@@ -1319,58 +1323,120 @@ details[open] summary{
     background: transparent;
     position: relative;
     margin:0 auto;
+    margin-left: 6%;
     font-size: calc(15px + .4vw);
     white-space: nowrap;
+    margin-top:30px;
 }
 
-.popup_table{
+.popup_table_field table {
+    display: block;
     height:auto;
-    width:90%;
-    background: transparent;
-    position: relative;
-    margin:0 auto;
-    min-width: 100%;
-    display:  inline-block ;
-}
-
-.popup_table table {
-    height:auto;
-    width:90%;
+    width:100%;
     border-collapse: collapse;
     border: solid 2px orange;/*表全体を線で囲う*/
     text-align: center;
     position: relative;
     margin:0 auto;
     cursor: help;
+
 }
 
 table.tttbe{
     font-size: calc(1px + .8vw);
+
 }
 
-.popup_table  table th{
+.popup_table_field  th{
+    height: 10px;
     border: dashed 1px orange;/**/
     /*破線 1px オレンジ*/
     background: #fbe5d6;
+    font-size: calc(1px + .8vw);
 }
 
-.popup_table table tr:nth-child(even) td{
+
+.popup_table_field  tr:nth-child(even) td{
     background: white;
 }
 
-.popup_table table tr td:nth-child(1){
+.popup_table_field  tr td:nth-child(1){
     width:20%;
 }
 
-/* .popup_table td:nth-child(2){
+.popup_table_field .font_red td:nth-child(4){
+    color:red;
+}
+.popup_table_field .font_green td:nth-child(4){
+    color:#385723;
     font-weight: bolder;
-    color: #385723;
 }
 
+.popup_table_field td .toretore {
+    display: none;
+    }
+.pro9:hover  .toretore{
+    display: inline;
+    position: absolute;
+    background-color: tomato;
+    height:50%;
+    width: 40%;
+    font-size: .9em;
+    right: 0;
+    bottom: 0;
+}
+.toretore{
+    position: relative;
+  }
+  
+.toretore:after{
+    content: "";
+    position: absolute;
+    top: 1em;
+    left: 0;
+    display: inline-block;
+    pointer-events: none;
+    width: 300px;
+    height: 300px;
+  }
+  
+  .toretore:hover:after{
+    background: url(nekosan.JPG); /* 表示する画像 */
+    background-size: contain; 
+    background-repeat: no-repeat;
+    background-position: center top;
+  }
+  
 
-.popup_table .font_red td:nth-child(2){
-    color:red;
-} */
+
+.fukidashi {
+    display: none;
+    width: 200px;
+    position: absolute;
+    top: 0;
+    left: 250px;
+    padding: 16px;
+    border-radius: 5px;
+    background: #33cc99;
+    color: #fff;
+    font-weight: bold;
+  }
+  .fukidashi:after {
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 0;
+    bottom: -19px;
+    margin-left: 10px;
+    border: solid transparent;
+    border-color: rgba(51, 204, 153, 0);
+    border-top-color: #33cc99;
+    border-width: 10px;
+    pointer-events: none;
+    content: " ";
+  }
+
+
 
 .top_details{
     height:100px;
@@ -1477,15 +1543,11 @@ button {
 	border-color: #da3c41;
 }
 
-
-#canvas{
-    display: block;
-}
-
 .canvas-container{
     background-color:blue;
     height:auto;
     width:100%;
+    
 }
 
 .chart_list{
@@ -1551,11 +1613,13 @@ button {
 }
 
 .plot_area{
+    box-sizing: border-box;
     height: auto;
     width: 100%;
     background-color: white;
-    margin-top: 100px;
+    margin-top: 20px;
     position: relative;
+
 }
 
 #plot_resultdata{
@@ -1569,4 +1633,15 @@ button {
     font-size: 25px;
     padding-top:5px;
     margin:0 0 0 20px;
+    
 }
+
+.picture_env{
+    width:auto;
+    height:50%;
+}
+.temp{border: solid 5px #a60000;}
+.hum{border: solid 5px #002e74;}
+.bar{border: solid 5px #4e0074;}
+.lum{border: solid 5px #72bd22;}
+

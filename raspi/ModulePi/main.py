@@ -1,17 +1,39 @@
 #!/usr/bin/env python3
-import asyncio,json,websockets,os,time,atexit,io,base64,socket,struct,serial
-import fcntl,struct,uuid,re
-import netifaces as ni
-from get_camera import full_img
-from sys import argv
-from multiprocessing import Pipe, Process, Manager
+import asyncio,json,websockets,os,time,\
+atexit,io,base64,socket,struct,serial,\
+fcntl,uuid,re,wiringpi
 import netifaces as ni
 import scapy.all as scapy
+from sys import argv
+from multiprocessing import Pipe, Process, Manager
 from PIL import Image
-from pprint import pprint
-from impro import Mcc
 from probe import main as Probe
 from sensor import Hard as Sensor
+try:
+    from get_camera import full_img
+    from impro import Mcc
+except Exception as e:
+    print("エラーを無視します:",e)
+    pass
+def _serial(send=None):
+    wiringpi.wiringPiSetup()
+    serial = wiringpi.serialOpen('/dev/ttyAMA0',9600)
+    if send != None:
+        wiringpi.serialPuts(serial,send)
+        wiringpi.serialPutchar(serial,3)
+        wiringpi.serialClose(serial)
+    else:
+        char = ""
+        asciinum = -1
+        while(True):
+            asciinum = wiringpi.serialGetchar(serial)
+            if asciinum != -1 and asciinum != 3:
+                char += chr(asciinum)
+            elif asciinum == 3:
+                break
+        wiringpi.serialClose(serial)
+        return char
+
 
 def _TcpSend(target_ip="127.0.0.1",target_port=8080):
     buffer_size = 4096
@@ -68,20 +90,19 @@ class ChildWebs:
         p.kill()
 
 class NetInfo:
-    PLC_MAC = ["58:52:8a"]
+    PLC_MAC = ["28:e9:8e"]
     PLC_IP = "114.51.4.254"
-    def __init__(self,ifname):
-        self.plcmac = None
+    def __init__(self):
         self.nic = ni.ifaddresses('wlan0')
         self.mymac = self.nic[ni.AF_LINK][0]['addr']
         try:
             self.myip = self.nic[ni.AF_INET][0]['addr']
         except KeyError:
             self.myip = None
-        self.__mac = self.Arp([self.PLC_IP])
+        self.__mac = self.arp([self.PLC_IP])
         for m in self.PLC_MAC:
             if self.__mac[self.PLC_IP].startswith(m):
-                self.plcmac = self.__mac[self.PLC_IP]
+                self.PLC_MAC = self.__mac[self.PLC_IP]
         self.mymac = ':'.join(re.split('(..)', format(uuid.getnode(), 'x'))[1::2])
 
     @staticmethod
@@ -140,7 +161,6 @@ class CamPi:
             print("Image processing complete successfully:",time.time() - start,"[sec]")
             subp.OneBeforeSendWait(cls._gendata(img_data,prodata))
             print("End of loop time:",time.time() - start,"[sec]")
-            #time.sleep(10)
 class ProbePi:
     @staticmethod
     def _gendata():
@@ -177,13 +197,19 @@ INSERT INTO pi_probe(
             print("End of loop time:",time.time() - start,"[sec]")
 
 if __name__ == '__main__':
+    #ipinfo = NetInfo()
     if argv[1] == "-c":
         CamPi.run()
+    elif argv[1] == "-dc":
+        print(_serial())
     elif argv[1] == "-p":
         ProbePi.run()
     elif argv[1] == "-pint":
         while True:
             full_img()
+    elif argv[1] == "-deb":
+        _serial("114.51.4.254")
+
     else:
         print("引数を指定してください")
         print("-p:プローブモード,-c:カメラモード")

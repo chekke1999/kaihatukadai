@@ -125,20 +125,6 @@ socket.onopen = function (event) {
 
 function getId(ele){
 
-
-
-
-
-
-
-
-
-
-
-    
-
-    
-
     //console.log(ele.id)
     let box = document.getElementById("box");//読み込みたい位置を指定
 
@@ -553,9 +539,15 @@ function result_generate(arr_parts){
             name: Object.keys(arr_key)[i]
         };
         insp = Object.keys(arr_key)[i];
-        table_th    =   '<div class="popup_inspection_name">'
+
+            table_th    =   '<div class="popup_inspection_name">'
             +    inspectionIndex(inspection)
-            +   '</div><div class="popup_table"><table border="1"><tr><th>部品名</th><th>X軸</th><th>Y軸</th><th>判定</th></tr>';
+            +   '</div>';
+
+
+        table_ganerate.insertAdjacentHTML("beforebegin",table_th);
+
+        table_th    =   '<tr><th>部品名</th><th>X軸</th><th>Y軸</th><th>判定</th></tr>';
 
         for(var key in arr_parts){
             var arr_key = arr_parts[key]
@@ -577,7 +569,7 @@ function result_generate(arr_parts){
                 }
                 if(false_cnt == -1){
                     f_t = "〇";
-                    font_red = ''
+                    font_red = 'class="font_green"'
                 }else{
                     f_t = "×";
                     font_red = 'class="font_red"';

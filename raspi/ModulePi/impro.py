@@ -45,29 +45,10 @@ class Mcc:
         res_H=cv2.split(hsv)
         res=res_H[0]
         return res
-    """エッジ"""
-    @staticmethod
-    def _EDGES_dec(img):
-
-        """
-        edges = cv2.Canny(img,0,180)
-        return edges
-        """     
-        dst=img.copy()
-        edges = cv2.Canny(img,60,60,apertureSize=3)
-          
-        minLineLength = 10
-        maxLineGap = 30
-        lines = cv2.HoughLinesP(edges,1,np.pi/180,100,minLineLength,maxLineGap)
-        for x1,y1,x2,y2 in lines[0]:
-            cv2.line(dst,(x1,y1),(x2,y2),(0,0,0),5)
-        #print( lines)
-        
-        return dst
     """#ズーム"""
     @staticmethod
     def _ZOOM_dec(set_img,point):
-        zoom_img=set_img[point[1]:point[3],point[0]:point[2]]
+        zoom_img=set_img[point[1]:point[3],point[0]:point[2]] #Y:Y,X:X
         #print(str(point))
         return zoom_img
     """テンプレマッチング"""
@@ -86,9 +67,9 @@ class Mcc:
             template=cv2.imread('img/temple/'+temp+'.jpg')
             template=cv2.cvtColor(template,cv2.COLOR_BGR2GRAY)
 
-        set_img=cls._ZOOM_dec(set_img,zoom_point)
+        zoom_img=cls._ZOOM_dec(set_img,zoom_point)
         try :
-            res=cv2.matchTemplate(set_img,template,cv2.TM_CCOEFF_NORMED)
+            res=cv2.matchTemplate(zoom_img,template,cv2.TM_CCOEFF_NORMED)
             h,w=template.shape[:2]
             font = cv2.FONT_HERSHEY_SIMPLEX
             
@@ -144,47 +125,11 @@ class Mcc:
             return [0,0]
 
         return return_pt
-
-    @classmethod
-    def _R_CHECK(cls,img,num):
-        h,w=img.shape[:2]
-        #set_point=[50,int(h/2)-20,w-50,int(h/2)+20]
-        set_point=[0,0,w,h]
-        #print(set_point)
-        H_img=cls._ZOOM_dec(cls._H_dec(img),set_point)
-        
-
-        f=open('img/test/col1.txt',mode='w')
-        f.write('')
-        f=open('img/test/col1.txt',mode='a')
-
-        h,w=H_img.shape[:2]
-        
-        H=list(range(h))
-        RGB=[]
-        H_data=[0]*180
-
-        for x in range(w):
-            for y in range(h):
-                H[y]=H_img[y,x]
-                H_data[H_img[y,x]]+=1
-            RGB.append(int(sum(H)/len(H)))
-            f.write(str(RGB[x]))
-            f.write("\n")
-        f.close()
-
-
-        MAX_H_data=H_data.index(max(H_data))
-        lower = np.array([MAX_H_data-0,0,0])
-        upper = np.array([MAX_H_data+0,255,255])
-        return H_img
     @classmethod
     def _MARCH_E_mono(cls,set_img,xp_img):
 
         template=cv2.imread('img/temple/H_bol_4080.jpg')
         template=cv2.cvtColor(template,cv2.COLOR_BGR2GRAY)
-
-        cls._SAVE("XX_",cv2.threshold(set_img, 100, 255, cv2.THRESH_BINARY)[1])
         Y,X=set_img.shape[:2]
         Y_off=int (Y/2) 
         X_off=int (X/2)
@@ -229,7 +174,6 @@ class Mcc:
             template = cv2.threshold(template, 100, 255, cv2.THRESH_BINARY)[1]
             super_img = cv2.threshold(super_img, 100, 255, cv2.THRESH_BINARY)[1]
             #cls._SAVE("X_temp",template)
-            cls._SAVE("X_"+str(img_num),super_img)
             ########################
             
             offset_X=[400,2900,400,2900]
@@ -261,7 +205,7 @@ class Mcc:
             cv2.rectangle(xp_img,
             (return_pt[img_num][0],return_pt[img_num][1]),
             (return_pt[img_num][2],return_pt[img_num][3]), 
-            (255,255,0),3)
+            (255,255,0),2)
         return return_pt,xp_img
     @classmethod
     def Img_Transform(cls,img,pt_set):
@@ -314,37 +258,36 @@ class Mcc:
         return data
     @classmethod 
     def _Parts_Select(cls):
-
         parts_point={
             "R":[
-                    [900,600,1150,1100],#1
-                    [900,950,1150,1450],
-                    [1000,600,1500,750],
-                    [1000,875,1500,1025],
-                    [800,525,1300,675],
-                    [1150,1125,1300,1300],
-                    [1250,1125,1400,1300],
-                    [1250,1250,1400,1425],
-                    [1150,1250,1300,1425],
-                    [1500,475,2000,625],#10
-                    [1150,475,1650,625],
-                    [1650,1000,1900,1400],
-                    [1450,100,1675,500],
-                    [800,400,1300,550],
-                    [800,300,1300,450],
-                    [800,200,1300,350],
-                    [800,100,1300,250],
-                    [1500,375,2000,525]#18
+                    [1000,600,1150,1100],#1
+                    [1000,1050,1150,1450],
+                    [1100,600,1500,750],
+                    [1100,875,1500,1025],
+                    [900,525,1300,675],
+                    [1200,1150,1300,1325],
+                    [1275,1150,1375,1325],
+                    [1275,1300,1375,1450],
+                    [1200,1300,1300,1450],
+                    [1600,475,2000,625],#10
+                    [1250,475,1650,625],
+                    [1775,1000,1925,1400],
+                    [1525,100,1675,500],
+                    [900,400,1300,550],
+                    [900,300,1300,450],
+                    [900,200,1300,350],
+                    [900,100,1300,250],
+                    [1600,375,2000,525]#18
                 ],
             "C":[
-                    [1350,800,1650,1000],
-                    [1500,1200,1800,1400],
-                    [1500,800,1800,1000]
+                    [1450,900,1650,1000],
+                    [1600,1300,1800,1400],
+                    [1600,900,1800,1000]
                 ],
             "D":[
-                    [800,600,1050,1000],
+                    [900,600,1050,1000],
                     [750,250,950,400],
-                    [1700,1300,2000,1600],
+                    [1700,1400,2000,1600],
                     [1700,100,2000,300]
                 ],
             "Q":[
@@ -352,8 +295,8 @@ class Mcc:
                     [1200,950,1400,1150]
                 ],
             "SW":[
-                    [300,100,900,600],
-                    [300,1100,900,1600]
+                    [400,150,800,550],
+                    [400,1150,800,1550]
                 ],
             "U":[
                     [1425,575,1825,925],

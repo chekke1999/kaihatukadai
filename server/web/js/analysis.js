@@ -287,7 +287,7 @@ window.onload = function (e) {
 	};
     xhr.send();
     false_cnt();
-    Pareto_generate();
+    // Pareto_generate();
 
 
     // // const result_attach_2 = document.getElementById('result_picture2');
@@ -303,13 +303,6 @@ window.onload = function (e) {
 
 }
 
-function func1() {
-    var term1 = document.getElementById("term1").value;
-    var term2 = document.getElementById("term2").value;
-    var term3 = document.getElementById("term3").value;
-    var term4 = document.getElementById("term4").value;
-    send_data_term(term1,term2,term3,term4);
-}
 
 function func_reset(){
     document.getElementById("term1").value = "";
@@ -345,15 +338,35 @@ function time_Divide(value){
     if(result[0].length == 2 && result[1].length == 2 && counter(value,":") == 1 && (value.split( ':' )|| value.match(/[^0-9]/))){
         var result = value.replace(/\//g,'-');
     }else{
+        var result = 'error'
         console.log('error');
     }
     return result;
 }
 
+function func1() {
+    var term1 = document.getElementById("term1").value;
+    var term2 = document.getElementById("term2").value;
+    var term3 = document.getElementById("term3").value;
+    var term4 = document.getElementById("term4").value;
+    var term001 = document.getElementById("form3");
+    console.log( term001 ) ;
+    send_data_term(term1,term2,term3,term4,term001);
+}
 
-function send_data_term(s_date,e_date,s_time,e_time){
+function send_data_term(s_date,e_date,s_time,e_time,radio){
     const result_table1 = document.getElementById("result_timetable1");
     const result_table2 = document.getElementById("result_timetable2");
+    var radioNodeList = radio.cr3 ;
+    var a = radioNodeList.value ;
+    
+    console.log( a ) ;
+    for(var key in arr_j){
+        console.log(arr_j[key])
+    }
+
+
+
 
     (s_date == "")? sel_str_Sdate = "*":sel_str_Sdate=date_Divide(s_date);
     (e_date == "")? sel_str_Edate = "*":sel_str_Edate=date_Divide(e_date);
@@ -496,92 +509,92 @@ function result_generate(arr_parts){
     }
 }
 
-function Pareto_generate(){
-    const plot_resultdata = document.getElementById('plot_resultdata');
-    const result_title_plot = document.getElementById("result_title_plot");
-    let arr_insp = false_cnt();
+// function Pareto_generate(){
+//     const plot_resultdata = document.getElementById('plot_resultdata');
+//     const result_title_plot = document.getElementById("result_title_plot");
+//     let arr_insp = false_cnt();
 
-    var counter = function(str,seq){
-        return str.split(seq).length - 1;
-    }
-    const Pareto = document.getElementById('Pareto');//パレート
+//     var counter = function(str,seq){
+//         return str.split(seq).length - 1;
+//     }
+//     const Pareto = document.getElementById('Pareto');//パレート
 
-    var salesData = [0];
+//     var salesData = [0];
     
 
 
-    var arr = Object.keys(arr_insp.value).map(function (key) {return arr_insp.value[key]});
+//     var arr = Object.keys(arr_insp.value).map(function (key) {return arr_insp.value[key]});
     
-    Object.keys(arr_insp.value).map(key => arr_insp.value[key])
+//     Object.keys(arr_insp.value).map(key => arr_insp.value[key])
     
-    var arr = Object.values(arr_insp.value);
-    arr.sort(function(a,b){
-        if( a > b ) return -1;
-        if( a < b ) return 1;
-        return 0;
-    });
+//     var arr = Object.values(arr_insp.value);
+//     arr.sort(function(a,b){
+//         if( a > b ) return -1;
+//         if( a < b ) return 1;
+//         return 0;
+//     });
 
-    for(i = 0;i < 5;i++){
-        salesData[i] = arr[i];
-    }
+//     for(i = 0;i < 5;i++){
+//         salesData[i] = arr[i];
+//     }
 
-    var labels = ["部品の位置", "値・型", "角度", "異物","傷", "汚れ"];
+//     var labels = ["部品の位置", "値・型", "角度", "異物","傷", "汚れ"];
 
-    var percentage = Cumulative_ratio(arr);
-    var chart = new Chart(Pareto,{
-    type: 'bar',
-    data: {
-        labels: labels,
-        datasets: [{
-            label: '比率の累計',
-            data: percentage,
-            backgroundColor: 'rgba(99, 132, 255, 0)',
-            borderColor: 'rgba(99, 132, 255, 1)',
-            pointBackgroundColor:'rgba(99, 132, 255, 1)',
-            borderWidth: 2,
-            type: 'line',
-            yAxisID: 'y-axis-percentage'
-        },{
-        label: '不良品数',
-        data: salesData,
-        backgroundColor: 'rgba(255, 99, 132, 1)',
-        borderColor: 'rgba(255, 99, 132, 1)',
-        borderWidth: 1,
-        yAxisID: 'y-axis-sales'
-        }]
-    },
-    options: {
-        scales: {
-        yAxes: [{
-            id: 'y-axis-sales',
-            type: 'linear',
-            display: true,
-            position: 'left',
-            ticks: {
-                beginAtZero: true,
+//     var percentage = Cumulative_ratio(arr);
+//     var chart = new Chart(Pareto,{
+//     type: 'bar',
+//     data: {
+//         labels: labels,
+//         datasets: [{
+//             label: '比率の累計',
+//             data: percentage,
+//             backgroundColor: 'rgba(99, 132, 255, 0)',
+//             borderColor: 'rgba(99, 132, 255, 1)',
+//             pointBackgroundColor:'rgba(99, 132, 255, 1)',
+//             borderWidth: 2,
+//             type: 'line',
+//             yAxisID: 'y-axis-percentage'
+//         },{
+//         label: '不良品数',
+//         data: salesData,
+//         backgroundColor: 'rgba(255, 99, 132, 1)',
+//         borderColor: 'rgba(255, 99, 132, 1)',
+//         borderWidth: 1,
+//         yAxisID: 'y-axis-sales'
+//         }]
+//     },
+//     options: {
+//         scales: {
+//         yAxes: [{
+//             id: 'y-axis-sales',
+//             type: 'linear',
+//             display: true,
+//             position: 'left',
+//             ticks: {
+//                 beginAtZero: true,
 
-            },
-            scalelabel: {                 //追加部分
-                display: true,              //追加部分
-                labelString: '縦軸ラベル1',  //追加部分
-            }
-        }, {
-            id: 'y-axis-percentage',
-            type: 'linear',
-            display: true,
-            position: 'right',
-            ticks: {
-            beginAtZero: true
-            }
-        }]
-        }
-    }
-    });
+//             },
+//             scalelabel: {                 //追加部分
+//                 display: true,              //追加部分
+//                 labelString: '縦軸ラベル1',  //追加部分
+//             }
+//         }, {
+//             id: 'y-axis-percentage',
+//             type: 'linear',
+//             display: true,
+//             position: 'right',
+//             ticks: {
+//             beginAtZero: true
+//             }
+//         }]
+//         }
+//     }
+//     });
     
-    // let plot_h = "<div class="+"result_title_plot"+">結果</div>";
-    // result_title_plot.remove();
-    // plot_resultdata.insertAdjacentHTML("afterbegin",plot_h);
-}
+//     let plot_h = "<div class="+"result_title_plot"+">結果</div>";
+//     // result_title_plot.remove();
+//     plot_resultdata.insertAdjacentHTML("afterbegin",plot_h);
+// }
 
 // const output_csv = document.getElementById('color_list');
 
@@ -600,102 +613,102 @@ function getCSV() {
 }
 
 
-function Fourier_generate(){
-    console.log("Fourier_generate")
-    var file = document.getElementById('file');
-    var result = document.getElementById('result');
-    var h="";
+// function Fourier_generate(){
+//     console.log("Fourier_generate")
+//     var file = document.getElementById('file');
+//     var result = document.getElementById('result');
+//     var h="";
 
-    if(window.File && window.FileReader && window.FileList && window.Blob) {
-        function loadLocalCsv(e) {
-            // ファイル情報を取得
-            var fileData = e.target.files[0];
-            console.log(fileData); // 取得した内容の確認用
+//     if(window.File && window.FileReader && window.FileList && window.Blob) {
+//         function loadLocalCsv(e) {
+//             // ファイル情報を取得
+//             var fileData = e.target.files[0];
+//             console.log(fileData); // 取得した内容の確認用
      
-            // CSVファイル以外は処理を止める
-            if(!fileData.name.match('.csv$')) {
-                alert('CSVファイルを選択してください');
-                return;
-            }
+//             // CSVファイル以外は処理を止める
+//             if(!fileData.name.match('.csv$')) {
+//                 alert('CSVファイルを選択してください');
+//                 return;
+//             }
      
-            // FileReaderオブジェクトを使ってファイル読み込み
-            var reader = new FileReader();
+//             // FileReaderオブジェクトを使ってファイル読み込み
+//             var reader = new FileReader();
 
-            // ファイル読み込みに成功したときの処理
-            reader.onload = function() {
-                var cols = reader.result.split('\n');
-                var data = [];
-                for (var i = 0; i < cols.length; i++) {
-                    data[i] = cols[i].split(',');
-                }
-                // var insert = createTable(data);
-                // result.appendChild(insert);
-                for(i = 0;i < data.length-1;i++){
-                    h = h + '"'+ data[i] + '",'
+//             // ファイル読み込みに成功したときの処理
+//             reader.onload = function() {
+//                 var cols = reader.result.split('\n');
+//                 var data = [];
+//                 for (var i = 0; i < cols.length; i++) {
+//                     data[i] = cols[i].split(',');
+//                 }
+//                 // var insert = createTable(data);
+//                 // result.appendChild(insert);
+//                 for(i = 0;i < data.length-1;i++){
+//                     h = h + '"'+ data[i] + '",'
                     
-                }
-                data = h
+//                 }
+//                 data = h
 
-                const Pareto = document.getElementById('Pareto');//パレート
-                var data1 = {
-                    labels: ["1月", "2月", "3月", "4月", "5月",5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],
-                    datasets: [{
-                        label: 'プリンター販売台数',
-                        data: data,
-                        borderColor: 'rgba(255, 100, 100, 1)'
-                    }]
-                };
-                console.log(h)
-                var options = {};
+//                 const Pareto = document.getElementById('Pareto');//パレート
+//                 var data1 = {
+//                     labels: ["1月", "2月", "3月", "4月", "5月",5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5,5],
+//                     datasets: [{
+//                         label: 'プリンター販売台数',
+//                         data: data,
+//                         borderColor: 'rgba(255, 100, 100, 1)'
+//                     }]
+//                 };
+//                 console.log(h)
+//                 var options = {};
                 
-                var ex_chart = new Chart(Pareto, {
-                    type: 'line',
-                    data: data1,
-                    options:  {
-                        scales: {
-                          yAxes: [
-                            {
-                              ticks: {
-                                beginAtZero: true,
-                                min: 0,
-                                max: 10
-                              }
-                            }
-                          ]
-                        }
-                      }
-                    });
+//                 var ex_chart = new Chart(Pareto, {
+//                     type: 'line',
+//                     data: data1,
+//                     options:  {
+//                         scales: {
+//                           yAxes: [
+//                             {
+//                               ticks: {
+//                                 beginAtZero: true,
+//                                 min: 0,
+//                                 max: 10
+//                               }
+//                             }
+//                           ]
+//                         }
+//                       }
+//                     });
 
 
 
 
-            }
-            // ファイル読み込みを実行
-            reader.readAsText(fileData, 'Shift_JIS');
+//             }
+//             // ファイル読み込みを実行
+//             reader.readAsText(fileData, 'Shift_JIS');
 
-        }
-        file.addEventListener('change', loadLocalCsv, false);
-                 console.log("ok")
-    } else {
-        file.style.display = 'none';
-        result.innerHTML = 'File APIに対応したブラウザでご確認ください';
-    }
+//         }
+//         file.addEventListener('change', loadLocalCsv, false);
+//                  console.log("ok")
+//     } else {
+//         file.style.display = 'none';
+//         result.innerHTML = 'File APIに対応したブラウザでご確認ください';
+//     }
 
-    const Pareto = document.getElementById('Pareto');//パレート
-    var data1 = {
-        labels: ["1月", "2月", "3月", "4月", "5月"],
-        datasets: [{
-            label: 'プリンター販売台数',
-            data: [880, 740, 900, 520, 930],
-            borderColor: 'rgba(255, 100, 100, 1)'
-        }]
-    };
+//     const Pareto = document.getElementById('Pareto');//パレート
+//     var data1 = {
+//         labels: ["1月", "2月", "3月", "4月", "5月"],
+//         datasets: [{
+//             label: 'プリンター販売台数',
+//             data: [880, 740, 900, 520, 930],
+//             borderColor: 'rgba(255, 100, 100, 1)'
+//         }]
+//     };
     
-    var options = {};
+//     var options = {};
     
-    var ex_chart = new Chart(Pareto, {
-        type: 'line',
-        data: data1,
-        options: options
-    });
-}
+//     var ex_chart = new Chart(Pareto, {
+//         type: 'line',
+//         data: data1,
+//         options: options
+//     });
+// }
