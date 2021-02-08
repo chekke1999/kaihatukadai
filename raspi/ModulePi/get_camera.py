@@ -23,7 +23,7 @@ def resize(img,re_length):
 	img2 = cv2.resize(img, dsize=None, fx=re_h , fy=re_w)
 	return img2
 
-def full_img():
+def full_img(show=True):
 	cap = cv2.VideoCapture (0)
 	WIDTH = 4056
 	HEIGHT = 3040
@@ -31,7 +31,8 @@ def full_img():
 	cap.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
 	cap.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
 	_, frame = cap.read()
-	imshow_fullscreen('screen', resize(frame,monitor.height))
+	if show:
+		imshow_fullscreen('screen', resize(frame,monitor.height))
 	return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
 def img_get(pipe):

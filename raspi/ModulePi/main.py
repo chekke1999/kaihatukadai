@@ -15,53 +15,56 @@ try:
 except Exception as e:
     print("エラーを無視します:",e)
     pass
-def _serial(send=None):
-    wiringpi.wiringPiSetup()
-    serial = wiringpi.serialOpen('/dev/ttyAMA0',9600)
-    if send != None:
-        wiringpi.serialPuts(serial,send)
-        wiringpi.serialPutchar(serial,3)
-        wiringpi.serialClose(serial)
-    else:
+class Serial:
+    def __init__(self):
+        wiringpi.wiringPiSetup()
+        self.serial = wiringpi.serialOpen('/dev/ttyAMA0',9600)
+    def send(self,data=None):
+        wiringpi.serialPuts(self.serial,data)
+        wiringpi.serialPutchar(self.serial,3)
+    def recv(self):
         char = ""
         asciinum = -1
         while(True):
-            asciinum = wiringpi.serialGetchar(serial)
+            asciinum = wiringpi.serialGetchar(self.serial)
             if asciinum != -1 and asciinum != 3:
                 char += chr(asciinum)
             elif asciinum == 3:
                 break
-        wiringpi.serialClose(serial)
         return char
+    def __del__(self):
+         wiringpi.serialClose(self.serial)
+
+class Tcp:
+    def __init__(self):
+        # 1.ソケットオブジェクトの作成
+        self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def client(self,ip="127.0.0.1",port=8080,data):
+        # 2.サーバに接続
+        self.tcp.connect((target_ip,target_port))
+        # 3.サーバにデータを送信
+        self.tcp.send(b"Data by TCP Client!!")
+        # 4.サーバからのレスポンスを受信
+        response = self.tcp.recv(4096)
+    def server(self,ip="127.0.0.1",port=8080,img_data):
+        # 2.作成したソケットオブジェクトにIPアドレスとポートを紐づける
+        self.tcp.bind((server_ip, server_port))
+        # 3.作成したオブジェクトを接続可能状態にする
+        self.tcp.listen(5)
+        # 4.ループして接続を待ち続ける
+        while True:
+            # 5.クライアントと接続する
+            client,address = self.tcp.accept()
+            print("[*] Connected!! [ Source : {}]".format(address))
+            # 6.データを受信する
+            data = client.recv(1024)
+            # 7.クライアントへデータを返す
+            if data == b"1":
+                client.send(img_data)
+            # 8.接続を終了させる
+            client.close()
 
 
-def _TcpSend(target_ip="127.0.0.1",target_port=8080):
-    buffer_size = 4096
-    # 1.ソケットオブジェクトの作成
-    tcp_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    # 2.サーバに接続
-    tcp_client.connect((target_ip,target_port))
-    # 3.サーバにデータを送信
-    tcp_client.send(b"Data by TCP Client!!")
-    # 4.サーバからのレスポンスを受信
-    response = tcp_client.recv(buffer_size)
-    print("[*]Received a response : {}".format(response))
-
-async def _Send(url,jlist):
-    async with websockets.connect(url,max_size=20000000) as websocket:
-        start = time.time()
-        sendj = json.dumps(jlist)
-        await websocket.send(sendj)
-        try:
-            recv_data = await websocket.recv()
-        except Exception as e:
-            print("websockets.exceptions.ConnectionClosedError:",e)
-            print('Reconnecting')
-            websocket = await websockets.connect(url,max_size=20000000)
-            await websocket.send(sendj)
-        else:
-            print("Send complete successfully:",time.time() - start,"[sec]")
-            return recv_data
 class ChildWebs:
     def __init__(self):
         manager = Manager()
@@ -71,6 +74,21 @@ class ChildWebs:
         self.cpro = Process(target=self._sendpro)
         self.cpro.start()
         print(self.data)
+    async def _Send(url,jlist):
+        async with websockets.connect(url,max_size=20000000) as websocket:
+            start = time.time()
+            sendj = json.dumps(jlist)
+            await websocket.send(sendj)
+            try:
+                recv_data = await websocket.recv()
+            except Exception as e:
+                print("websockets.exceptions.ConnectionClosedError:",e)
+                print('Reconnecting')
+                websocket = await websockets.connect(url,max_size=20000000)
+                await websocket.send(sendj)
+            else:
+                print("Send complete successfully:",time.time() - start,"[sec]")
+                return recv_data
     def OneBeforeSendWait(self,data):
         while self.data["flag"]:
             pass
@@ -81,7 +99,7 @@ class ChildWebs:
         loop = asyncio.get_event_loop()
         while True:
             if self.data["flag"]:
-                print("return:",loop.run_until_complete(_Send("ws://192.168.11.199:8080",self.data["data"])))
+                print("return:",loop.run_until_complete(self._Send("ws://192.168.11.199:8080",self.data["data"])))
                 self.data["flag"] = False
             else:
                 pass
@@ -127,11 +145,7 @@ class CamPi:
     @staticmethod
     def _gendata(img_data,prodata):
         png = io.BytesIO()
-        try:
-            Image.fromarray(prodata["img"]).save(png,"PNG")
-        except Exception as e:
-            print(f"Error:{e}")
-            Image.fromarray(img_data).save(png,"PNG")
+        Image.fromarray(prodata["img"]).save(png,"PNG")
         b_frame = png.getvalue()
         jdict = Sensor.main()
         del prodata["img"]
@@ -147,7 +161,14 @@ class CamPi:
         return send_d
 
     @classmethod
-    def run(cls):
+    def run(cls,net):
+        seri = Serial()
+        subcam_ip = seri.recv()
+        if subcam_ip == -1:
+            exit()
+        else:
+            seri.send(f"Successful connection.Your ip is {subcam_ip}")
+
         #プロセスの分離とプロセス間通信用マネージャ
         subp = ChildWebs()
         atexit.register(subp.AllKill,p=subp.cpro)
@@ -161,6 +182,28 @@ class CamPi:
             print("Image processing complete successfully:",time.time() - start,"[sec]")
             subp.OneBeforeSendWait(cls._gendata(img_data,prodata))
             print("End of loop time:",time.time() - start,"[sec]")
+
+class SCamPi:
+    @classmethod
+    def run(cls,net):
+        seri = Serial()
+        time.sleep(2)
+        seri.send(net.myip)
+        recv = seri.recv()
+        if recv == -1:
+            exit()
+        else:
+            print(recv)
+        
+
+        while(True):
+            start = time.time()
+            print("Please wait until the shooting is completed...",end="")
+            img_data = full_img(show=False)
+            print("\rshooting complete successfully:",time.time() - start,"[sec]")
+
+            print("End of loop time:",time.time() - start,"[sec]")
+
 class ProbePi:
     @staticmethod
     def _gendata():
@@ -197,18 +240,16 @@ INSERT INTO pi_probe(
             print("End of loop time:",time.time() - start,"[sec]")
 
 if __name__ == '__main__':
-    #ipinfo = NetInfo()
+    net = NetInfo()
     if argv[1] == "-c":
-        CamPi.run()
+        CamPi.run(net)
     elif argv[1] == "-dc":
-        print(_serial())
+        SCamPi.run(net)
     elif argv[1] == "-p":
-        ProbePi.run()
+        ProbePi.run(net)
     elif argv[1] == "-pint":
         while True:
             full_img()
-    elif argv[1] == "-deb":
-        _serial("114.51.4.254")
 
     else:
         print("引数を指定してください")

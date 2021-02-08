@@ -29,6 +29,9 @@ def totalp(i,value):
     sd_percent = np.std(i/value[3]) * 100
     total_percent = (max_percent+min_percent+avg_percent+sd_percent)/ 4
 
+    if total_percent <= 100:
+        total_percent = 100
+
     return abs(total_percent)
 def main ():
     volts_no_np=[]
