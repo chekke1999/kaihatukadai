@@ -5,7 +5,7 @@ fcntl,uuid,re,wiringpi
 import netifaces as ni
 import scapy.all as scapy
 from sys import argv
-from multiprocessing import Pipe, Process, Manager
+from multiprocessing import Pipe, Process, Manager, Pool
 from PIL import Image
 from probe import main as Probe
 from sensor import Hard as Sensor
@@ -15,6 +15,9 @@ try:
 except Exception as e:
     print("エラーを無視します:",e)
     pass
+def AllKill(p):
+    p.kill()
+
 class Serial:
     def __init__(self):
         wiringpi.wiringPiSetup()
@@ -43,10 +46,15 @@ class Tcp:
         # 2.サーバに接続
         self.tcp.connect((target_ip,target_port))
         # 3.サーバにデータを送信
-        self.tcp.send(b"Data by TCP Client!!")
+        self.tcp.send(data)
         # 4.サーバからのレスポンスを受信
-        response = self.tcp.recv(4096)
-    def server(self,ip="127.0.0.1",port=8080,img_data):
+        data = b""
+        wihle True:
+            response = self.tcp.recv(4096)
+            if not response:
+                return data
+            data += response
+    def server(self,ip="127.0.0.1",port=8080):
         # 2.作成したソケットオブジェクトにIPアドレスとポートを紐づける
         self.tcp.bind((server_ip, server_port))
         # 3.作成したオブジェクトを接続可能状態にする
@@ -59,11 +67,20 @@ class Tcp:
             # 6.データを受信する
             data = client.recv(1024)
             # 7.クライアントへデータを返す
-            if data == b"1":
-                client.send(img_data)
+            if data == b"plees":
+                self.data["flag"] = True
+                while self.data["flag"]:
+                    pass
+                client.send(self.data["data"])
+
             # 8.接続を終了させる
             client.close()
-
+    def backserver():
+        self.data = manager.dict()
+        self.data["flag"] = False 
+        self.data["data"] = None
+        self.cpro = Process(target=self.server)
+        self.cpro.start()
 
 class ChildWebs:
     def __init__(self):
@@ -103,13 +120,11 @@ class ChildWebs:
                 self.data["flag"] = False
             else:
                 pass
-    @staticmethod
-    def AllKill(p):
-        p.kill()
 
 class NetInfo:
-    PLC_MAC = ["28:e9:8e"]
-    PLC_IP = "114.51.4.254"
+    VENDER_MAC = ["dc:a6:32","b8:27:eB"]
+    GATE_MAC = None
+    GATE_IP = "114.51.4.1"
     def __init__(self):
         self.nic = ni.ifaddresses('wlan0')
         self.mymac = self.nic[ni.AF_LINK][0]['addr']
@@ -117,10 +132,10 @@ class NetInfo:
             self.myip = self.nic[ni.AF_INET][0]['addr']
         except KeyError:
             self.myip = None
-        self.__mac = self.arp([self.PLC_IP])
-        for m in self.PLC_MAC:
-            if self.__mac[self.PLC_IP].startswith(m):
-                self.PLC_MAC = self.__mac[self.PLC_IP]
+        self.__mac = self.arp([self.GATE_IP])
+        for m in self.VENDER_MAC:
+            if self.__mac[self.GATE_IP].startswith(m):
+                self.GATE_MAC = self.__mac[self.GATE_IP]
         self.mymac = ':'.join(re.split('(..)', format(uuid.getnode(), 'x'))[1::2])
 
     @staticmethod
@@ -143,78 +158,91 @@ class NetInfo:
 
 class CamPi:
     @staticmethod
-    def _gendata(img_data,prodata):
+    def _base64conv(ndimg):
         png = io.BytesIO()
-        Image.fromarray(prodata["img"]).save(png,"PNG")
-        b_frame = png.getvalue()
+        Image.fromarray(ndimg).save(png,"PNG")
+        return base64.b64encode(png.getvalue()).decode('utf-8')
+
+    @classmethod
+    def _gendata(prodata1,prodata2):
+        base64_img1 = cls._base64conv(prodata1["img"])
+        base64_img2 = cls._base64conv(prodata2)
         jdict = Sensor.main()
-        del prodata["img"]
-        jdict.update(prodata)
+        del prodata1["img"]
+        jdict.update(prodata1)
         send_d = {
             "in_data" : {
                 "db":"piscan",
-                "mac":"58:52:8a:d6:69:a1",
+                "mac":cls.pimac,
                 "jstr":json.dumps(jdict),
-                "img":[base64.b64encode(b_frame).decode('utf-8'),base64.b64encode(b_frame).decode('utf-8')]
+                "img":[base64_img1,base64_img2]
             }
         }
         return send_d
 
     @classmethod
     def run(cls,net):
+        cls.pimac = net.GATE_MAC
         seri = Serial()
         subcam_ip = seri.recv()
         if subcam_ip == -1:
             exit()
         else:
             seri.send(f"Successful connection.Your ip is {subcam_ip}")
-
-        #プロセスの分離とプロセス間通信用マネージャ
+        tcpc = Tcp.client()
         subp = ChildWebs()
-        atexit.register(subp.AllKill,p=subp.cpro)
+        atexit.register(AllKill,p=subp.cpro)
+        atexit.register(AllKill,p=tcpc.cpro)
         while(True):
             start = time.time()
             print("Please wait until the shooting is completed...",end="")
-            img_data = full_img()
-            print("\rshooting complete successfully:",time.time() - start,"[sec]")
+            ndimg1 = full_img()
+            print("\rShooting complete successfully:",time.time() - start,"[sec]")
+            print("Wait for the sub camera to complete shooting")
+            ndimg2 = np.load(io.BytesIO(tcpc(subcam_ip,8080,b"plees")))
+            print("\rSub camera shooting complete successfully:",time.time() - start,"[sec]")
             print("Run Image processing...")
-            prodata = Mcc.Start(img=img_data)
+            prodata1 = Mcc.Start(ndimg1)
+            prodata2 = ndimg2
             print("Image processing complete successfully:",time.time() - start,"[sec]")
-            subp.OneBeforeSendWait(cls._gendata(img_data,prodata))
+            subp.OneBeforeSendWait(cls._gendata(prodata1,prodata2))
             print("End of loop time:",time.time() - start,"[sec]")
 
 class SCamPi:
     @classmethod
     def run(cls,net):
         seri = Serial()
-        time.sleep(2)
         seri.send(net.myip)
         recv = seri.recv()
         if recv == -1:
             exit()
         else:
-            print(recv)
-        
-
+            pass
+        print(recv)
+        tcps = Tcp.server
         while(True):
-            start = time.time()
-            print("Please wait until the shooting is completed...",end="")
-            img_data = full_img(show=False)
-            print("\rshooting complete successfully:",time.time() - start,"[sec]")
-
-            print("End of loop time:",time.time() - start,"[sec]")
+            if tcps.data["flag"]:
+                start = time.time()
+                print("Please wait until the shooting is completed...",end="")
+                ndimg = full_img(show=False)
+                ndbyte = io.BytesIO()
+                np.save(ndbyte,ndimg)
+                tcps.data["data"] = ndbyte.getvalue()
+                tcps.data["flag"] = False
+                print("\rshooting complete successfully:",time.time() - start,"[sec]")
+                print("End of loop time:",time.time() - start,"[sec]")
 
 class ProbePi:
-    @staticmethod
-    def _gendata():
+    @classmethod
+    def _gendata(cls):
         jdict = Sensor.main()
         jdict.update(Probe())
         insert_str = f"""\
 INSERT INTO pi_probe(
-    plc_mac,
+    stationpi_mac,
     scan_data
 ) VALUES( 
-    '58:52:8a:d6:69:a1',
+    {cls.pimac},
     '{json.dumps(jdict)}'
 );
 """
@@ -227,9 +255,10 @@ INSERT INTO pi_probe(
         }
         return send_d
     @classmethod
-    def run(cls):
+    def run(cls,net):
+        cls.pimac = net.GATE_MAC
         subp = ChildWebs()
-        atexit.register(subp.AllKill,p=subp.cpro)
+        atexit.register(AllKill,p=subp.cpro)
         while True:
             time.sleep(10)
             start = time.time()
@@ -241,6 +270,8 @@ INSERT INTO pi_probe(
 
 if __name__ == '__main__':
     net = NetInfo()
+    if net.GATE_MAC == None:
+        exit()
     if argv[1] == "-c":
         CamPi.run(net)
     elif argv[1] == "-dc":

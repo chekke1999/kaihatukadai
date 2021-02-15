@@ -41,15 +41,34 @@ var g, w0, h0, w2, h2, x0, y0, dx, dy, w, h;    // screen size
 var cc = ["red", "blue", "green", "orange"];
 
 //-------------------------------------
+function fitCanvasSize() {
+  var canvas = document.getElementById("canvas");
+  // Canvas のサイズをクライアントサイズに合わせる
+  canvas.width = document.documentElement.clientWidth - 10;
+  canvas.height = document.documentElement.clientHeight - 10;
 
+
+  // Canvas サイズに合わせて矩形を描画
+
+}
+
+window.onresize = function(){ 
+  fitCanvasSize();
+  init();
+}
 //..........................
 function init() {
 //..........................
+
+
+  fitCanvasSize();
+
+
   df1 = document.form1;
   setList();
   loadCanvas();
-  setD(8);
-  dispF(0);
+  setD(0);
+  // dispF(0);
   paint();
 }
 
@@ -65,14 +84,14 @@ function loadCanvas() {
   g = canvas.getContext("2d");
   g.lineWidth = 1;
   g.font = "12px 'ＭＳ 明朝'";
-  w0 = canvas.width;
-  h0 = canvas.height;
+  w0 = canvas.width / 1.7;
+  h0 = canvas.height / 1.7;
   w1 = w0*2/7; h1 = h0;
-  w2 = w0*5/7; h2 = h0/2;
+  w2 = w0*6/7; h2 = h0/2;
   dx = w2/15; dy = h2/10;
-  w = w2 - 2*dx; x0 = dx;
+  w = w2; x0 = dx;
   h = (h2 - 2*dy)/2; y0 = h2/2;
-
+  console.log(w)
   canvas.addEventListener("mousedown" , mousePressed);
 }
 
@@ -116,7 +135,7 @@ function calc(sw) { //
     if(df1.radio2[1].checked) alert("変換終了！");
     setDisable("");
     runFlag = 2;
-    dispF(0);
+    // dispF(0);
   }else {
     stopFlag = 0;
   }
@@ -498,7 +517,7 @@ function paint() {
   g.clearRect(0, 0, w0, h0);
   paint1();
   paint2();
-  dispF(0);
+  // dispF(0);
   y0 = h2/2;
 }
 
@@ -591,7 +610,7 @@ function paint2() { // 変換結果
   g.fillRect(x0, h0-dy, w*M/2/N, 4);
   g.fillRect(w2-dx-w*M/2/N, h0-dy, w*M/2/N, 4);
                                        // 実数部
-  g.strokeStyle = "blue";
+  g.strokeStyle = "pink";
   g.beginPath();
 
   for(var i=0; i<N; i++) {

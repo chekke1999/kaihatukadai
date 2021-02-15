@@ -183,10 +183,10 @@ function plot_ENV(arr,arr_no,max){
               label: '電圧',
               data: arr,
               spanGaps: true,
-              borderColor: "rgba(235,82,169,1)",
+              borderColor: "rgba(0,0,0,1)",
               backgroundColor: "rgba(0,0,0,0)",
               fill: false,
-              borderWidth: 2,
+              borderWidth: 4,
 
             }
           ],

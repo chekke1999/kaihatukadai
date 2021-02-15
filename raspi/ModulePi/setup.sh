@@ -39,6 +39,11 @@ timedatectl set-ntp true
 systemctl daemon-reload
 systemctl restart systemd-timesyncd.service
 
+#static route
+cat << EOF > /lib/dhcpcd/dhcpcd-hooks/40-route
+ip route add 192.168.0.0/24 via 114.51.4.1 dev eth0 proto static
+EOF
+
 # pakage install
 apt-get update;sudo apt-get upgrade -y
 apt install -y python3-pip

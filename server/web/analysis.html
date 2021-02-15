@@ -5,7 +5,7 @@
     <link rel="stylesheet" href="style\test.css">
     <script src="js\jquery-3.5.1.min.js"></script>
     <script src="js\analysis.js"></script>
-    <script src="js\fftp.js"></script>
+    <!-- <script src="js\fftp.js"></script> -->
     <link rel="shortcut icon" href="favicon.ico">
     <meta name="viewport" content="width=device-width,initial-scale=1">
 <html xml:lang="ja" xmlns="http://www.w3.org/1999/xhtml">
@@ -39,11 +39,65 @@
                     <div class="result_table">
 
 
+                        <hr size="1">
+
+                        <form name="form1">
+                        <table>
+                        <tr>
+                        <td><input type="radio" name="radio1" onClick="setD(0)"checked>矩形波</td>
+                        <td><input type="radio" name="radio1" onClick="setD(1)">３角波</td>
+                        <td><input type="radio" name="radio1" onClick="setD(2)">ノコギリ波</td>
+                        <td><input type="radio" name="radio1" onClick="setD(3)">台形波</td>
+                        <td><input type="radio" name="radio1" onClick="setD(4)">半楕円波</td>
+                        <td><input type="radio" name="radio1" onClick="setD(5)">正弦波</td>
+                        </tr>
+                        <tr>
+                        <td><input type="radio" name="radio1" onClick="setD(6)">任意折線</td>
+                        <td><input type="radio" name="radio1" onClick="setD(7)">任意曲線</td>
+                        <td><input type="radio" name="radio1" onClick="setD(8)" >音声ﾃﾞｰﾀ 1</td>
+                        <td><input type="radio" name="radio1" onClick="setD(9)">音声ﾃﾞｰﾀ 2</td>
+                        <td><input type="radio" name="radio1" onClick="setD(10)" disabled>.</td>
+                        <td>　</td>
+                        </tr>
+                        </table>
+                        <table class="tab1">
+                        <tr>
+                        <td>データ数 N</td>
+                        <td>逆変換次数 M</td>
+                        <td><input type="radio" name="radio2" onClick="setParam(2)" checked>高速ﾌｰﾘｴ変換</td>
+                        <td><input type="button" value="計算開始" onClick="calc(1)"></td>
+                        <td><input type="text" size="10" value="処理時間(sec)"></td>
+                        <td>　　</td>
+                        <!-- <td><input type="button" value="Prev" onClick="dispF(-1)"></td>
+                        <td><input type="button" value="to Top" onClick="dispF(-2)"></td> -->
+                        </tr>
+                        <tr>
+                        <td><select name="cb1" onChange="setParam(0)"></select></td>
+                        <td><select name="cb2" onChange="setParam(1)"></select></td>
+                        
+                        <td><input type="radio" name="radio2" onClick="setParam(2)">通常ﾌｰﾘｴ変換</td>
+                        <!--td><input type="button" value="計算中止" onClick="calc(0)"></td-->
+                        <td></td>
+                        <td><input type="text" size="5" name="tfT" value="0"></td>
+                        <td>　　</td>
+                        <!-- <td><input type="button" value="Next" onClick="dispF(+1)"></td>
+                        <td><input type="button" value="to Tail" onClick="dispF(+2)"></td> -->
+                        </tr>
+                        </table><br>
+                        
+                            <canvas  id="canvas" style="width:100%;box-sizing: border-box;background-color:white;border: 1px solid green;"/></canvas>
+
+                        <br>
+                        
+                        <!--
+                        ●テキストによるデータ入力欄：<br>
+                        　　<textarea name="taD" rows="10" cols="15" value=""></textarea><br>
+                        -->
+                        </form>
 
 
 
-
-                                <div class="canvas-container-photo">
+                                <!-- <div class="canvas-container-photo">
                                     <div class="chart_list list_photo">画像検査</div>
                                     <div class="canvas-box-photo" onclick="Pareto_generate()"><li class="canvas_text">パレート図</li></div>
                                     <div class="canvas-box-photo" onclick="Fourier_generate()"><li class="canvas_text">散布図</li></div>
@@ -53,13 +107,13 @@
                                     <div class="chart_list">プローブ検査</div>
                                     <div class="canvas-box-probe" onclick="Fourier_generate()"><li class="canvas_text">フーリエ変換</li></div>
                                     <div class="canvas-box-probe" onclick="plot()"><li class="canvas_text">異常値検知</li></div>
-                                </div>
+                                </div> -->
                                 
-                                <input type="file" name="file" id="file">
+                                <!-- <input type="file" name="file" id="file"> -->
                                 <div id="result"></div>
 
                                 <div class="plot_area">
-                                    <canvas id="Pareto"><canvas>
+                                    <!-- <canvas id="canvas"><canvas> -->
                                     <!-- <canvas id=sty"Scatter" le="height:100;background-color:white;"><canvas>
                                     <canvas id="Outliers_photo" style="height:100;background-color:white;"><canvas>
                                     <canvas id="Fourier" style="height:100;background-color:white;"><canvas>
@@ -68,46 +122,7 @@
                                 <div id="plot_resultdata">
                                     <!-- <div id="result_title_plot">123</div> -->
                                     
-<div onLoad="init()">
 
-    <form name="form1">
-    <div><input type="radio" name="radio1" onClick="setD(0)">矩形波</div>
-    <div><input type="radio" name="radio1" onClick="setD(1)">３角波</div>
-    <div><input type="radio" name="radio1" onClick="setD(2)">ノコギリ波</div>
-    <div><input type="radio" name="radio1" onClick="setD(3)">台形波</div>
-    <div><input type="radio" name="radio1" onClick="setD(4)">半楕円波</div>
-    <div><input type="radio" name="radio1" onClick="setD(5)">正弦波</div>
-    <div><input type="radio" name="radio1" onClick="setD(6)">任意折線</div>
-    <div><input type="radio" name="radio1" onClick="setD(7)">任意曲線</div>
-    <div><input type="radio" name="radio1" onClick="setD(8)" checked>音声ﾃﾞｰﾀ 1</div>
-    <div><input type="radio" name="radio1" onClick="setD(9)">音声ﾃﾞｰﾀ 2</div>
-    <div><input type="radio" name="radio1" onClick="setD(10)" disabled>.</div>
-    <div>　</div>
-    <div><input type="checkbox" name="chkG">grid入力</div>
-    <div>データ数 N</div>
-    <div>逆変換次数 M</div>
-    <div><input type="radio" name="radio2" onClick="setParam(2)" checked>高速ﾌｰﾘｴ変換</div>
-    <div><input type="button" value="計算開始" onClick="calc(1)"></div>
-    <div><input type="text" size="10" value="処理時間(sec)"></div>
-    <div>　　</div>
-    <div><input type="button" value="Prev" onClick="dispF(-1)"></div>
-    <div><input type="button" value="to Top" onClick="dispF(-2)"></div>
-    <div><select name="cb1" onChange="setParam(0)"></select></div>
-    <div><select name="cb2" onChange="setParam(1)"></select></div>
-    
-    <div><input type="radio" name="radio2" onClick="setParam(2)">通常ﾌｰﾘｴ変換</div>
-    <!--div><input type="button" value="計算中止" onClick="calc(0)"></div-->
-    <div></div>
-    <div><input type="text" size="5" name="tfT" value="0"></div>
-    <div>　　</div>
-    <div><input type="button" value="Next" onClick="dispF(+1)"></div>
-    <div><input type="button" value="to Tail" onClick="dispF(+2)"></div>
-    <canvas width="700" height="450" id="canvas" style="border: 1px solid green;"></canvas>
-    <br>
-    </form>
-    
-    </blockquote>
-    </div>
     
                                 </div>
                         <div id="nav-links" class="nav-links"></div>
