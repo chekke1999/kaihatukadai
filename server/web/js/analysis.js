@@ -592,7 +592,7 @@ function loadCanvas() {
   dx = w2/15; dy = h2/10;
   w = w2; x0 = dx;
   h = (h2 - 2*dy)/2; y0 = h2/2;
-  console.log(w)
+  // console.log(w)
   canvas.addEventListener("mousedown" , mousePressed);
 }
 
@@ -1049,7 +1049,7 @@ function paint1() { // source
   g.rect(w2/2, dy-7, 20, 1);
   g.fillStyle = "red";
   g.fillText("元データ", w2/2+25, dy-5);
-  g.fillText("fmax = "+fmtF(fmax, 6, 1), 2*dx, h2-5);
+  g.fillText("MAX = "+fmtF(fmax, 6, 1), 2*dx, h2-5);
 
   for(var i=0; i<N; i++) {
     x = x0 + w*i/N;
@@ -1088,22 +1088,19 @@ function paint2() { // 変換結果
   g.fillStyle = "red";
   g.strokeStyle = "red";
   g.beginPath();
-  g.rect(w2*3/6, h2+dy-7, 15, 1);
-  g.fillText("振幅ｽﾍﾟｸﾄﾙ", w2*3/6+20, h2+dy-5);
+  g.fillText("━━ 振幅ｽﾍﾟｸﾄﾙ", w2*3/6+20, h2+dy-10);
   g.stroke();
 
   g.fillStyle = "blue";
   g.strokeStyle = "blue";
   g.beginPath();
-  g.rect(w2*4/6, h2+dy-7, 15, 1);
-  g.fillText("実数部", w2*4/6+20, h2+dy-5);
+  g.fillText("━━ 実数部", w2*4/6+60, h2+dy-10);
   g.stroke();
 
   g.fillStyle = "green";
   g.strokeStyle = "green";
   g.beginPath();
-  g.rect(w2*5/6, h2+dy-7, 15, 1);
-  g.fillText("虚数部", w2*5/6+20, h2+dy-5);
+  g.fillText("━━ 虚数部", w2*5/6+50, h2+dy-10);
   g.stroke();
   if(runFlag != 2) return;
                                        // 逆変換対象部

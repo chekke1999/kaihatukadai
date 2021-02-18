@@ -39,21 +39,28 @@ class Serial:
          wiringpi.serialClose(self.serial)
 
 class Tcp:
-    def __init__(self):
+    def __init__(self,bkserver_mode=False):
         # 1.ソケットオブジェクトの作成
         self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    def client(self,ip="127.0.0.1",port=8080,data):
+        if bkserver_mode:
+            self.data = manager.dict()
+            self.data["flag"] = False 
+            self.data["data"] = None
+            self.cpro = Process(target=self.server)
+            self.cpro.start()
+    def client(self,ip="127.0.0.1",port=8080,data,res=True):
         # 2.サーバに接続
         self.tcp.connect((target_ip,target_port))
         # 3.サーバにデータを送信
         self.tcp.send(data)
         # 4.サーバからのレスポンスを受信
-        data = b""
-        wihle True:
-            response = self.tcp.recv(4096)
-            if not response:
-                return data
-            data += response
+        if res:
+            data = b""
+            wihle True:
+                response = self.tcp.recv(4096)
+                if not response:
+                    return data
+                data += response
     def server(self,ip="127.0.0.1",port=8080):
         # 2.作成したソケットオブジェクトにIPアドレスとポートを紐づける
         self.tcp.bind((server_ip, server_port))
@@ -72,15 +79,10 @@ class Tcp:
                 while self.data["flag"]:
                     pass
                 client.send(self.data["data"])
-
+            elif data == b"0x01"
+                self.data["flag"] = True
             # 8.接続を終了させる
             client.close()
-    def backserver():
-        self.data = manager.dict()
-        self.data["flag"] = False 
-        self.data["data"] = None
-        self.cpro = Process(target=self.server)
-        self.cpro.start()
 
 class ChildWebs:
     def __init__(self):
@@ -189,24 +191,27 @@ class CamPi:
             exit()
         else:
             seri.send(f"Successful connection.Your ip is {subcam_ip}")
-        tcpc = Tcp.client()
         subp = ChildWebs()
+        tcps = Tcp(bkserver_mode=True)
         atexit.register(AllKill,p=subp.cpro)
-        atexit.register(AllKill,p=tcpc.cpro)
+        atexit.register(AllKill,p=tcps.cpro)
         while(True):
-            start = time.time()
-            print("Please wait until the shooting is completed...",end="")
-            ndimg1 = full_img()
-            print("\rShooting complete successfully:",time.time() - start,"[sec]")
-            print("Wait for the sub camera to complete shooting")
-            ndimg2 = np.load(io.BytesIO(tcpc(subcam_ip,8080,b"plees")))
-            print("\rSub camera shooting complete successfully:",time.time() - start,"[sec]")
-            print("Run Image processing...")
-            prodata1 = Mcc.Start(ndimg1)
-            prodata2 = ndimg2
-            print("Image processing complete successfully:",time.time() - start,"[sec]")
-            subp.OneBeforeSendWait(cls._gendata(prodata1,prodata2))
-            print("End of loop time:",time.time() - start,"[sec]")
+            if tcps.data["flag"]:
+                start = time.time()
+                print("Please wait until the shooting is completed...",end="")
+                ndimg1 = full_img()
+                print("\rShooting complete successfully:",time.time() - start,"[sec]")
+                print("Wait for the sub camera to complete shooting")
+                ndimg2 = np.load(io.BytesIO(tcps.client(subcam_ip,8080,b"plees")))
+                print("\rSub camera shooting complete successfully:",time.time() - start,"[sec]")
+                print("Run Image processing...")
+                prodata1 = Mcc.Start(ndimg1)
+                prodata2 = ndimg2
+                print("Image processing complete successfully:",time.time() - start,"[sec]")
+                subp.OneBeforeSendWait(cls._gendata(prodata1,prodata2))
+                tcps.data["flag"] = False
+                tcps.client(ip="plcnet",data=b"1",res=False)
+                print("End of loop time:",time.time() - start,"[sec]")
 
 class SCamPi:
     @classmethod
@@ -219,7 +224,7 @@ class SCamPi:
         else:
             pass
         print(recv)
-        tcps = Tcp.server
+        tcps = Tcp(bkserver_mode=True)
         while(True):
             if tcps.data["flag"]:
                 start = time.time()

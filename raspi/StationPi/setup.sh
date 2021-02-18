@@ -4,7 +4,7 @@ num = $1
 if expr "$num" : "[0-9]*$" >&/dev/null; then
     echo "number:$num"
 else
-    read -p "PLC側ネットワークのホスト部の(IPを指定1~127の範囲):" num
+    read -p "PLC側ネットワークのホスト部の(IPを指定1~84の範囲):" num
     if expr "$num" : "[0-9]*$" >&/dev/null; then
         echo "number:$num"
     else
@@ -12,7 +12,7 @@ else
         exit
     fi
 fi
-if [ $num -ge 128 ] && [ $num -gt 0 ]; then
+if [ $num -ge 84 ] && [ $num -gt 0 ]; then
     echo "128>num>0の範囲で設定してください"
     exit
 fi
@@ -86,7 +86,7 @@ sysctl -w net.ipv4.ip_forward=1
 sed -ie 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
 
 #plcのhost名
-plcip = $(( $num+127 ))
+plcip = $(( $num+84 ))
 echo "192.168.0.${plcip}       plcnet" >> /etc/hosts
 
 #DHCP 10秒遅延起動

@@ -34,6 +34,7 @@ var hoge;
 
 var now_page_cnt = 0;
 
+
 const inspectionList = [
     { name: "mounted_parts", display: '検査項目：部品の位置' },
     { name: "misalignment", display: '検査項目：部品の値・型' },
@@ -360,6 +361,8 @@ window.onload = function (e) {
             // console.log('全データ数:' + data_cnt_max);
         }
 
+
+
         (data_cnt_max >= 50)?display_num = 50:display_num = data_cnt_max;
         
 
@@ -409,7 +412,9 @@ window.onload = function (e) {
         }
     }
     }
-
+    const download = document.getElementById("download");
+    //ボタンがクリックされたら「downloadCSV」を実行する
+    download.addEventListener("click", downloadCSV, false);
 
 
 }
@@ -482,7 +487,7 @@ function html_generate(key,jdata,event){
     arr_j[key] = jdata[key];
 
 
-    console.log(jdata[key])
+    // console.log(jdata[key])
     
 
 
@@ -646,3 +651,123 @@ function output(){
 // window.addEventListener('load',function(){
 //   setInterval('location.reload()',timer);
 // });
+
+
+
+
+function downloadCSV() {
+    console.log("ok")
+
+    h = "SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera;"
+
+    const req_3 = {
+        "sql" : {
+            "db":"piscan",
+            "query" :h,
+            "commit":false
+        }
+    }
+
+    socket.send(JSON.stringify(req_3)); 
+
+    socket.onmessage = function (event) {
+            console.log("ok")
+            arr_j = JSON.parse(event.data);
+            CSV_generate();
+    }
+
+}
+
+function CSV_generate(){
+    
+    console.log("clickok")
+    csv_flag = 1;
+    //ダウンロードするCSVファイル名を指定する
+    const filename = "download.csv";
+    //CSVデータ
+    const dataCSV = [
+        {num:1,time:"20:11",R1:12},
+        {num:2,time:"20:11",R1:12},
+        {num:3,time:"20:11",R1:12},
+        {num:4,time:"20:11",R1:12},
+        {num:5,time:"20:11",R1:12},
+        {num:6,time:"20:11",R1:12},
+    ];
+
+    let dataCSV_new = "id,MACアドレス,日付,時間,気温,湿度,気圧\n";
+
+    let csv_time = 0;
+    let csv_date = 0;
+    let csv_parts = new Object();
+    let csv_parts_text = "";
+
+    let csv_status = new Object();
+    
+
+    ////CSVをがんばってつくるところ////
+    for(let key in arr_j){
+        csv_time = arr_j[key][2];
+        csv_date = csv_time.split('T');
+        csv_time = csv_date[1].split('.');
+        
+        csv_parts[key] = JSON.parse(arr_j[key][3]).parts;
+
+        for(let key2 in csv_parts[key]){
+            // csv_parts_text = csv_parts_text + csv_parts[key][key2]+","
+
+            csv_parts_text  =   csv_parts_text + "{"
+                            +   csv_parts[key][key2]["mounted_parts"][0].replace(/{/g, ' ')
+                            +   "."
+                            +   csv_parts[key][key2]["mounted_parts"][1] + "},"
+                            console.log(csv_parts[key][key2]["mounted_parts"][0])
+        }
+
+        console.log("-------------------");
+
+        csv_status[key] = JSON.parse(arr_j[key][3]).status;
+
+        dataCSV_new = dataCSV_new 
+                    + arr_j[key][0] + ", " 
+                    + arr_j[key][1]+ ", " 
+                    +csv_date[0] + ", " 
+                    +csv_time[0] + ", " 
+                    +csv_status[key].temp + ", " 
+                    +csv_status[key].hr + ", " 
+                    +csv_status[key].atm + ", " 
+                    +csv_parts_text
+                    +"\n";
+        csv_parts_text="";
+    }
+    // console.log(dataCSV_new)
+    // for(let key in dataCSV){
+    //     for(let key2 in dataCSV[key]){
+    //         dataCSV_new = dataCSV_new + dataCSV[key][key2] + ","
+    //     }
+    //     dataCSV_new = dataCSV_new + "\n";
+    // }
+    ///////がんばって作り終わった//////
+
+    //BOMを付与する（Excelでの文字化け対策）
+    const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+    //Blobでデータを作成する
+    const blob = new Blob([bom, dataCSV_new], { type: "text/csv"});
+
+    //IE10/11用(download属性が機能しないためmsSaveBlobを使用）
+    if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob(blob, filename);
+    //その他ブラウザ
+    } else {
+        //BlobからオブジェクトURLを作成する
+        const url = (window.URL || window.webkitURL).createObjectURL(blob);
+        //ダウンロード用にリンクを作成する
+        const download = document.createElement("a");
+        //リンク先に上記で生成したURLを指定する
+        download.href = url;
+        //download属性にファイル名を指定する
+        download.download = filename;
+        //作成したリンクをクリックしてダウンロードを実行する
+        download.click();
+        //createObjectURLで作成したオブジェクトURLを開放する
+        (window.URL || window.webkitURL).revokeObjectURL(url);
+    }
+}

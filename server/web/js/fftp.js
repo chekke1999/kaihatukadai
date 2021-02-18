@@ -610,7 +610,7 @@ function paint2() { // 変換結果
   g.fillRect(x0, h0-dy, w*M/2/N, 4);
   g.fillRect(w2-dx-w*M/2/N, h0-dy, w*M/2/N, 4);
                                        // 実数部
-  g.strokeStyle = "pink";
+  g.strokeStyle = "blue";
   g.beginPath();
 
   for(var i=0; i<N; i++) {

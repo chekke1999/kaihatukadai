@@ -7,8 +7,8 @@ class Mcc:
     @staticmethod
     def _SAVE(imge_str,save_img):
         save_img_res=cv2.cvtColor(save_img,cv2.COLOR_BGR2RGB)
-        cv2.imwrite('img/test/'+imge_str+'.png',save_img_res)
-        print("SAVE")
+        #cv2.imwrite('img/test/'+imge_str+'.png',save_img_res)
+        #print("SAVE")
     @staticmethod
     def _Point_DEC(set_pt):
         pt_return=[[]*4]*4
@@ -45,6 +45,12 @@ class Mcc:
         res_H=cv2.split(hsv)
         res=res_H[0]
         return res
+    @staticmethod
+    def Show_img(show_img):
+        show_img=cv2.resize(show_img,(1024,768))
+        cv2.imshow('Capture',show_img)
+        cv2.waitKey(0)
+        #cv2.destroyAllWindows()
     """#ズーム"""
     @staticmethod
     def _ZOOM_dec(set_img,point):
@@ -354,7 +360,7 @@ class Mcc:
 
     @classmethod
     def _send_data(cls,img,wark_data):
-        
+
         R=[]
         C=[]
         D=[]
@@ -480,3 +486,7 @@ class Mcc:
         except NameError:
             return send_data
         return send_data
+
+
+Mcc.Start(cv2.imread('img/1.png'))
+Mcc.Show_img(cv2.imread('img/test/XP_.png'))

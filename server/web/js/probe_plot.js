@@ -144,10 +144,14 @@ window.onload = function (e) {
     // // const result_attach_2 = document.getElementById('result_picture2');
     // // メッセージの待ち受け
     socket.onmessage = function (event) {
+
         // console.log("onmessage_ok")
         jdata = JSON.parse(event.data);
+        for(var key in jdata){
+            arr_j[key] = jdata[key]
+        }
+        JSON.parse(jdata[587][3])
         var len = Object.keys(jdata).length;
-        console.log(len)
         for(var key in jdata[1]){
             console.log(JSON.parse(jdata[407][3])["measured_value"][9]["adc_data"][1]);
             // arr_j[key] = JSON.parse(jdata[key][3])["measured_value"][9]["adc_data"];
@@ -167,6 +171,10 @@ window.onload = function (e) {
         plot_ENV(arr_temp,arr_no);
     }
 
+    //ボタンを取得する
+const download = document.getElementById("download");
+//ボタンがクリックされたら「downloadCSV」を実行する
+download.addEventListener("click", downloadCSV, false);
 }
 
 
@@ -275,6 +283,7 @@ function time_Divide(value){
 
 
 function send_data_term(s_date,e_date,s_time,e_time){
+    console.log("okokokok")
     const result_table1 = document.getElementById("result_timetable1");
     const result_table2 = document.getElementById("result_timetable2");
 
@@ -306,6 +315,7 @@ function send_data_term(s_date,e_date,s_time,e_time){
     }
 }
 function false_cnt(){
+    
     var arr_insp = {
         sum:0,
         value:{
@@ -322,7 +332,7 @@ function false_cnt(){
 
     for(key in arr_j){
 
-        // console.log(arr_j[key]);
+        console.log(arr_j[key]);
         arr_key = JSON.parse(arr_j[key][5]).parts;
 
         for(i=0;i<Math.max(Object.keys(arr_key).length);i++){
@@ -349,53 +359,81 @@ function false_cnt(){
     return arr_insp
 }
 
-function Cumulative_ratio(arr_parts){
-    let ratio = [0];
-    let before = 0;
-    for(i = 0;i<5;i++){
-        ratio[i] = arr_parts[i+1] / arr_parts[0]*100 + before;
-        before = ratio[i];
+
+
+function downloadCSV() {
+    //ダウンロードするCSVファイル名を指定する
+    const filename = "download.csv";
+    //CSVデータ
+    const dataCSV = [
+        {num:1,time:"20:11",R1:12},
+        {num:2,time:"20:11",R1:12},
+        {num:3,time:"20:11",R1:12},
+        {num:4,time:"20:11",R1:12},
+        {num:5,time:"20:11",R1:12},
+        {num:6,time:"20:11",R1:12},
+    ];
+
+    let dataCSV_new = "id,MACアドレス,日付,時間,気温,湿度,気圧\n";
+
+    let csv_time = 0;
+    let csv_date = 0;
+
+    let csv_status = new Object();
+    
+
+    ////CSVをがんばってつくるところ////
+    for(let key in arr_j){
+        csv_time = arr_j[key][2];
+        csv_date = csv_time.split('T')
+        csv_time = csv_date[1].split('.')
+        
+
+        csv_status[key] = JSON.parse(arr_j[key][3]).status
+        console.log(csv_status[key])
+
+        dataCSV_new = dataCSV_new 
+                    + arr_j[key][0] + ", " 
+                    + arr_j[key][1]+ ", " 
+                    +csv_date[0] + ", " 
+                    +csv_time[0] + ", " 
+                    +csv_status[key].temp + ", " 
+                    +csv_status[key].hr + ", " 
+                    +csv_status[key].atm + ", " 
+                    +"\n";
     }
-    // console.log(arr_parts)
-    return ratio
+    // console.log(dataCSV_new)
+    // for(let key in dataCSV){
+    //     for(let key2 in dataCSV[key]){
+    //         dataCSV_new = dataCSV_new + dataCSV[key][key2] + ","
+    //     }
+    //     dataCSV_new = dataCSV_new + "\n";
+    // }
+    ///////がんばって作り終わった//////
+
+    //BOMを付与する（Excelでの文字化け対策）
+    const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+    //Blobでデータを作成する
+    const blob = new Blob([bom, dataCSV_new], { type: "text/csv"});
+
+    //IE10/11用(download属性が機能しないためmsSaveBlobを使用）
+    if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob(blob, filename);
+    //その他ブラウザ
+    } else {
+        //BlobからオブジェクトURLを作成する
+        const url = (window.URL || window.webkitURL).createObjectURL(blob);
+        //ダウンロード用にリンクを作成する
+        const download = document.createElement("a");
+        //リンク先に上記で生成したURLを指定する
+        download.href = url;
+        //download属性にファイル名を指定する
+        download.download = filename;
+        //作成したリンクをクリックしてダウンロードを実行する
+        download.click();
+        //createObjectURLで作成したオブジェクトURLを開放する
+        (window.URL || window.webkitURL).revokeObjectURL(url);
+    }
 }
 
-function result_generate(arr_parts){
-    const table_ganerate = document.getElementById('popup_table_field');
-    var table_element = '';
-    var table_th;
-    var f_t = 0;
-    var font_red = '';
-    var i;
-    var cnt = 0;
-    var insp = '';
 
-    for(var key in arr_parts){
-        var arr_key = arr_parts[key];
-    }
-    for(i=0;i<Math.max(Object.keys(arr_key).length);i++){
-        const inspection = {
-            name: Object.keys(arr_key)[i]
-        };
-        insp = Object.keys(arr_key)[i];
-        table_th    =   '<div class="popup_inspection_name">'
-            +    inspectionIndex(inspection)
-            +   '</div><div class="popup_table"><table border="1"><tr><th>部品名</th><th>判定</th></tr>';
-
-        for(var key in arr_parts){
-            var arr_key = arr_parts[key]
-            if (insp in arr_key) {
-                if(arr_key[insp] == false){
-                    f_t = '×'; font_red = 'class="font_red"';
-                }else{ f_t = '〇'}
-                table_element   =   table_element + '<tr ' + font_red + '><td>' + key + '</td><td>' + f_t + '</td></tr>';
-                
-                font_red = '';
-            }
-            cnt++;
-        }
-        table_element = table_element + "</table></div>";
-        table_ganerate.insertAdjacentHTML("beforeend",table_th + table_element);
-        table_element = '';
-    }
-}
