@@ -7,7 +7,7 @@ class Mcc:
     @staticmethod
     def _SAVE(imge_str,save_img):
         save_img_res=cv2.cvtColor(save_img,cv2.COLOR_BGR2RGB)
-        #cv2.imwrite('img/test/'+imge_str+'.png',save_img_res)
+        cv2.imwrite('img/test/'+imge_str+'.png',save_img_res)
         #print("SAVE")
     @staticmethod
     def _Point_DEC(set_pt):
@@ -45,12 +45,6 @@ class Mcc:
         res_H=cv2.split(hsv)
         res=res_H[0]
         return res
-    @staticmethod
-    def Show_img(show_img):
-        show_img=cv2.resize(show_img,(1024,768))
-        cv2.imshow('Capture',show_img)
-        cv2.waitKey(0)
-        #cv2.destroyAllWindows()
     """#ズーム"""
     @staticmethod
     def _ZOOM_dec(set_img,point):
@@ -134,7 +128,7 @@ class Mcc:
     @classmethod
     def _MARCH_E_mono(cls,set_img,xp_img):
 
-        template=cv2.imread('img/temple/H_bol_4080.jpg')
+        template=cv2.imread('img/temple/H_bol_4080_B.jpg')
         template=cv2.cvtColor(template,cv2.COLOR_BGR2GRAY)
         Y,X=set_img.shape[:2]
         Y_off=int (Y/2) 
@@ -142,10 +136,10 @@ class Mcc:
         
         return_pt=[]
         XY_off_img=[
-            set_img[200:600,400:900],
-            set_img[200:600,2900:3400],
-            set_img[2100:2500,400:900],
-            set_img[2100:2500,2900:3400]
+            set_img[400:800,600:1100],#[Y:Y,X:X]
+            set_img[400:800,3100:3600],
+            set_img[2300:2700,600:1100],
+            set_img[2300:2700,3100:3600]
             ]
         """
             XY_off_img=[
@@ -155,25 +149,20 @@ class Mcc:
                 set_img[Y_off:Y,X_off:X]
                 ]
         """
-        """
-            cv2.rectangle(xp_img,
-            (400,200),(800,600),
-            (255,255,0),2)
-            cv2.rectangle(xp_img,
-            (2900,200),(3300,600),
-            (255,255,0),2)
-            cv2.rectangle(xp_img,
-            (400,2100),(800,2500),
-            (255,255,0),2)
-            cv2.rectangle(xp_img,
-            (2900,2100),(3300,2500),
-            (255,255,0),2)
-            cls._SAVE("1XP_",xp_img)
-        """
         
-
-
-
+        cv2.rectangle(xp_img,
+        (500,400),(1000,800),
+        (255,255,0),2)
+        cv2.rectangle(xp_img,
+        (3000,400),(3500,800),
+        (255,255,0),2)
+        cv2.rectangle(xp_img,
+        (500,2300),(1000,2700),
+        (255,255,0),2)
+        cv2.rectangle(xp_img,
+        (3000,2300),(3500,2700),
+        (255,255,0),2)
+        
         for img_num in range(4):
             super_img = XY_off_img[img_num].copy()
             #############            
@@ -182,8 +171,8 @@ class Mcc:
             #cls._SAVE("X_temp",template)
             ########################
             
-            offset_X=[400,2900,400,2900]
-            offset_Y=[200,200,2100,2100]
+            offset_X=[600,3100,600,3100]
+            offset_Y=[400,400,2300,2300]
             """
             offset_X=[0,X_off,0,X_off]
             offset_Y=[0,0,Y_off,Y_off]
@@ -212,6 +201,7 @@ class Mcc:
             (return_pt[img_num][0],return_pt[img_num][1]),
             (return_pt[img_num][2],return_pt[img_num][3]), 
             (255,255,0),2)
+        cls._SAVE("1XP_",xp_img)
         return return_pt,xp_img
     @classmethod
     def Img_Transform(cls,img,pt_set):
@@ -487,6 +477,56 @@ class Mcc:
             return send_data
         return send_data
 
+    @classmethod
+    def Test_start(cls):
+        img=cv2.imread('img/1.png')
+        
+        img=cv2.resize(img,(4080,3040))
+        img_copy=img.copy()
+        pro_img=img.copy()
+        
+        cls._SAVE("2XP_",cls._H_dec(img_copy))
 
-Mcc.Start(cv2.imread('img/1.png'))
-Mcc.Show_img(cv2.imread('img/test/XP_.png'))
+        #point_T,trancs_img=cls._MARCH_E_mono(cls._H_dec(img),img_copy)
+        point_T,trancs_img=cls._MARCH_E_mono(cls._H_dec(cls._HSV_dec (img,(120,250,255),(0,0,0))),img_copy)
+
+        pro_img=cls.Img_Transform(trancs_img,cls._Point_DEC(point_T))
+        
+        #pro_img=cv2.resize(img,(2198,1696))
+        img=pro_img.copy()
+        img_copy=img.copy()
+
+        parts_xywh=cls._Parts_Select()
+        R_data=cls._Parts_serch(img,img_copy,"R",parts_xywh)
+        C_data=cls._Parts_serch(img,img_copy,"C",parts_xywh)
+        D_data=cls._Parts_serch(img,img_copy,"D",parts_xywh)
+        Q_data=cls._Parts_serch(img,img_copy,"Q",parts_xywh)
+        SW_data=cls._Parts_serch(img,img_copy,"SW",parts_xywh)
+        #U_data=cls._Parts_serch(img,img_copy,"U",parts_xywh)
+
+
+        send_value=[
+                    R_data,
+                    C_data,
+                    D_data,
+                    Q_data,
+                    SW_data,
+                [ #U
+                    [(-1,-1)],
+                    [(-1,-1)]
+                ]
+            ]
+
+
+        cls._SAVE("XP_",img)
+        cls._SAVE("H_dec",cls._H_dec (img))
+        return cls._send_data(img,send_value)
+
+
+"""
+img=cv2.imread('img/1.png')
+img=cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+img_rotate_180 = cv2.rotate(img, cv2.ROTATE_180)
+Mcc.Start(img_rotate_180)
+
+"""

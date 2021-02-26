@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import asyncio,json,websockets,os,time,\
 atexit,io,base64,socket,struct,serial,\
-fcntl,uuid,re,wiringpi
+fcntl,uuid,re,serial,sys
 import netifaces as ni
 import scapy.all as scapy
+import numpy as np
 from sys import argv
 from multiprocessing import Pipe, Process, Manager, Pool
 from PIL import Image
@@ -13,57 +14,78 @@ try:
     from get_camera import full_img
     from impro import Mcc
 except Exception as e:
-    print("エラーを無視します:",e)
+    print("importエラーを無視します:",e)
     pass
-def AllKill(p):
-    p.kill()
+def cleanup(clp=[]):
+    for c in clp:
+        if type(c) is Process:
+            c.kill()
+        else:
+            del c
 
 class Serial:
     def __init__(self):
-        wiringpi.wiringPiSetup()
-        self.serial = wiringpi.serialOpen('/dev/ttyAMA0',9600)
-    def send(self,data=None):
-        wiringpi.serialPuts(self.serial,data)
-        wiringpi.serialPutchar(self.serial,3)
-    def recv(self):
-        char = ""
-        asciinum = -1
-        while(True):
-            asciinum = wiringpi.serialGetchar(self.serial)
-            if asciinum != -1 and asciinum != 3:
-                char += chr(asciinum)
-            elif asciinum == 3:
-                break
+        self.ser = serial.Serial('/dev/ttyAMA0', 9600, timeout=10)
+    def send(self,data=b""):
+        self.ser.write(data)
+        
+    def recv(self,cnt=1):
+        char = self.ser.read(cnt)
         return char
     def __del__(self):
-         wiringpi.serialClose(self.serial)
+        self.ser.close()
 
 class Tcp:
-    def __init__(self,bkserver_mode=False):
-        # 1.ソケットオブジェクトの作成
-        self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        if bkserver_mode:
-            self.data = manager.dict()
-            self.data["flag"] = False 
-            self.data["data"] = None
-            self.cpro = Process(target=self.server)
+    def __init__(self,ip=None,port=None,mode=None):
+        self.port = port
+        self.ip = ip
+        manager = Manager()
+        self.data = manager.dict()
+        self.data["flag"] = False 
+        self.data["data"] = None
+        if mode == "svr":
+            self.cpro = Process(target=self.__server)
             self.cpro.start()
-    def client(self,ip="127.0.0.1",port=8080,data,res=True):
+        elif mode == "clt":
+            self.cpro = Process(target=self.__client)
+            self.cpro.start()
+        else:
+            self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def client(self,data,ip,port,res=None):
         # 2.サーバに接続
-        self.tcp.connect((target_ip,target_port))
-        # 3.サーバにデータを送信
+        self.tcp.connect((ip,port))
+        # 3.データ送信
         self.tcp.send(data)
-        # 4.サーバからのレスポンスを受信
-        if res:
+        if res == "big":
             data = b""
-            wihle True:
+            while(True):
                 response = self.tcp.recv(4096)
                 if not response:
                     return data
                 data += response
-    def server(self,ip="127.0.0.1",port=8080):
+        elif res == "sml":
+            response = self.tcp.recv(4096)
+            return response
+        else:
+            return None
+    def __client(self):
+        # 1.ソケットオブジェクトの作成
+        self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # 2.サーバに接続
+        self.tcp.connect((self.ip,self.port))
+        # 3.PLCに初回シグナル送信
+        self.tcp.send(b"1")
+        while(True):
+            if not self.data["flag"]:
+                # 4.サーバからのレスポンスを受信
+                self.data["data"] = self.tcp.recv(4096)
+                self.data["flag"] = True
+
+    def __server(self):
+        # 1.ソケットオブジェクトの作成
+        self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         # 2.作成したソケットオブジェクトにIPアドレスとポートを紐づける
-        self.tcp.bind((server_ip, server_port))
+        self.tcp.bind((self.ip, self.port))
         # 3.作成したオブジェクトを接続可能状態にする
         self.tcp.listen(5)
         # 4.ループして接続を待ち続ける
@@ -79,10 +101,11 @@ class Tcp:
                 while self.data["flag"]:
                     pass
                 client.send(self.data["data"])
-            elif data == b"0x01"
+                # 8.接続を終了させる
+                client.close()
+            elif data == rb"\x01":
                 self.data["flag"] = True
-            # 8.接続を終了させる
-            client.close()
+
 
 class ChildWebs:
     def __init__(self):
@@ -124,39 +147,21 @@ class ChildWebs:
                 pass
 
 class NetInfo:
-    VENDER_MAC = ["dc:a6:32","b8:27:eB"]
+    VENDER_MAC = ["dc:a6:32","b8:27:eb"]
     GATE_MAC = None
     GATE_IP = "114.51.4.1"
     def __init__(self):
-        self.nic = ni.ifaddresses('wlan0')
+        self.nic = ni.ifaddresses('eth0')
         self.mymac = self.nic[ni.AF_LINK][0]['addr']
         try:
             self.myip = self.nic[ni.AF_INET][0]['addr']
         except KeyError:
             self.myip = None
-        self.__mac = self.arp([self.GATE_IP])
+        mac = scapy.getmacbyip(self.GATE_IP)
         for m in self.VENDER_MAC:
-            if self.__mac[self.GATE_IP].startswith(m):
-                self.GATE_MAC = self.__mac[self.GATE_IP]
+            if mac.startswith(m):
+                self.GATE_MAC = mac
         self.mymac = ':'.join(re.split('(..)', format(uuid.getnode(), 'x'))[1::2])
-
-    @staticmethod
-    def arp(ip):
-        #cls.ip = ip
-        mac_list = {}
-        print(ip)
-        arp_r = scapy.ARP(pdst=ip)
-        br = scapy.Ether(dst='ff:ff:ff:ff:ff:ff')
-        request = br/arp_r
-        answered, unanswered = scapy.srp(request, timeout=1)
-        print('\tIP\t\t\t\t\tMAC')
-        print('_' * 37)
-        for i in answered:
-            ip, mac = i[1].psrc, i[1].hwsrc
-            print(ip, '\t\t' + mac)
-            print('-' * 37)
-            mac_list = {ip:mac}
-        return mac_list
 
 class CamPi:
     @staticmethod
@@ -186,45 +191,56 @@ class CamPi:
     def run(cls,net):
         cls.pimac = net.GATE_MAC
         seri = Serial()
-        subcam_ip = seri.recv()
-        if subcam_ip == -1:
+        subcam_ip = seri.recv(cnt=10).decode() 
+        if subcam_ip == b"":
+            print("TimeoutError", file=sys.stderr)
             exit()
         else:
-            seri.send(f"Successful connection.Your ip is {subcam_ip}")
+            seri.send(b"0")
+            print(f"complete serial :{subcam_ip}")
+            del seri
         subp = ChildWebs()
-        tcps = Tcp(bkserver_mode=True)
-        atexit.register(AllKill,p=subp.cpro)
-        atexit.register(AllKill,p=tcps.cpro)
+        tcps = Tcp(mode="svr",ip=net.myip,port=8080)
+        tcpc = Tcp(mode="clt",ip="plcnet",port=8081)
+        send = Tcp()
+        atexit.register(cleanup,clp=[subp.cpro,tcps.cpro,tcpc])
+        print("loop start")
         while(True):
-            if tcps.data["flag"]:
+            if tcpc.data["flag"]:
+                tcpc.data["flag"] = False
                 start = time.time()
                 print("Please wait until the shooting is completed...",end="")
                 ndimg1 = full_img()
                 print("\rShooting complete successfully:",time.time() - start,"[sec]")
                 print("Wait for the sub camera to complete shooting")
-                ndimg2 = np.load(io.BytesIO(tcps.client(subcam_ip,8080,b"plees")))
+                ndimg2 = np.load(io.BytesIO(send.client(data=b"plees",res="big",ip=subcam_ip,port=8080)))
                 print("\rSub camera shooting complete successfully:",time.time() - start,"[sec]")
+                send.client(data=b"2",res="sml",ip="plcnet",port=8081)
                 print("Run Image processing...")
                 prodata1 = Mcc.Start(ndimg1)
                 prodata2 = ndimg2
                 print("Image processing complete successfully:",time.time() - start,"[sec]")
                 subp.OneBeforeSendWait(cls._gendata(prodata1,prodata2))
-                tcps.data["flag"] = False
-                tcps.client(ip="plcnet",data=b"1",res=False)
                 print("End of loop time:",time.time() - start,"[sec]")
 
 class SCamPi:
     @classmethod
     def run(cls,net):
         seri = Serial()
-        seri.send(net.myip)
-        recv = seri.recv()
-        if recv == -1:
-            exit()
-        else:
-            pass
-        print(recv)
-        tcps = Tcp(bkserver_mode=True)
+        print(net.myip.encode())
+        for i in range(1,4):
+            seri.send(net.myip.encode())
+            recv = seri.recv(cnt=1)
+            if recv == b"" and i == 3:
+                print("TimeoutError", file=sys.stderr)
+                exit()
+            elif recv != b"":
+                print("complete serial:",recv)
+                del seri
+                break
+        tcps = Tcp(mode="svr",ip=net.myip,port=8080)
+        atexit.register(cleanup,clp=[tcps.cpro])
+        print("loop start")
         while(True):
             if tcps.data["flag"]:
                 start = time.time()
@@ -244,7 +260,7 @@ class ProbePi:
         jdict.update(Probe())
         insert_str = f"""\
 INSERT INTO pi_probe(
-    stationpi_mac,
+    spi_mac,
     scan_data
 ) VALUES( 
     {cls.pimac},
@@ -263,7 +279,7 @@ INSERT INTO pi_probe(
     def run(cls,net):
         cls.pimac = net.GATE_MAC
         subp = ChildWebs()
-        atexit.register(AllKill,p=subp.cpro)
+        atexit.register(cleanup,clp=subp.cpro)
         while True:
             time.sleep(10)
             start = time.time()
@@ -286,7 +302,6 @@ if __name__ == '__main__':
     elif argv[1] == "-pint":
         while True:
             full_img()
-
     else:
         print("引数を指定してください")
         print("-p:プローブモード,-c:カメラモード")

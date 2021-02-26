@@ -86,7 +86,7 @@ sysctl -w net.ipv4.ip_forward=1
 sed -ie 's/#net.ipv4.ip_forward=1/net.ipv4.ip_forward=1/' /etc/sysctl.conf
 
 #plcのhost名
-plcip = $(( $num+84 ))
+plcip=$(($num+84))
 echo "192.168.0.${plcip}       plcnet" >> /etc/hosts
 
 #DHCP 10秒遅延起動

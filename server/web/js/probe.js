@@ -11,7 +11,7 @@ var cnt_b = 0;
 var cnt_g = 0;
 
 var display_num = 10;　/////データ表示数
-
+let now_id = 0;
 
 let arr_details = [];
 
@@ -33,6 +33,11 @@ let page_cnt_arr = 0;
 var hoge;
 
 var now_page_cnt = 0;
+
+var csv_flag = 0;
+
+var cnt_csv = 0;
+
 
 const inspectionList = [
     { name: "mounted_parts", display: '検査項目：部品の位置' },
@@ -79,7 +84,6 @@ function check(){
 
     //console.log(display_num);
     document.cookie = "display_num=" + display_num;
-    //console.log("cookie=" +document.cookie);
     location.reload();
     page_generate();
 }
@@ -177,6 +181,8 @@ function pop_up(id){
     arr_table = JSON.parse(arr_table)
     id = '' + cnt_arr;
 
+    now_id = id;
+
     h =  day.detail[0] 
         + '/' 
         + ( '00' + day.detail[1] ).slice( -2 ) + '/' + ( '00' + day.detail[2] ).slice( -2 )
@@ -186,7 +192,6 @@ function pop_up(id){
         +   id;
 
     let fuga = JSON.parse(arr_j[cnt_arr][3]);
-    console.log(fuga)
     
     env_rh = fuga.status.hr;//湿度
     env_lux = fuga.status.luminance;//輝度
@@ -201,8 +206,7 @@ function pop_up(id){
             +   env_rh
             +   '% / 気圧:'
             +   env_atm
-            +   'hPa / 検査ステーション:'
-            +   mac_add;
+            +   'hPa';
 
     detail_title.insertAdjacentHTML("afterbegin", h);
     env_text.insertAdjacentHTML("afterbegin",env)
@@ -276,7 +280,6 @@ window.addEventListener('beforeunload', function(e){
 
 
 function page_Move(ele){
-    //document.cookie = "page"+ page_cnt_arr + "=" + now_page;
     page_cnt_arr++;
     now_page = ele;
     page_html_send();
@@ -353,6 +356,14 @@ window.onload = function (e) {
             data_cnt_max =  jdata_cnt[1];
             data_cnt = 1;
             //console.log('全データ数:' + data_cnt_max);
+        }
+
+        if(csv_flag==1){
+
+                console.log("ok")
+                arr_j = JSON.parse(event.data);
+                CSV_generate();
+                csv_flag=0;
         }
 
         (data_cnt_max >= 50)?display_num = 50:display_num = data_cnt_max;
@@ -437,7 +448,7 @@ function html_generate(key,jdata,event){
     var date_week = new Date( yearStr, jsMonth , dayStr );
     day.week = date_week.getDay();
 
-    console.log(jdata[key][0])
+    // console.log(jdata[key][0])
 
     h = '<div id="'
     +  jdata[key][0]
@@ -450,9 +461,6 @@ function html_generate(key,jdata,event){
     + '</div>'
     + '<div class="dai2_probe">'
     + ( '00' + day.time[0] ).slice( -2 ) + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
-    + '</div>'
-    + '<div class="dai3_probe">'
-    + mac_add
     + '</div>'
     + '</div>';
 
@@ -467,7 +475,10 @@ function html_generate(key,jdata,event){
 function result_generate(arr_parts,id){
     // console.log("ok")
     const table_ganerate = document.getElementById('popup_table_field');
+    const prove_Fourier = document.getElementById('prove_Fourier');
     const result_attach_1 = document.getElementById('result_picture1');
+
+
     var table_element = '';
     var table_th;
     var cnt = 0;
@@ -478,22 +489,14 @@ function result_generate(arr_parts,id){
     var TP;
     var hukidasi = '<div>';
 
-
-        // table_th    =   '<div class="popup_inspection_name">'
-        //     +   '電圧測定'
-        //     +   '</div><div class="popup_table"><table class="tttbe" border="1">\
-        //     <tr><th rowspan="2">ピン名</th>\
-        //     <th colspan="3">電圧(V)</th>\
-        //     <th rowspan="2">標準偏差</th>\
-        //     <th rowspan="2">シミュレーション比較(%)</th></tr>\
-        //     <tr><th>最大</th><th>最小</th><th>平均</th></tr>';
         table_th    =   '<tr><th rowspan="2">ピン名</th>\
             <th colspan="3">電圧(V)</th>\
             <th rowspan="2">標準偏差</th>\
             <th rowspan="2">シミュレーション比較(%)</th></tr>\
             <tr><th>最大</th><th>最小</th><th>平均</th></tr>';
 
-            
+        let    HH =  '<button id="download" type="button" onclick="downloadCSV(1)">Download CSV</button></br>'
+
         // console.log(arr_parts["measured_value"][9]) 
         
         for(var key in arr_parts["measured_value"]){
@@ -517,10 +520,10 @@ function result_generate(arr_parts,id){
                 }
                 // console.log(arr_parts["measured_value"][key][key2])
             }
-            table_element   =   table_element + '<tr class="pro' + key +'"><td >' + key + '</td><td>' + MAX + '</td><td>' + MIN + '</td><td>' + AVG + '</td><td>' + SD + '</td><td>' + TP + '</td></tr>';
+            table_element   =   table_element + '<tr class="pro' + key +'"><td >' + key + '</td><td>' + MAX + '</td><td>' + MIN + '</td><td>' + AVG + '</td><td>' + SD + '</td><td>' + TP + '</td>'+'</tr>';
         }
 
-        for(var key in arr_parts){
+        for(var key in arr_parts){　
             var arr_key = arr_parts[key]
             for(var key in arr_key["9"]){
                 // console.log(key)
@@ -528,12 +531,249 @@ function result_generate(arr_parts,id){
                 
             cnt++;
         }
-        table_element = table_element;
         table_ganerate.insertAdjacentHTML("beforeend",table_th +table_element);
         table_element = '';
 
     var p =    '<image src="'
     +   'img_pro.png'
     +   '" class="picture_1">';
-    result_attach_1.insertAdjacentHTML("afterbegin", p);
+    result_attach_1.insertAdjacentHTML("afterbegin", p+HH);
+}
+
+function cookie_probe(id,pin){
+    var prove_Fourier = document.getElementById("prove_Fourier");
+    const fourier_PP = document.getElementById('fourier_PP');
+    // fourier_PP.innerHTML = "hello" + pin;
+
+    console.log(JSON.parse(arr_j[id][3])["measured_value"][pin]["adc_data"])
+
+    let arr_fourier = [0];
+    let arr_no = [0];
+    let arr_lenght = JSON.parse(arr_j[id][3])["measured_value"][pin]["adc_data"].length;
+
+    for(let i = 0;i<arr_lenght;i++){
+        arr_fourier[i] =  JSON.parse(arr_j[id][3])["measured_value"][pin]["adc_data"];
+        arr_no[i] = i;
+    }
+
+    var myLineChart = new Chart(prove_Fourier, {
+        type: 'line',
+        data: {
+            labels: arr_no,
+            datasets: [
+            {
+                label: '気温(度)',
+                data: arr_fourier,
+                borderColor: "rgba(244,67,22,1)",
+                backgroundColor: "rgba(0,0,0,0)"
+            }]
+        },
+        options: {
+            title: {
+                display: true
+            },elements: {
+                point:{
+                radius: 0
+                }
+            },
+            scales: {
+                yAxes: [{
+                    ticks: {
+                    suggestedMax: 40,
+                    suggestedMin: 0,
+                    stepSize: 0.1,
+                    callback: function(value, index, values){
+                        return  value +  '度'
+                    }
+                }
+            }],
+            xAxes:[{
+                ticks:{
+                    minRotation: 0,   // ┐表示角度水平
+                    maxRotation: 0,   // ┘
+                    autoSkip: true,  //なくてもよい
+                    maxTicksLimit: 15
+                }
+            }]
+            
+            },
+        }
+        });
+    
+}
+
+function downloadCSV() {
+    console.log("551515")
+    num_50_flag = 1;
+    csv_flag = 1;
+        
+        
+    h = "SELECT * FROM pi_probe;"
+
+    const req_3 = {
+        "sql" : {
+            "db":"piscan",
+            "query" :h,
+            "commit":false
+        }
+    }
+
+    socket.send(JSON.stringify(req_3)); 
+    
+}
+
+function CSV_generate(){
+    if(cnt_csv == 0){
+        cnt_csv = 1;
+    console.log("okokoookooko")
+    // console.log(arr_j)
+    //ダウンロードするCSVファイル名を指定する
+    const filename = "download.csv";
+    //CSVデータ
+
+    let dataCSV_new = now_id + "\n"
+    dataCSV_new = dataCSV_new + "id,MACアドレス,日付,時間,気温(度),湿度(%),気圧(hPa),輝度(lx),";
+
+    let csv_time = 0;
+    let csv_date = 0;
+    let csv_parts = new Object();
+    let csv_parts_text = "";
+    let csv_number = "時間(t)\n";
+    let csv_pinname =   "No,電極9(V),電極10(V),電極11(V),電極12(V),電極13(V)";
+
+    let csv_status = new Object();
+    let parts_flag = 0;
+    let a_search = 0;
+
+    var arr_temp = "";
+    var i = 0;
+
+
+console.log(jdata[1])
+        // for(var key in jdata[1]){
+            console.log(JSON.parse(jdata[now_id][3])["measured_value"][9]["adc_data"][1]);
+            // console.log(key);
+            for(i = 0; i <= 255 ; i++){
+                arr_temp = arr_temp + i + ", ";
+                arr_temp = arr_temp + JSON.parse(jdata[now_id][3])["measured_value"][9]["adc_data"][i] + ", ";
+                arr_temp = arr_temp + JSON.parse(jdata[now_id][3])["measured_value"][10]["adc_data"][i] + ", ";
+                arr_temp = arr_temp + JSON.parse(jdata[now_id][3])["measured_value"][11]["adc_data"][i] + ", ";
+                arr_temp = arr_temp + JSON.parse(jdata[now_id][3])["measured_value"][12]["adc_data"][i] + ", ";
+                arr_temp = arr_temp + JSON.parse(jdata[now_id][3])["measured_value"][13]["adc_data"][i] + ", " + "\n";
+                // console.log(arr_temp[i])
+            }
+
+
+            
+        // }
+        arr_temp = arr_temp + "\n";
+        console.log(arr_temp)
+        
+        for(let key in arr_j){
+            csv_parts[key] = JSON.parse(arr_j[key][3]).parts;
+            if(parts_flag == 0){
+                for(let key2 in csv_parts[key]){
+                    dataCSV_new = dataCSV_new + key2 + ",";
+                }
+                dataCSV_new = dataCSV_new + "\n";
+                parts_flag = 1;
+            }
+        }
+
+    ////CSVをがんばってつくるところ////
+        csv_time = arr_j[1][2];
+        csv_date = csv_time.split('T');
+        csv_time = csv_date[1].split('.');
+        
+        csv_parts[1] = JSON.parse(arr_j[1][3]).parts;
+
+        for(let key2 in csv_parts[1]){
+            for(let key3 in csv_parts[1][key2]){
+                if(key3 == a){
+                    a_search++;
+                }
+            }
+        }
+
+        // if(a_search == 0){
+        //     alert(inspectionIndex({name: a})+'の検査結果はありません');
+        //     return 0;
+        // }
+
+
+        for(let key2 in csv_parts[1]){
+            
+            // csv_parts_text = csv_parts_text + csv_parts[key][key2]+","
+
+            csv_parts_text  =   csv_parts_text + "{"
+                            +   csv_parts[1][key2][a][0]
+                            +   "."
+                            +   csv_parts[1][key2][a][1] + "},"
+
+        }
+
+
+        for(i = 0; i <= arr_temp.length ; i++){
+            csv_parts_text = csv_parts_text + arr_temp[i] + "\n";
+            csv_number = csv_number + i + "\n"; 
+        }
+
+
+        csv_status[1] = JSON.parse(arr_j[1][3]).status;
+
+
+        if(isNaN(csv_status[1].luminance) == true){
+            csv_status[1].luminance = 0;
+        }
+
+
+    
+    console.log(arr_temp.length)
+
+    dataCSV_new = dataCSV_new 
+                + arr_j[1][0] + ", " 
+                + arr_j[1][1]+ ", " 
+                +csv_date[0] + ", " 
+                +csv_time[0] + ", " 
+                +csv_status[1].temp + ", " 
+                +csv_status[1].hr + ", " 
+                +csv_status[1].atm + ", " 
+                +csv_status[1].luminance + ", " 
+                +"\n"
+                +csv_pinname
+                +"\n"
+                // +csv_number 
+                // +"\n"+ ", "
+                +arr_temp
+                +"\n";
+    csv_parts_text="";
+
+    ///////がんばって作り終わった//////
+
+    //BOMを付与する（Excelでの文字化け対策）
+    const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
+    //Blobでデータを作成する
+    const blob = new Blob([bom, dataCSV_new], { type: "text/csv"});
+
+    //IE10/11用(download属性が機能しないためmsSaveBlobを使用）
+    if (window.navigator.msSaveBlob) {
+        window.navigator.msSaveBlob(blob, filename);
+    //その他ブラウザ
+    } else {
+        //BlobからオブジェクトURLを作成する
+        const url = (window.URL || window.webkitURL).createObjectURL(blob);
+        //ダウンロード用にリンクを作成する
+        const download = document.createElement("a");
+        //リンク先に上記で生成したURLを指定する
+        download.href = url;
+        //download属性にファイル名を指定する
+        download.download = filename;
+        //作成したリンクをクリックしてダウンロードを実行する
+        download.click();
+        //createObjectURLで作成したオブジェクトURLを開放する
+        (window.URL || window.webkitURL).revokeObjectURL(url);
+    }
+
+    return 0;
+}
 }

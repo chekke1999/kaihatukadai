@@ -4,7 +4,7 @@ import numpy as np
 import cv2
 from screeninfo import get_monitors 
 
-monitor = get_monitors()[0]
+
 
 def imshow_fullscreen(winname, img):
 	cv2.namedWindow(winname, cv2.WINDOW_NORMAL)
@@ -31,7 +31,9 @@ def full_img(show=True):
 	cap.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
 	cap.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
 	_, frame = cap.read()
+	print(frame)
 	if show:
+		monitor = get_monitors()[0]
 		imshow_fullscreen('screen', resize(frame,monitor.height))
 	return cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
@@ -56,11 +58,12 @@ def img_get(pipe):
 		elif key == ord('q'):
 			break
 
-
+def destroy():
+	cv2.destroyAllWindows()
 
 
 if __name__ == '__main__':
 	#test()
-	img = full_img()
-	imshow_fullscreen('screen', img)
-	cv2.imwrite('./img/test_fps.png', img)
+	img = full_img(show=False)
+	imshow_fullscreen('screen', img)#
+	cv2.imwrite('~/banana/Pictures/test_fps.png', img)

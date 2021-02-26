@@ -29,8 +29,8 @@ def totalp(i,value):
     sd_percent = np.std(i/value[3]) * 100
     total_percent = (max_percent+min_percent+avg_percent+sd_percent)/ 4
 
-    if total_percent <= 100:
-        total_percent = 100
+    #if total_percent <= 100:
+        #total_percent = 99
 
     return abs(total_percent)
 def main ():
@@ -41,7 +41,7 @@ def main ():
             #mcp3028の基準電圧 入力を抵抗にて分圧してあるので、×1.4すること
             ADCC = ADConverterClass(ref_volts=3.3, ch=i)
             print(f"pin{i}:",ADCC.get_voltage())
-            for num in range(250):
+            for num in range(255):
                 state.append(round(ADCC.get_voltage(),3))
             volts_no_np.append(state)
     except KeyboardInterrupt:                           

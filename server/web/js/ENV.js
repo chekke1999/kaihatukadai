@@ -162,6 +162,7 @@ window.onload = function (e) {
     socket.onmessage = function (event) {
         // console.log("onmessage_ok")
         jdata = JSON.parse(event.data);
+
         for(var key in jdata){
             arr_j[key] = JSON.parse(jdata[key][5])
         }

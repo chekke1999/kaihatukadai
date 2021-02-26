@@ -34,6 +34,8 @@ var hoge;
 
 var now_page_cnt = 0;
 
+var myLineChart;
+
 const inspectionList = [
     { name: "mounted_parts", display: '検査項目：部品の位置' },
     { name: "misalignment", display: '検査項目：部品の値・型' },
@@ -56,7 +58,7 @@ const inspectionIndex = inspection => {
 const req = {
     "sql" : {
         "db":"piscan",
-        "query" :"SELECT TOP " + display_num + " * FROM pi_probe;",
+        "query" :"SELECT TOP " + display_num + " scan_id,plc_mac,datetime,scan_data FROM pi_camera;",
         "commit":false
     }
 }
@@ -64,7 +66,7 @@ const req = {
 const req3 = {
     "sql" : {
         "db":"piscan",
-        "query" :"SELECT * FROM pi_probe;",
+        "query" :"SELECT * FROM pi_camera;",
         "commit":false
     }
 }
@@ -119,9 +121,20 @@ window.addEventListener('beforeunload', function(e){
   /** 更新される直前の処理 */
   socket.close();
 });
+function max_generate(data){
+    data = data.filter(v => v);
+    data = data.reduce((a,b)=>a>b?a:b);
+    return data;
+}
 
+function length_ticks(No){
+    No = (No.length)/10
+    return No;
+}
 
 window.onload = function (e) {
+    // ctx1 = document.getElementById("temp");
+
     const disp_num = document.getElementById('disp_num');
 
     var cnt_page_processing = 0;
@@ -139,86 +152,138 @@ window.onload = function (e) {
     false_cnt();
 
     var arr_temp = [0];
+    var arr_hr = [0];
+    var arr_atm = [0];
+    var arr_lum = [0];
     var arr_no=[0];
-    var i = 0;
-    // // const result_attach_2 = document.getElementById('result_picture2');
-    // // メッセージの待ち受け
-    socket.onmessage = function (event) {
 
+    var max_data = new Object();
+
+    socket.onmessage = function (event) {
         // console.log("onmessage_ok")
         jdata = JSON.parse(event.data);
+
         for(var key in jdata){
-            arr_j[key] = jdata[key]
+            arr_j[key] = JSON.parse(jdata[key][5])
         }
-        JSON.parse(jdata[587][3])
-        var len = Object.keys(jdata).length;
-        for(var key in jdata[1]){
-            console.log(JSON.parse(jdata[407][3])["measured_value"][9]["adc_data"][1]);
-            // arr_j[key] = JSON.parse(jdata[key][3])["measured_value"][9]["adc_data"];
-            // for(var key in arr_j){
-            //     console.log(arr_j[key]);
-            // }
-            for(i = 0; i <= 250 ; i++){
-                // arr_temp[i] = JSON.parse(jdata[len][3])["measured_value"][9]["adc_data"][i];
-                arr_temp[i] = JSON.parse(jdata[587][3])["measured_value"][9]["adc_data"][i];
+        for(var key in arr_j[1]["status"]){
+            var i = 0;
+            for(var key2 in arr_j){
+                if(key == "temp"){
+                    arr_temp[i] = arr_j[key2]["status"][key];
+                }else if(key == "hr"){
+                    arr_hr[i] = arr_j[key2]["status"][key];
+                }else if(key == "atm"){
+                    arr_atm[i] = arr_j[key2]["status"][key];
+                }else{
+                    arr_lum[i] = arr_j[key2]["status"][key];
+                }
+                // arr_temp[key] = arr_j[key2]["status"][key];
                 arr_no[i] = i;
+                i++;
+                
             }
 
 
         }
-        // console.log(arr_temp)
-        console.log("LEN ="+ len)
-        plot_ENV(arr_temp,arr_no);
-    }
 
-    //ボタンを取得する
-const download = document.getElementById("download");
-//ボタンがクリックされたら「downloadCSV」を実行する
-download.addEventListener("click", downloadCSV, false);
-}
+    console.log(max_data.temp)
+    max_data.temp = max_generate(arr_temp)
+    max_data.hr = max_generate(arr_hr)
+    max_data.atm = max_generate(arr_atm)
+    max_data.lum = max_generate(arr_lum)
 
-
-function plot_ENV(arr,arr_no,max){
-    var ctx = document.getElementById("temp");
     var length_ticks = (arr_no.length)/10;
-    console.log(length_ticks)
-    var myLineChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: arr_no,
-          datasets: [
-            {
-              label: '電圧',
-              data: arr,
-              spanGaps: true,
-              borderColor: "rgba(0,0,0,1)",
-              backgroundColor: "rgba(0,0,0,0)",
-              fill: false,
-              borderWidth: 4,
 
-            }
-          ],
-        },
-        options: {
-          title: {
-            display: true,
-            text: 'プローブ検査'
-          },
-          elements: {
+    console.log(max_data)
+        
+    var ctx1 = document.getElementById("temp");
+    var ctx2 = document.getElementById("humidity");
+    var ctx3 = document.getElementById("barometric");
+    var ctx4 = document.getElementById("luminance");
+
+    var max_lab = new Object();
+    max_lab.temp = max_data.temp.length/10;
+    max_lab.hr = max_data.hr.length/10;
+    max_lab.atm = max_data.atm.length/10;
+    max_lab.lum = max_data.lum.length/10;
+
+    console.log(max_lab)
+
+    var myLineChart = new Chart(ctx1, {
+    type: 'line',
+    data: {
+        labels: arr_no,
+        datasets: [
+        {
+            label: '気温(度)',
+            data: arr_temp,
+            borderColor: "rgba(244,67,22,1)",
+            backgroundColor: "rgba(0,0,0,0)"
+        }]
+    },
+    options: {
+        title: {
+            display: true
+        },elements: {
             point:{
             radius: 0
             }
         },
-          scales: {
+        scales: {
             yAxes: [{
-              ticks: {
-                suggestedMax: 1,
+                ticks: {
+                suggestedMax: 40,
                 suggestedMin: 0,
-                stepSize: 1,
+                stepSize: max_lab.temp,
                 callback: function(value, index, values){
-                  return  value +  'V';
+                    return  value +  '度'
                 }
-              }
+            }
+        }],
+        xAxes:[{
+            ticks:{
+                minRotation: 0,   // ┐表示角度水平
+                maxRotation: 0,   // ┘
+                autoSkip: true,  //なくてもよい
+                maxTicksLimit: length_ticks
+            }
+        }]
+        
+        },
+    }
+    });
+    var myLineChart2 = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: arr_no,
+            datasets: [
+            {
+                label: '湿度(%)',
+                data: arr_hr,
+                borderColor: "rgba(15,96,166,1)",
+                backgroundColor: "rgba(0,0,0,0)"
+            }],
+        },
+        options: {
+            title: {
+            display: true,
+            text: ''
+            },elements: {
+                point:{
+                radius: 0
+                }
+            },
+            scales: {
+            yAxes: [{
+                ticks: {
+                suggestedMax: 40,
+                suggestedMin: 0,
+                stepSize: max_lab.hr,
+                callback: function(value, index, values){
+                    return  value +  '%'
+                }
+                }
             }],
             xAxes:[{
                 ticks:{
@@ -229,9 +294,100 @@ function plot_ENV(arr,arr_no,max){
                 }
             }]
             
-          },
+            },
         }
-      });
+    });
+    var myLineChart3 = new Chart(ctx3, {
+        type: 'line',
+        data: {
+            labels: arr_no,
+            datasets: [
+            {
+                label: '気圧(hPa)',
+                data: arr_atm,
+                borderColor: "rgba(35,15,166,1)",
+                backgroundColor: "rgba(0,0,0,0)"
+            }],
+        },
+        options: {
+            title: {
+            display: true,
+            text: ''
+            },elements: {
+                point:{
+                radius: 0
+                }
+            },
+            scales: {
+            yAxes: [{
+                ticks: {
+                suggestedMax: 40,
+                suggestedMin: 0,
+                stepSize: max_lab.atm,
+                callback: function(value, index, values){
+                    return  value +  'hPa'
+                }
+                }
+            }],
+            xAxes:[{
+                ticks:{
+                    minRotation: 0,   // ┐表示角度水平
+                    maxRotation: 0,   // ┘
+                    autoSkip: true,  //なくてもよい
+                    maxTicksLimit: length_ticks
+                }
+            }]
+            
+            },
+        }
+        });
+    var myLineChart4 = new Chart(ctx4, {
+        type: 'line',
+        data: {
+            labels: arr_no,
+            datasets: [
+            {
+                label: '輝度(lx)',
+                data: arr_lum,
+                borderColor: "rgba(166,136,15,1)",
+                backgroundColor: "rgba(0,0,0,0)"
+            }],
+        },
+        options: {
+            title: {
+            display: true,
+            text: ''
+            },elements: {
+                point:{
+                radius: 0
+                }
+            },
+            scales: {
+            yAxes: [{
+                ticks: {
+                suggestedMax: 40,
+                suggestedMin: 0,
+                stepSize: max_lab.lum,
+                callback: function(value, index, values){
+                    return  value +  'lx'
+                }
+                }
+            }],
+            xAxes:[{
+                ticks:{
+                    minRotation: 0,   // ┐表示角度水平
+                    maxRotation: 0,   // ┘
+                    autoSkip: true,  //なくてもよい
+                    maxTicksLimit: length_ticks
+                }
+            }]
+            
+            },
+        }
+        });
+    }
+
+
 }
 
 function func1() {
@@ -283,7 +439,6 @@ function time_Divide(value){
 
 
 function send_data_term(s_date,e_date,s_time,e_time){
-    console.log("okokokok")
     const result_table1 = document.getElementById("result_timetable1");
     const result_table2 = document.getElementById("result_timetable2");
 
@@ -295,7 +450,7 @@ function send_data_term(s_date,e_date,s_time,e_time){
     result_table1.innerHTML = "期間："+ sel_str_Sdate + "~" + sel_str_Edate;
     result_table2.innerHTML = "時間："+ sel_str_Stime + "~" + sel_str_Etime;
 
-    h = "SELECT * FROM pi_probe while scan_id <= 10;";
+    h = "SELECT * FROM pi_camera while scan_id <= 10;";
 
 
     const req_2 = {
@@ -315,7 +470,6 @@ function send_data_term(s_date,e_date,s_time,e_time){
     }
 }
 function false_cnt(){
-    
     var arr_insp = {
         sum:0,
         value:{
@@ -332,7 +486,7 @@ function false_cnt(){
 
     for(key in arr_j){
 
-        console.log(arr_j[key]);
+        // console.log(arr_j[key]);
         arr_key = JSON.parse(arr_j[key][5]).parts;
 
         for(i=0;i<Math.max(Object.keys(arr_key).length);i++){
@@ -359,81 +513,56 @@ function false_cnt(){
     return arr_insp
 }
 
-
-
-function downloadCSV() {
-    //ダウンロードするCSVファイル名を指定する
-    const filename = "download.csv";
-    //CSVデータ
-    const dataCSV = [
-        {num:1,time:"20:11",R1:12},
-        {num:2,time:"20:11",R1:12},
-        {num:3,time:"20:11",R1:12},
-        {num:4,time:"20:11",R1:12},
-        {num:5,time:"20:11",R1:12},
-        {num:6,time:"20:11",R1:12},
-    ];
-
-    let dataCSV_new = "id,MACアドレス,日付,時間,気温,湿度,気圧\n";
-
-    let csv_time = 0;
-    let csv_date = 0;
-
-    let csv_status = new Object();
-    
-
-    ////CSVをがんばってつくるところ////
-    for(let key in arr_j){
-        csv_time = arr_j[key][2];
-        csv_date = csv_time.split('T')
-        csv_time = csv_date[1].split('.')
-        
-
-        csv_status[key] = JSON.parse(arr_j[key][3]).status
-        console.log(csv_status[key])
-
-        dataCSV_new = dataCSV_new 
-                    + arr_j[key][0] + ", " 
-                    + arr_j[key][1]+ ", " 
-                    +csv_date[0] + ", " 
-                    +csv_time[0] + ", " 
-                    +csv_status[key].temp + ", " 
-                    +csv_status[key].hr + ", " 
-                    +csv_status[key].atm + ", " 
-                    +"\n";
+function Cumulative_ratio(arr_parts){
+    let ratio = [0];
+    let before = 0;
+    for(i = 0;i<5;i++){
+        ratio[i] = arr_parts[i+1] / arr_parts[0]*100 + before;
+        before = ratio[i];
     }
-    // console.log(dataCSV_new)
-    // for(let key in dataCSV){
-    //     for(let key2 in dataCSV[key]){
-    //         dataCSV_new = dataCSV_new + dataCSV[key][key2] + ","
-    //     }
-    //     dataCSV_new = dataCSV_new + "\n";
-    // }
-    ///////がんばって作り終わった//////
-
-    //BOMを付与する（Excelでの文字化け対策）
-    const bom = new Uint8Array([0xef, 0xbb, 0xbf]);
-    //Blobでデータを作成する
-    const blob = new Blob([bom, dataCSV_new], { type: "text/csv"});
-
-    //IE10/11用(download属性が機能しないためmsSaveBlobを使用）
-    if (window.navigator.msSaveBlob) {
-        window.navigator.msSaveBlob(blob, filename);
-    //その他ブラウザ
-    } else {
-        //BlobからオブジェクトURLを作成する
-        const url = (window.URL || window.webkitURL).createObjectURL(blob);
-        //ダウンロード用にリンクを作成する
-        const download = document.createElement("a");
-        //リンク先に上記で生成したURLを指定する
-        download.href = url;
-        //download属性にファイル名を指定する
-        download.download = filename;
-        //作成したリンクをクリックしてダウンロードを実行する
-        download.click();
-        //createObjectURLで作成したオブジェクトURLを開放する
-        (window.URL || window.webkitURL).revokeObjectURL(url);
-    }
+    // console.log(arr_parts)
+    return ratio
 }
 
 
+
+
+function result_generate(arr_parts){
+    const table_ganerate = document.getElementById('popup_table_field');
+    var table_element = '';
+    var table_th;
+    var f_t = 0;
+    var font_red = '';
+    var i;
+    var cnt = 0;
+    var insp = '';
+
+    for(var key in arr_parts){
+        var arr_key = arr_parts[key];
+    }
+    for(i=0;i<Math.max(Object.keys(arr_key).length);i++){
+        const inspection = {
+            name: Object.keys(arr_key)[i]
+        };
+        insp = Object.keys(arr_key)[i];
+        table_th    =   '<div class="popup_inspection_name">'
+            +    inspectionIndex(inspection)
+            +   '</div><div class="popup_table"><table border="1"><tr><th>部品名</th><th>判定</th></tr>';
+
+        for(var key in arr_parts){
+            var arr_key = arr_parts[key]
+            if (insp in arr_key) {
+                if(arr_key[insp] == false){
+                    f_t = '×'; font_red = 'class="font_red"';
+                }else{ f_t = '〇'}
+                table_element   =   table_element + '<tr ' + font_red + '><td>' + key + '</td><td>' + f_t + '</td></tr>';
+                
+                font_red = '';
+            }
+            cnt++;
+        }
+        table_element = table_element + "</table></div>";
+        table_ganerate.insertAdjacentHTML("beforeend",table_th + table_element);
+        table_element = '';
+    }
+}

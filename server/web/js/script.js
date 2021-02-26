@@ -31,8 +31,12 @@ let env_temp = 0;
 let arr_parts = 0;
 let page_cnt_arr = 0;
 var hoge;
+let num_50_flag = 0;
+
 
 var now_page_cnt = 0;
+
+var csv_flag = 0;
 
 
 const inspectionList = [
@@ -209,8 +213,7 @@ function pop_up(id_value){
             +   'hPa / 輝度:'
             // +   env_lux
             +   496.487
-            +   'lx / 基板タイプ:'
-            +   data.type;
+            +   'lx';
     // console.log(env_text);
     detail_title.insertAdjacentHTML("afterbegin", h);
     env_text.insertAdjacentHTML("afterbegin",env)
@@ -285,6 +288,7 @@ window.addEventListener('beforeunload', function(e){
 
 
 function page_Move(ele){
+    num_50_flag = 0;
     page_cnt_arr++;
     now_page = ele;
     page_html_send();
@@ -333,6 +337,7 @@ function page_generate(){
 
 
 window.onload = function (e) {
+
     const disp_num = document.getElementById('disp_num');
 
     var cnt_page_processing = 0;
@@ -351,6 +356,7 @@ window.onload = function (e) {
     // const result_attach_2 = document.getElementById('result_picture2');
     // メッセージの待ち受け
     socket.onmessage = function (event) {
+        
         var h;
 
         if(data_cnt == 0){
@@ -361,7 +367,12 @@ window.onload = function (e) {
             // console.log('全データ数:' + data_cnt_max);
         }
 
-
+        if(csv_flag==1){
+            console.log("ok")
+            arr_j = JSON.parse(event.data);
+            CSV_generate();
+            csv_flag=0;
+        }
 
         (data_cnt_max >= 50)?display_num = 50:display_num = data_cnt_max;
         
@@ -394,8 +405,7 @@ window.onload = function (e) {
                     result_attach_2.insertAdjacentHTML("afterbegin", p2);
 
                 }else{
-                    html_generate(key,jdata,event);
-                    
+                        html_generate(key,jdata,event);
                     //console.log(jdata[key])
                 }
 
@@ -412,13 +422,13 @@ window.onload = function (e) {
         }
     }
     }
-    const download = document.getElementById("download");
-    //ボタンがクリックされたら「downloadCSV」を実行する
-    download.addEventListener("click", downloadCSV, false);
 
 
 }
 function html_generate(key,jdata,event){
+
+        
+    
     //key = Number(now_page_cnt) + Number(key);
 
     // const search_date_o = document.getElementById('S_date_year_old');
@@ -436,92 +446,93 @@ function html_generate(key,jdata,event){
 
     var G_B_text;
 
-    // search_date_o.value = "*";
-    // search_date_n.value = today.getFullYear() + "/" + (today.getMonth()+1) + "/" + today.getDate();
-    // search_time_o.value = "00:00";
-    // search_time_n.value = today.getHours() + ":" + today.getMinutes();
-    //console.log(key);
-    
-    data.arr = JSON.parse(event.data)[key][3];
+        // search_date_o.value = "*";
+        // search_date_n.value = today.getFullYear() + "/" + (today.getMonth()+1) + "/" + today.getDate();
+        // search_time_o.value = "00:00";
+        // search_time_n.value = today.getHours() + ":" + today.getMinutes();
+        //console.log(key);
+        
+        data.arr = JSON.parse(event.data)[key][3];
 
-    data.date = jdata[key][2];
-    // console.log(data.arr)
-    data.status = JSON.parse(data.arr);
-    data.type = data.status.type;
+        data.date = jdata[key][2];
+        // console.log(data.arr)
+        data.status = JSON.parse(data.arr);
+        data.type = data.status.type;
 
-   　//console.log(jdata[key]);
-    data.number = key;
-    let O_N = 0;
+    　//console.log(jdata[key]);
+        data.number = key;
+        let O_N = 0;
 
-    day = data.date.split('T');
-    day.date = day[0];
-    day.hours = day[1];
+        day = data.date.split('T');
+        day.date = day[0];
+        day.hours = day[1];
 
-    day.detail = day.date.split("-");
-    day.time = day.hours.split(":");
-    day.time[2] = Math.floor(day.time[2]);
+        day.detail = day.date.split("-");
+        day.time = day.hours.split(":");
+        day.time[2] = Math.floor(day.time[2]);
 
-    var yearStr = day.detail[0] ;
-    var monthStr = day.detail[1] ;
-    var dayStr = day.detail[2];
-    var jsMonth = monthStr - 1 ;
-    var date_week = new Date( yearStr, jsMonth , dayStr );
-    // console.log(dayOfWeekStrJP[date_week.getDay()] + '曜日');
-    day.week = date_week.getDay();
+        var yearStr = day.detail[0] ;
+        var monthStr = day.detail[1] ;
+        var dayStr = day.detail[2];
+        var jsMonth = monthStr - 1 ;
+        var date_week = new Date( yearStr, jsMonth , dayStr );
+        // console.log(dayOfWeekStrJP[date_week.getDay()] + '曜日');
+        day.week = date_week.getDay();
 
-    var false_cnt = 0;
-    var gb_t = '';
-    false_cnt = jdata[key][3].indexOf(-1);
+        var false_cnt = 0;
+        var gb_t = '';
+        false_cnt = jdata[key][3].indexOf(-1);
 
-    if(false_cnt <= 0){
-        O_N = '〇';
-        cnt_g++;
-        G_B_text = '<div class="dai4">'
-    }else{
-        O_N = '×';
-        cnt_b++;
-        G_B_text = '<div class="dai4 bad">'
-        gb_t = 'bad';
+
+        if(num_50_flag != 1){
+
+        if(false_cnt <= 0){
+            O_N = '〇';
+            cnt_g++;
+            G_B_text = '<div class="dai4">'
+        }else{
+            O_N = '×';
+            cnt_b++;
+            G_B_text = '<div class="dai4 bad">'
+            gb_t = 'bad';
+        }
     }
 
-    arr_j[key] = jdata[key];
+        arr_j[key] = jdata[key];
 
 
-    // console.log(jdata[key])
-    
+        // console.log(jdata[key])
+        
 
 
-    h = '<div id="'
-    +  arr_j[key][0]
-    + '" class="result_element '
-    + gb_t
-    + '" onclick="getId(this);">'
-    + '<div class="dai0">'
-    +   String(arr_j[key][0])
-    + '</div>'
-    + '<div class="dai1">'
-    +   day.detail[0] + '/' + ( '00' + day.detail[1] ).slice( -2 ) + '/' +( '00' + day.detail[2] ).slice( -2 )
-    + '</div>'
-    + '<div class="dai2">'
-    + ( '00' + day.time[0] ).slice( -2 ) + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
-    + '</div>'
-    + '<div class="dai3">'
-    + data.type
-    + '</div>'
-    + G_B_text
-    + O_N
-    + '</div>'
-    + '</div>';
+        h = '<div id="'
+        +  arr_j[key][0]
+        + '" class="result_element '
+        + gb_t
+        + '" onclick="getId(this);">'
+        + '<div class="dai0">'
+        +   String(arr_j[key][0])
+        + '</div>'
+        + '<div class="dai1">'
+        +   day.detail[0] + '/' + ( '00' + day.detail[1] ).slice( -2 ) + '/' +( '00' + day.detail[2] ).slice( -2 )
+        + '</div>'
+        + '<div class="dai2">'
+        + ( '00' + day.time[0] ).slice( -2 ) + ':' + ( '00' + day.time[1] ).slice( -2 ) + ':' + ( '00' + day.time[2] ).slice( -2 )
+        + '</div>'
+        + G_B_text
+        + O_N
+        + '</div>'
+        + '</div>';
 
 
 
-    arr_details[key] = h;
+        arr_details[key] = h;
 
-    inpe = document.getElementById(data.number);
+        inpe = document.getElementById(data.number);
 
-    cnt_result.innerHTML = data_cnt_max;//data_cnt_max;
-    cnt_good.innerHTML = cnt_g;
-    cnt_bad.innerHTML = cnt_b;
+        cnt_result.innerHTML = data_cnt_max;//data_cnt_max;
+        cnt_good.innerHTML = cnt_g;
+        cnt_bad.innerHTML = cnt_b;
 }
 function result_generate(arr_parts){
     const table_ganerate = document.getElementById('popup_table_field');
@@ -656,8 +667,11 @@ function output(){
 
 
 function downloadCSV() {
-    console.log("ok")
-
+    console.log("フラグを1にするよ")
+    num_50_flag = 1;
+    csv_flag = 1;
+        
+        
     h = "SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera;"
 
     const req_3 = {
@@ -669,19 +683,15 @@ function downloadCSV() {
     }
 
     socket.send(JSON.stringify(req_3)); 
-
-    socket.onmessage = function (event) {
-            console.log("ok")
-            arr_j = JSON.parse(event.data);
-            CSV_generate();
-    }
-
+    
 }
 
 function CSV_generate(){
-    
-    console.log("clickok")
-    csv_flag = 1;
+
+    var inspection_name = document.getElementById( "inspection_name" ) ;
+    var radioNodeList = inspection_name.trigger ;
+    var a = radioNodeList.value ;
+    console.log(a)
     //ダウンロードするCSVファイル名を指定する
     const filename = "download.csv";
     //CSVデータ
@@ -694,7 +704,9 @@ function CSV_generate(){
         {num:6,time:"20:11",R1:12},
     ];
 
-    let dataCSV_new = "id,MACアドレス,日付,時間,気温,湿度,気圧\n";
+
+    let dataCSV_new = inspectionIndex({name: a})+ "\n"
+    dataCSV_new = dataCSV_new + "id,MACアドレス,日付,時間,気温,湿度,気圧,輝度,";
 
     let csv_time = 0;
     let csv_date = 0;
@@ -702,10 +714,25 @@ function CSV_generate(){
     let csv_parts_text = "";
 
     let csv_status = new Object();
-    
+    let parts_flag = 0;
+    let a_search = 0;
 
+
+    for(let key in arr_j){
+        csv_parts[key] = JSON.parse(arr_j[key][3]).parts;
+        if(parts_flag == 0){
+            for(let key2 in csv_parts[key]){
+                dataCSV_new = dataCSV_new + key2 + ",";
+            }
+            dataCSV_new = dataCSV_new + "\n";
+            parts_flag = 1;
+        }
+    }
+    
     ////CSVをがんばってつくるところ////
     for(let key in arr_j){
+
+
         csv_time = arr_j[key][2];
         csv_date = csv_time.split('T');
         csv_time = csv_date[1].split('.');
@@ -713,18 +740,36 @@ function CSV_generate(){
         csv_parts[key] = JSON.parse(arr_j[key][3]).parts;
 
         for(let key2 in csv_parts[key]){
+            for(let key3 in csv_parts[key][key2]){
+                if(key3 == a){
+                    a_search++;
+                }
+            }
+        }
+
+        if(a_search == 0){
+            alert(inspectionIndex({name: a})+'の検査結果はありません');
+            return 0;
+        }
+
+
+        for(let key2 in csv_parts[key]){
+            
             // csv_parts_text = csv_parts_text + csv_parts[key][key2]+","
 
             csv_parts_text  =   csv_parts_text + "{"
-                            +   csv_parts[key][key2]["mounted_parts"][0].replace(/{/g, ' ')
+                            +   csv_parts[key][key2][a][0]
                             +   "."
-                            +   csv_parts[key][key2]["mounted_parts"][1] + "},"
-                            console.log(csv_parts[key][key2]["mounted_parts"][0])
+                            +   csv_parts[key][key2][a][1] + "},"
+
         }
 
-        console.log("-------------------");
-
         csv_status[key] = JSON.parse(arr_j[key][3]).status;
+
+
+        if(isNaN(csv_status[key].luminance) == true){
+            csv_status[key].luminance = 0;
+        }
 
         dataCSV_new = dataCSV_new 
                     + arr_j[key][0] + ", " 
@@ -734,6 +779,7 @@ function CSV_generate(){
                     +csv_status[key].temp + ", " 
                     +csv_status[key].hr + ", " 
                     +csv_status[key].atm + ", " 
+                    +csv_status[key].luminance + ", " 
                     +csv_parts_text
                     +"\n";
         csv_parts_text="";
@@ -770,4 +816,6 @@ function CSV_generate(){
         //createObjectURLで作成したオブジェクトURLを開放する
         (window.URL || window.webkitURL).revokeObjectURL(url);
     }
+
+    return 0;
 }

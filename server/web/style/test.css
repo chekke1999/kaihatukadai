@@ -693,7 +693,7 @@ table .td_num{
 
 .dai1{
     height:100%;
-    width:30%;
+    width:35%;
     float: left;
     background: transparent;
     text-align: center;
@@ -705,7 +705,7 @@ table .td_num{
 
 .dai2{
     height:100%;
-    width:20%;
+    width:30%;
     float: left;
     background: transparent;
     text-align: center;
@@ -726,7 +726,7 @@ table .td_num{
     box-sizing: border-box;
     font-size: calc(10px + .5vw);
 }
-
+/* 
 .dai4{
     height:100%;
     width:15%;
@@ -735,12 +735,12 @@ table .td_num{
     text-align: center;
     line-height:50px;
     font-size: calc(10px + .5vw);
-}
+} */
 
 /*////probe///*/
 .dai0_probe{
     height:100%;
-    width:15%;
+    width:20%;
     float: left;
     background: transparent;
     text-align: center;
@@ -752,7 +752,7 @@ table .td_num{
 
 .dai1_probe{
     height:100%;
-    width:30%;
+    width:40%;
     float: left;
     background: transparent;
     text-align: center;
@@ -764,7 +764,7 @@ table .td_num{
 
 .dai2_probe{
     height:100%;
-    width:30%;
+    width:40%;
     float: left;
     background: transparent;
     text-align: center;
@@ -773,7 +773,7 @@ table .td_num{
     box-sizing: border-box;
     font-size: calc(10px + .5vw);
 }
-
+/* 
 .dai3_probe{
     height:100%;
     width:25%;
@@ -783,7 +783,7 @@ table .td_num{
     line-height:50px;
     box-sizing: border-box;
     font-size: calc(10px + .5vw);
-}
+} */
 
 .result_elementbox .dai0_probe{
     height:100%;
@@ -1644,4 +1644,6 @@ button {
 .hum{border: solid 5px #002e74;}
 .bar{border: solid 5px #4e0074;}
 .lum{border: solid 5px #72bd22;}
+.Wave{border: solid 5px #005a66;}
+.Four{border: solid 5px #ae0005;}
 

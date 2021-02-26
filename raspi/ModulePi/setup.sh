@@ -3,6 +3,7 @@
 raspi-config nonint do_serial 0
 raspi-config nonint do_i2c 0
 raspi-config nonint do_ssh 0
+raspi-config nonint do_camera 0
 raspi-config nonint do_wifi_country JP
 raspi-config nonint do_change_timezone Asia/Tokyo
 
@@ -40,9 +41,7 @@ systemctl daemon-reload
 systemctl restart systemd-timesyncd.service
 
 #static route
-cat << EOF > /lib/dhcpcd/dhcpcd-hooks/40-route
-ip route add 192.168.0.0/24 via 114.51.4.1 dev eth0 proto static
-EOF
+sudo sh -c "echo 'ip route add 192.168.0.0/24 via 114.51.4.1 dev eth0 proto static' > /lib/dhcpcd/dhcpcd-hooks/40-route"
 
 # pakage install
 apt-get update;sudo apt-get upgrade -y
@@ -67,6 +66,7 @@ if [ $1 = "-incv2" ]; then
         libprotobuf-dev libgoogle-glog-dev libgflags-dev \
         protobuf-compiler \
     # opencv build
+    cd $HOME
     mkdir cv2; cd cv2
     wget -O opencv.zip https://github.com/opencv/opencv/archive/4.3.0.zip
     wget -O opencv_contrib.zip https://github.com/opencv/opencv_contrib/archive/4.3.0.zip
@@ -82,7 +82,7 @@ if [ $1 = "-incv2" ]; then
 
     cmake -D CMAKE_BUILD_TYPE=RELEASE \
         -D CMAKE_INSTALL_PREFIX=/usr/local \
-        -D OPENCV_EXTRA_MODULES_PATH=../opencv_contrib/modules \
+        -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib/modules \
         -D ENABLE_NEON=ON \
         -D WITH_FFMPEG=ON \
         -D WITH_TBB=ON \

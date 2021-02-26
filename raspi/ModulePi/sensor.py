@@ -6,10 +6,19 @@ import RPi.GPIO as gpio
 import numpy as np
 import smbus
 import time
-
+import wiringpi as wpi
 
 
 class Hard:
+    flag=False #電気測定部ならTrue カメラ部ならFalse
+    if flag==True:#電気
+        LED_pin=[24,25,5]
+        SW_pin=[6,16,26]
+        motor_sensor=[17,27]
+    else:#カメラ
+        LED_pin=[22,27,0]
+        SW_pin=[23,24,25]
+        RELRY_pin=[4,17]
     @classmethod
     def _SPI_AD_DEC(cls,mode,ch):
         Vref = 3.3
@@ -192,7 +201,6 @@ class Hard:
         except ZeroDivisionError:
             print("ZeroDivisionError")
             return 0,0,0
-
     @classmethod
     def _I2C_COMMAD(cls,com):
         COM=(0x80 | 0x20 | com)
@@ -233,53 +241,55 @@ class Hard:
         #time.sleep(0.2)
     @classmethod
     def _GPIO_SETUP(cls):
-        LED_pin=[22,27,0]
-        RELRY_pin=[4,17]
         gpio.setmode(gpio.BCM)
+        if cls.flag==False:
+            gpio.setup(cls.RELRY_pin[0],gpio.OUT)
+            gpio.setup(cls.RELRY_pin[1],gpio.OUT)
+        """
+        else:
+            gpio.setup(cls.motor_sensor[0],gpio.IN,pull_up_down=gpio.PUD_DOWN)
+            gpio.setup(cls.motor_sensor[1],gpio.IN,pull_up_down=gpio.PUD_DOWN)
+        """
         for num in range(3):
-            gpio.setup(LED_pin[num],gpio.OUT)
-        gpio.setup(RELRY_pin[0],gpio.OUT)
-        gpio.setup(RELRY_pin[1],gpio.OUT)
+            gpio.setup(cls.SW_pin[num],gpio.IN,pull_up_down=gpio.PUD_DOWN)
+            gpio.setup(cls.LED_pin[num],gpio.OUT)
 ############################################
     @classmethod
     def _LED(cls,pin,HILO):
         if pin==0:
-            gpio.output(22,HILO)
+            gpio.output(cls.LED_pin[0],HILO)
         if pin==1:
-            gpio.output(27,HILO)
+            gpio.output(cls.LED_pin[1],HILO)
         if pin==2:
-            gpio.output(0,HILO)
+            gpio.output(cls.LED_pin[2],HILO)
+    @classmethod
+    def light_power(cls,HILO):
+        gpio.output(17,HILO)
     @classmethod
     def _Line(cls,HILO):
         gpio.output(4,HILO)
     @classmethod
-    def _Motor(cls,dir,speed):
-        gpio.setup(motor_pin,gpio.OUT)
-        servo=gpio.PWM(motor_pin,50)
-        servo.start(7.5)
-        time.sleep(2)
-        servo.ChangeDutyCycle(5)
-        time.sleep(2)
-        servo.ChangeDutyCycle(10)
-        time.sleep(2)
-        servo.stop()
-        """
-            import wiringpi as pi
+    def _Motor(cls,dir):
             IN1_MOTOR_PIN = 23
-            IN2_MOTOR_PIN = 24
-            pi.pinMode( IN1_MOTOR_PIN, pi.OUTPUT )
-            pi.pinMode( IN2_MOTOR_PIN, pi.OUTPUT )
-            pi.softPwmCreate( IN1_MOTOR_PIN, 0, 100 )
-            pi.softPwmCreate( IN2_MOTOR_PIN, 0, 100 )
-            pi.softPwmWrite( IN1_MOTOR_PIN, 0 )
-            pi.softPwmWrite( IN2_MOTOR_PIN, 0 )
-            pi.softPwmWrite( IN1_MOTOR_PIN, 0 )
-            pi.softPwmWrite( IN2_MOTOR_PIN, 25 )
-        """
+            IN2_MOTOR_PIN = 22
+            wpi.wiringPiSetupGpio()
+            wpi.pinMode( IN1_MOTOR_PIN, wpi.OUTPUT )
+            wpi.pinMode( IN2_MOTOR_PIN, wpi.OUTPUT )
+            wpi.softPwmCreate( IN1_MOTOR_PIN, 0, 100 )
+            wpi.softPwmCreate( IN2_MOTOR_PIN, 0, 100 )
+            if dir > 0:
+                wpi.softPwmWrite( IN1_MOTOR_PIN, 50 )
+                wpi.softPwmWrite( IN2_MOTOR_PIN, 0 )
+            elif dir < 0:
+                wpi.softPwmWrite( IN1_MOTOR_PIN, 0 )
+                wpi.softPwmWrite( IN2_MOTOR_PIN, 0 )
+            else :
+                wpi.softPwmWrite( IN1_MOTOR_PIN, 0 )
+                wpi.softPwmWrite( IN2_MOTOR_PIN, 50 )
     @classmethod
     def light(cls,light_data):
         gpio.output(17,True)
-        Hard._SPI_DA_DEC(light)
+        Hard._SPI_DA_DEC(light_data)
     @classmethod
     def main(cls):
         Hard._GPIO_SETUP()
@@ -300,11 +310,18 @@ class Hard:
         return send_data
 ############################################
 """
-    gpio SW 23 24 25 
-    gpio LED 27 22 0 
-    12 13 G
-    5 6 G
-
+    カメラ
+        gpio SW 23,24,25 
+        gpio LED 22,27,0
+        開いてるとこ
+        12 13 
+        5 6 
+    電気
+        sw 6,16,26
+        led 24,25,5
+        開いてるとこ
+        22　23　モータ
+        17　27　センサ
     I2C
         TSL25721
             SCK──────┤Clock(GPIO3)

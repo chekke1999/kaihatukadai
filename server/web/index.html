@@ -42,8 +42,7 @@
                         <div class="dai dai0">No.</div>
                         <div class="dai dai1">日付</div>
                         <div class="dai dai2">時間</div>
-                        <div class="dai dai3">基板タイプ</div>
-                        <div class="dai dai4">判定</div>
+                        <div class="dai dai3">判定</div>
                     </div>
                     <div class="result_table">
 
@@ -80,7 +79,16 @@
                         </tr>
                       </table>
 
-                      <button id="download" type="button">Download CSV</button>
+                      <button id="download" type="button" onclick="downloadCSV(1)">Download CSV</button></br>
+
+                    <form id="inspection_name">
+                        <label><input type="radio" name="trigger" value="mounted_parts"checked>部品の位置</br></label>
+                        <label><input type="radio" name="trigger" value="misalignment">部品の値・型</br></label>
+                        <label><input type="radio" name="trigger" value="angle">部品の傾き</br></label>
+                        <label><input type="radio" name="trigger" value="foreign_matter">部品の異物</br></label>
+                        <label><input type="radio" name="trigger" value="scratch">部品の傷</br></label>
+                        <label><input type="radio" name="trigger" value="soiled">部品の汚れ</br></label>
+                    </form>
 
                       <img id="neko" src="test.png" />
                 </div>
