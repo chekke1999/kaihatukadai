@@ -23,6 +23,13 @@ def cleanup(clp=[]):
         else:
             del c
 
+class Count():
+    def __init__():
+        self.cnt = 0
+    def num():
+        self.cnt += 1
+        return self.cnt
+
 class Serial:
     def __init__(self):
         self.ser = serial.Serial('/dev/ttyAMA0', 9600, timeout=10)
@@ -43,6 +50,9 @@ class Tcp:
         self.data = manager.dict()
         self.data["flag"] = False 
         self.data["data"] = None
+        self.data["send_flag"] = False
+        self.data["send_data"] = None
+
         if mode == "svr":
             self.cpro = Process(target=self.__server)
             self.cpro.start()
@@ -51,20 +61,25 @@ class Tcp:
             self.cpro.start()
         else:
             self.tcp = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    def client(self,data,ip,port,res=None):
+            self.tcp.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+            self.tcp.settimeout(30)
+    def client(self,ip,port,res=None,data=None):
         # 2.サーバに接続
         self.tcp.connect((ip,port))
         # 3.データ送信
+        print("data send:",data)
         self.tcp.send(data)
         if res == "big":
             data = b""
             while(True):
                 response = self.tcp.recv(4096)
                 if not response:
+                    self.tcp.close()
                     return data
                 data += response
         elif res == "sml":
             response = self.tcp.recv(4096)
+            self.tcp.close()
             return response
         else:
             return None
@@ -75,11 +90,16 @@ class Tcp:
         self.tcp.connect((self.ip,self.port))
         # 3.PLCに初回シグナル送信
         self.tcp.send(b"1")
+        print("child.data set:",self.data)
         while(True):
             if not self.data["flag"]:
-                # 4.サーバからのレスポンスを受信
                 self.data["data"] = self.tcp.recv(4096)
                 self.data["flag"] = True
+                
+            if self.data["send_flag"]:
+                print("plc_flag send:",self.data["send_data"])
+                self.tcp.send(self.send["send_data"])
+                self.data["send_flag"] = False
 
     def __server(self):
         # 1.ソケットオブジェクトの作成
@@ -106,7 +126,6 @@ class Tcp:
             elif data == rb"\x01":
                 self.data["flag"] = True
 
-
 class ChildWebs:
     def __init__(self):
         manager = Manager()
@@ -115,7 +134,7 @@ class ChildWebs:
         self.data["data"] = None
         self.cpro = Process(target=self._sendpro)
         self.cpro.start()
-        print(self.data)
+    @staticmethod
     async def _Send(url,jlist):
         async with websockets.connect(url,max_size=20000000) as websocket:
             start = time.time()
@@ -171,7 +190,7 @@ class CamPi:
         return base64.b64encode(png.getvalue()).decode('utf-8')
 
     @classmethod
-    def _gendata(prodata1,prodata2):
+    def _gendata(cls,prodata1,prodata2):
         base64_img1 = cls._base64conv(prodata1["img"])
         base64_img2 = cls._base64conv(prodata2)
         jdict = Sensor.main()
@@ -190,32 +209,34 @@ class CamPi:
     @classmethod
     def run(cls,net):
         cls.pimac = net.GATE_MAC
-        seri = Serial()
-        subcam_ip = seri.recv(cnt=10).decode() 
-        if subcam_ip == b"":
-            print("TimeoutError", file=sys.stderr)
-            exit()
-        else:
-            seri.send(b"0")
-            print(f"complete serial :{subcam_ip}")
-            del seri
-        subp = ChildWebs()
-        tcps = Tcp(mode="svr",ip=net.myip,port=8080)
+        # seri = Serial()
+        # subcam_ip = seri.recv(cnt=10).decode() 
+        # if len(subcam_ip) < 10:
+        #     print(f"TimeoutError: return ip={subcam_ip}, leng={len(subcam_ip)}", file=sys.stderr)
+        #     exit()
+        # else:
+        #     seri.send(b"0")
+        #     print(f"complete serial :{subcam_ip}")
+        #     del seri
         tcpc = Tcp(mode="clt",ip="plcnet",port=8081)
-        send = Tcp()
-        atexit.register(cleanup,clp=[subp.cpro,tcps.cpro,tcpc])
+        tcpc.data["send_data"] = b"1"
+        subp = ChildWebs()
+        atexit.register(cleanup,clp=[subp.cpro,tcpc.cpro])
         print("loop start")
         while(True):
             if tcpc.data["flag"]:
-                tcpc.data["flag"] = False
+                print("plc recv:",tcpc.data)
                 start = time.time()
                 print("Please wait until the shooting is completed...",end="")
                 ndimg1 = full_img()
                 print("\rShooting complete successfully:",time.time() - start,"[sec]")
                 print("Wait for the sub camera to complete shooting")
-                ndimg2 = np.load(io.BytesIO(send.client(data=b"plees",res="big",ip=subcam_ip,port=8080)))
+                #サブカメラのラズパイでcap.readでNoneが戻り値になる問題
+                #ndimg2 = np.load(io.BytesIO(send.client(data=b"plees",res="big",ip=subcam_ip,port=8080)))
+                ndimg2 = np.array(Image.open('/home/pi/banana/Pictures/l_e_others_501.png'))
                 print("\rSub camera shooting complete successfully:",time.time() - start,"[sec]")
-                send.client(data=b"2",res="sml",ip="plcnet",port=8081)
+                tcpc.data["flag"] = False
+                tcpc.data["send_flag"] = True
                 print("Run Image processing...")
                 prodata1 = Mcc.Start(ndimg1)
                 prodata2 = ndimg2
@@ -226,6 +247,7 @@ class CamPi:
 class SCamPi:
     @classmethod
     def run(cls,net):
+        cls.pimac = net.GATE_MAC
         seri = Serial()
         print(net.myip.encode())
         for i in range(1,4):
@@ -263,7 +285,7 @@ INSERT INTO pi_probe(
     spi_mac,
     scan_data
 ) VALUES( 
-    {cls.pimac},
+    '{cls.pimac}',
     '{json.dumps(jdict)}'
 );
 """
@@ -274,24 +296,43 @@ INSERT INTO pi_probe(
                 "commit":True
             }
         }
+        print(send_d)
         return send_d
     @classmethod
     def run(cls,net):
         cls.pimac = net.GATE_MAC
         subp = ChildWebs()
         atexit.register(cleanup,clp=subp.cpro)
+        tcpc = Tcp(mode="clt",ip="plcnet",port=8081)
+        send = Tcp()
         while True:
-            time.sleep(10)
+            if tcpc.data["flag"]:
+                start = time.time()
+                print("Scan probe...")
+                send_d = cls._gendata()
+                print("Scan complete successfully:",time.time() - start,"[sec]")
+                tcpc.data["flag"] = False
+                send.client(data=b"2",ip="plcnet",port=8081)
+                subp.OneBeforeSendWait(send_d)
+                print("End of loop time:",time.time() - start,"[sec]")
+    @classmethod
+    def test_run(cls):
+        cls.pimac = net.GATE_MAC
+        subp = ChildWebs()
+        atexit.register(cleanup,clp=subp.cpro)
+        while(True):
             start = time.time()
             print("Scan probe...")
             send_d = cls._gendata()
             print("Scan complete successfully:",time.time() - start,"[sec]")
             subp.OneBeforeSendWait(send_d)
             print("End of loop time:",time.time() - start,"[sec]")
+            time.sleep(5)
 
 if __name__ == '__main__':
     net = NetInfo()
     if net.GATE_MAC == None:
+        print("Mac address none")
         exit()
     if argv[1] == "-c":
         CamPi.run(net)
@@ -302,6 +343,8 @@ if __name__ == '__main__':
     elif argv[1] == "-pint":
         while True:
             full_img()
+    elif argv[1] == "-tpro":
+        ProbePi.test_run()
     else:
         print("引数を指定してください")
         print("-p:プローブモード,-c:カメラモード")

@@ -60,9 +60,6 @@ class SW:
             gpio.add_event_detect(Hard.motor_sensor[0],gpio.RISING,callback=SW._motor_sensor_callback_1,bouncetime=300)
             gpio.add_event_detect(Hard.motor_sensor[1],gpio.RISING,callback=SW._motor_sensor_callback_2,bouncetime=300)
         """
-    @classmethod
-    def _test_main(cls):
-        SW._SW_callback_1(1)
 
 
 #SW._test_main()

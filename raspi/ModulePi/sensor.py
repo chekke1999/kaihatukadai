@@ -264,10 +264,11 @@ class Hard:
             gpio.output(cls.LED_pin[2],HILO)
     @classmethod
     def light_power(cls,HILO):
-        gpio.output(17,HILO)
+        gpio.output(cls.RELRY_pin[1],HILO)
+        print
     @classmethod
     def _Line(cls,HILO):
-        gpio.output(4,HILO)
+        gpio.output(cls.RELRY_pin[0],HILO)
     @classmethod
     def _Motor(cls,dir):
             IN1_MOTOR_PIN = 23

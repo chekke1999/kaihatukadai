@@ -1489,6 +1489,10 @@ div.slide-show {
     animation-delay: 20s;
 }
 
+.top_form{
+    margin-top:200px;
+}
+
 button {
     pointer-events: fill;
 }
@@ -1647,3 +1651,11 @@ button {
 .Wave{border: solid 5px #005a66;}
 .Four{border: solid 5px #ae0005;}
 
+.Mhz_text{
+    text-align: center;
+}
+
+.result_Mhz{
+    border-top: solid 2px #adadad;
+    padding-top:30px;
+}

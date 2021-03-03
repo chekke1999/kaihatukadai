@@ -623,6 +623,7 @@ function downloadCSV() {
 }
 
 function CSV_generate(){
+    
     if(cnt_csv == 0){
         cnt_csv = 1;
     console.log("okokoookooko")
@@ -773,7 +774,7 @@ console.log(jdata[1])
         //createObjectURLで作成したオブジェクトURLを開放する
         (window.URL || window.webkitURL).revokeObjectURL(url);
     }
-
+    cnt_csv = 0;
     return 0;
 }
 }

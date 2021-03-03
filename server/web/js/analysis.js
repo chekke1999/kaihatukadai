@@ -212,7 +212,8 @@ function func1() {
         search_cnt_1++;
       }
     }
-
+    console.log(arr_j)
+    console.log(term1)
   
     if(search_cnt_1 >= 1){
       for(var key in JSON.parse(arr_j[term1][3])["measured_value"]){
@@ -471,15 +472,16 @@ function test(probe_NUM,PIN_NUM){
   var IMABS_arr = [0];
   var IMABS_arr_50 = [0];
   var plot_length = [0];
+  var MAX_Y = 0;
 
   let data_lenght = 0;
 
   var max_data = new Object();
 
+    console.log(JSON.parse(arr_j[1][3])["measured_value"][9]["adc_data"])
 
-
-  for(var key in JSON.parse(arr_j[1000][3])["measured_value"][9]["adc_data"]){
-    arr_temp[key] = (JSON.parse(arr_j[1000][3])["measured_value"][9]["adc_data"][key]);
+  for(var key in JSON.parse(arr_j[1][3])["measured_value"][9]["adc_data"]){
+    arr_temp[key] = (JSON.parse(arr_j[1][3])["measured_value"][9]["adc_data"][key]);
     arr_no[i] = i;
     i++;
   }
@@ -506,12 +508,17 @@ function test(probe_NUM,PIN_NUM){
     IMABS_arr_50[i] = IMABS_arr[i] 
   }
 
+
+
+  MAX_Y = IMABS_arr_50.reduce((a,b)=>a>b?a:b); //最大値を求める
+
   for(i = 0; i < data_lenght/2 ; i++){
       plot_length[i] = i*10/data_lenght;
   }
 
 
-  var length_ticks = (arr_no.length)/10;
+  var length_ticks = (arr_no.length / 2)/10;
+  console.log(Math.round(length_ticks))
 
 
 
@@ -585,9 +592,9 @@ function test(probe_NUM,PIN_NUM){
       scales: {
       yAxes: [{
           ticks: {
-          suggestedMax: 1,
+          suggestedMax: MAX_Y ,
           suggestedMin: 0,
-          stepSize: 0.5,
+          stepSize: Math.round(MAX_Y*100)/100,
           callback: function(value, index, values){
               return  value +  ''
           }
@@ -598,7 +605,7 @@ function test(probe_NUM,PIN_NUM){
               minRotation: 0,   // ┐表示角度水平
               maxRotation: 0,   // ┘
               autoSkip: true,  //なくてもよい
-              maxTicksLimit: 100
+              maxTicksLimit: Math.round(length_ticks*100)
           }
       }]
       

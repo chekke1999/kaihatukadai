@@ -24,14 +24,14 @@ def resize(img,re_length):
 	return img2
 
 def full_img(show=True):
-	cap = cv2.VideoCapture (0)
+	cap = cv2.VideoCapture(0)
 	WIDTH = 4056
 	HEIGHT = 3040
 	cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('Y','U','1','2'))
 	cap.set(cv2.CAP_PROP_FRAME_WIDTH, WIDTH)
 	cap.set(cv2.CAP_PROP_FRAME_HEIGHT, HEIGHT)
-	_, frame = cap.read()
-	print(frame)
+	cap_flag, frame = cap.read()
+	print("flag",cap_flag)
 	if show:
 		monitor = get_monitors()[0]
 		imshow_fullscreen('screen', resize(frame,monitor.height))
@@ -65,5 +65,5 @@ def destroy():
 if __name__ == '__main__':
 	#test()
 	img = full_img(show=False)
-	imshow_fullscreen('screen', img)#
-	cv2.imwrite('~/banana/Pictures/test_fps.png', img)
+	imshow_fullscreen('screen', img)
+	cv2.imwrite('/home/pi/test_fps.png', img)

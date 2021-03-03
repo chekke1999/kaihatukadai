@@ -171,6 +171,7 @@ window.onload = function (e) {
             for(var key2 in arr_j){
                 if(key == "temp"){
                     arr_temp[i] = arr_j[key2]["status"][key];
+
                 }else if(key == "hr"){
                     arr_hr[i] = arr_j[key2]["status"][key];
                 }else if(key == "atm"){
@@ -187,15 +188,18 @@ window.onload = function (e) {
 
         }
 
-    console.log(max_data.temp)
-    max_data.temp = max_generate(arr_temp)
-    max_data.hr = max_generate(arr_hr)
-    max_data.atm = max_generate(arr_atm)
-    max_data.lum = max_generate(arr_lum)
+    // max_data.temp = max_generate(arr_temp)
+    // max_data.hr = max_generate(arr_hr)
+    // max_data.atm = max_generate(arr_atm)
+    // max_data.lum = max_generate(arr_lum)
+
+    max_data.temp = 50
+    max_data.hr = 50
+    max_data.atm = 50
+    max_data.lum = 50
 
     var length_ticks = (arr_no.length)/10;
 
-    console.log(max_data)
         
     var ctx1 = document.getElementById("temp");
     var ctx2 = document.getElementById("humidity");

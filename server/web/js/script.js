@@ -102,7 +102,7 @@ const inspectionIndex = inspection => {
 const req = {
     "sql" : {
         "db":"piscan",
-        "query" :"SELECT TOP " + display_num + " scan_id,plc_mac,datetime,scan_data FROM pi_camera;",
+        "query" :"SELECT TOP " + display_num + " scan_id,spi_mac,datetime,scan_data FROM pi_camera;",
         "commit":false
     }
 }
@@ -253,7 +253,7 @@ function page_html_send(ele){
     }
 
 
-    h = "SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera WHERE"
+    h = "SELECT scan_id,spi_mac,datetime,scan_data FROM pi_camera WHERE"
         +   " scan_id > "
         +   now_page_cnt
         +   " AND scan_id <= "
@@ -672,7 +672,7 @@ function downloadCSV() {
     csv_flag = 1;
         
         
-    h = "SELECT scan_id,plc_mac,datetime,scan_data FROM pi_camera;"
+    h = "SELECT scan_id,spi_mac,datetime,scan_data FROM pi_camera;"
 
     const req_3 = {
         "sql" : {
