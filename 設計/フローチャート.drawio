@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2021-03-08T01:35:55.791Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36" etag="WctH0KiF_ZTQS5I0wAcV" version="13.10.4" type="github">
+<mxfile host="app.diagrams.net" modified="2021-03-08T01:36:24.085Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36" etag="EboH8n_6xLzTDKdgQ4cC" version="13.10.4" type="github">
   <diagram id="wkKprQKMh2lIjEy9JK0p" name="Page-1">
-    <mxGraphModel dx="2249" dy="1859" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="3671" dy="2549" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -134,24 +134,6 @@
         <mxCell id="dFKXp6tCZQXhxMECFwLC-186" value="撮影完了フラグをTrue" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="75" y="535" width="150" height="70" as="geometry" />
         </mxCell>
-        <mxCell id="gs2BWEIWhmqGeNFwZReW-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="gs2BWEIWhmqGeNFwZReW-8" target="gs2BWEIWhmqGeNFwZReW-10" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="gs2BWEIWhmqGeNFwZReW-8" value="PLCからステーション&lt;br&gt;情報取得" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="1332.52" y="-55" width="150" height="70" as="geometry" />
-        </mxCell>
-        <mxCell id="gs2BWEIWhmqGeNFwZReW-9" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="gs2BWEIWhmqGeNFwZReW-10" target="gs2BWEIWhmqGeNFwZReW-8" edge="1">
-          <mxGeometry relative="1" as="geometry">
-            <mxPoint x="1412.52" y="170" as="targetPoint" />
-            <Array as="points">
-              <mxPoint x="1300.02" y="85" />
-              <mxPoint x="1300.02" y="-20" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="gs2BWEIWhmqGeNFwZReW-10" value="ステーションの情報&lt;br&gt;をサーバに送信" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="1330.02" y="65" width="155" height="70" as="geometry" />
-        </mxCell>
         <mxCell id="bqaIwRByT3U3bhcLjqRG-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="LhpffrZuen5v1YRQ7B42-1" target="LhpffrZuen5v1YRQ7B42-6" edge="1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -274,18 +256,6 @@
         </mxCell>
         <mxCell id="qD_2ZNkwh3tH0Hq8MnKl-52" value="&lt;span style=&quot;color: rgb(0 , 0 , 0) ; font-family: &amp;#34;helvetica&amp;#34; ; font-size: 12px ; font-style: normal ; font-weight: 400 ; letter-spacing: normal ; text-align: center ; text-indent: 0px ; text-transform: none ; word-spacing: 0px ; background-color: rgb(248 , 249 , 250) ; display: inline ; float: none&quot;&gt;ステーションPiの存在確認&lt;br&gt;ARP&lt;br&gt;&lt;/span&gt;" style="rhombus;whiteSpace=wrap;html=1;" parent="1" vertex="1">
           <mxGeometry x="1023" y="-290" width="180" height="80" as="geometry" />
-        </mxCell>
-        <mxCell id="_6dwRvxBaeqmldl8VEm--17" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="_6dwRvxBaeqmldl8VEm--14" target="_6dwRvxBaeqmldl8VEm--15" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="_6dwRvxBaeqmldl8VEm--14" value="StationPi" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
-          <mxGeometry x="1357.52" y="-440" width="100" height="100" as="geometry" />
-        </mxCell>
-        <mxCell id="_6dwRvxBaeqmldl8VEm--21" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="_6dwRvxBaeqmldl8VEm--15" target="gs2BWEIWhmqGeNFwZReW-8" edge="1">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
-        <mxCell id="_6dwRvxBaeqmldl8VEm--15" value="DHCPとDNSサーバ起動" style="rounded=1;whiteSpace=wrap;html=1;" parent="1" vertex="1">
-          <mxGeometry x="1322.52" y="-220" width="170" height="60" as="geometry" />
         </mxCell>
         <mxCell id="_6dwRvxBaeqmldl8VEm--26" value="" style="endArrow=none;dashed=1;html=1;exitX=1;exitY=0.5;exitDx=0;exitDy=0;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" parent="1" source="ztofhrs_hkuCxPjCwXTj-6" target="YXvn23vjxqq8DgFYmBK6-19" edge="1">
           <mxGeometry width="50" height="50" relative="1" as="geometry">
