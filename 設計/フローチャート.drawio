@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2021-03-08T01:34:31.589Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36" etag="PJufPHSVbvYhDKqXRuL1" version="13.10.4" type="github">
+<mxfile host="app.diagrams.net" modified="2021-03-08T01:35:55.791Z" agent="5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.72 Safari/537.36" etag="WctH0KiF_ZTQS5I0wAcV" version="13.10.4" type="github">
   <diagram id="wkKprQKMh2lIjEy9JK0p" name="Page-1">
-    <mxGraphModel dx="2012" dy="1744" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+    <mxGraphModel dx="2249" dy="1859" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -380,6 +380,11 @@
         <mxCell id="YXvn23vjxqq8DgFYmBK6-23" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="YXvn23vjxqq8DgFYmBK6-19" target="YXvn23vjxqq8DgFYmBK6-1">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
+        <mxCell id="YXvn23vjxqq8DgFYmBK6-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;entryX=0;entryY=0.5;entryDx=0;entryDy=0;" edge="1" parent="1" source="YXvn23vjxqq8DgFYmBK6-19" target="YXvn23vjxqq8DgFYmBK6-41">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="350" y="-160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
         <mxCell id="YXvn23vjxqq8DgFYmBK6-19" value="&lt;span style=&quot;color: rgb(0 , 0 , 0) ; font-family: &amp;#34;helvetica&amp;#34; ; font-size: 12px ; font-style: normal ; font-weight: 400 ; letter-spacing: normal ; text-align: center ; text-indent: 0px ; text-transform: none ; word-spacing: 0px ; background-color: rgb(248 , 249 , 250) ; display: inline ; float: none&quot;&gt;&lt;span style=&quot;font-family: &amp;#34;helvetica&amp;#34;&quot;&gt;SubカメラにIP伝達&lt;/span&gt;&lt;br style=&quot;font-family: &amp;#34;helvetica&amp;#34;&quot;&gt;&lt;span style=&quot;font-family: &amp;#34;helvetica&amp;#34;&quot;&gt;シリアル&lt;/span&gt;&lt;br&gt;&lt;/span&gt;" style="rhombus;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="75" y="-190" width="150" height="60" as="geometry" />
         </mxCell>
@@ -439,6 +444,12 @@
         </mxCell>
         <mxCell id="YXvn23vjxqq8DgFYmBK6-35" value="マネージャにデータセット" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
           <mxGeometry x="330.01" y="805" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="YXvn23vjxqq8DgFYmBK6-41" value="終了" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="369.99999999999994" y="-190" width="120" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="YXvn23vjxqq8DgFYmBK6-42" value="レスポンス無ければ" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;" vertex="1" parent="1">
+          <mxGeometry x="210" y="-200" width="150" height="20" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
